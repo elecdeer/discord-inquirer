@@ -25,6 +25,9 @@ jobs:
         continue-on-error: true
         run: npm list
 
+      - name: Install dependencies
+        run: npm install
+
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
