@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
   "devDependencies": {
+    "@changesets/cli": "^2.24.4",
     "@types/node": "^18.7.23",
     "tsup": "^6.2.3",
     "turbo": "^1.5.5",
