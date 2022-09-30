@@ -1,0 +1,7 @@
+{
+  "name": "@monorepo/tsconfig",
+  "private": true,
+  "devDependencies": {
+    "@tsconfig/node18": "^1.0.1"
+  }
+}
