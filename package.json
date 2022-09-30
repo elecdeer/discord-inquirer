@@ -10,7 +10,8 @@
     "build": "turbo run build",
     "test": "turbo run test --parallel",
     "lint": "turbo run lint --parallel",
-    "format": "turbo run format --parallel"
+    "format": "turbo run format --parallel",
+    "release": "turbo run build lint test && changeset version && changeset publish"
   },
   "repository": {
     "type": "git",
