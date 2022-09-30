@@ -1,6 +1,6 @@
 {
   "name": "@elecdeer/event-flow",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "event emitter that can be filtered, mapped, etc.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
