@@ -1,166 +1,28 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { createEventFlow } from "./eventFlow";
 
-import type { IEventFlow, IEventFlowEmitter, IEventFlowHandler } from "./types";
+import type { IEventFlow, IEventFlowHandler } from "./types";
 
-describe("utils/eventFlow", () => {
-  const createOnTestCase =
-    (
-      testFlow: IEventFlowHandler<number>,
-      emitFlow: IEventFlowEmitter<number>
-    ) =>
-    () => {
-      const handler1 = vi.fn();
-      const handler2 = vi.fn();
-      const handler3 = vi.fn();
-
-      testFlow.on(handler1);
-      testFlow.on(handler2);
-      testFlow.on(handler3);
-
-      const emitValue = 0;
-      const emitValue2 = 2;
-      emitFlow.emit(emitValue);
-      emitFlow.emit(emitValue2);
-
-      expect(handler1).toHaveBeenCalledWith(emitValue);
-      expect(handler2).toHaveBeenCalledWith(emitValue);
-      expect(handler3).toHaveBeenCalledWith(emitValue);
-
-      expect(handler1).toHaveBeenCalledWith(emitValue2);
-      expect(handler2).toHaveBeenCalledWith(emitValue2);
-      expect(handler3).toHaveBeenCalledWith(emitValue2);
-
-      expect(handler1).toHaveBeenCalledTimes(2);
-      expect(handler2).toHaveBeenCalledTimes(2);
-      expect(handler3).toHaveBeenCalledTimes(2);
-    };
-
-  const createOnceTestCase =
-    (
-      testFlow: IEventFlowHandler<number>,
-      emitFlow: IEventFlowEmitter<number>
-    ) =>
-    () => {
-      const handler = vi.fn();
-
-      testFlow.once(handler);
-
-      emitFlow.emit(0);
-      emitFlow.emit(1);
-      expect(handler).toBeCalledTimes(1);
-    };
-
-  const createOffTestCase =
-    (
-      testFlow: IEventFlowHandler<number>,
-      emitFlow: IEventFlowEmitter<number>
-    ) =>
-    () => {
-      const handler = vi.fn();
-
-      testFlow.on(handler);
-      testFlow.off(handler);
-
-      testFlow.on(handler).off();
-
-      emitFlow.emit(0);
-      expect(handler).not.toBeCalled();
-    };
-
-  const createOffAllTestCase =
-    (testFlow: IEventFlowHandler<number>, sourceFlow: IEventFlow<number>) =>
-    () => {
-      const handler = vi.fn();
-      const handler2 = vi.fn();
-      const handler3 = vi.fn();
-
-      testFlow.on(handler);
-      testFlow.on(handler2);
-      sourceFlow.on(handler3);
-      testFlow.offAll();
-
-      sourceFlow.emit(0);
-      expect(handler).not.toBeCalled();
-      expect(handler2).not.toBeCalled();
-      expect(handler3).not.toBeCalled();
-    };
-
-  const createOffAllInBranchTestCase =
-    (testFlow: IEventFlowHandler<number>, sourceFlow: IEventFlow<number>) =>
-    () => {
-      const handler = vi.fn();
-      const handler2 = vi.fn();
-      const handler3 = vi.fn();
-
-      testFlow.on(handler);
-      testFlow.on(handler2);
-      sourceFlow.on(handler3);
-      testFlow.offAllInBranch();
-
-      sourceFlow.emit(0);
-      expect(handler).not.toBeCalled();
-      expect(handler2).not.toBeCalled();
-      expect(handler3).toBeCalled();
-    };
-
+describe("/eventFlow.ts", () => {
   describe("createEventFlow()", () => {
     describe("functions test", () => {
-      let flow: IEventFlow<number> = createEventFlow<number>();
-      beforeEach(() => {
-        flow = createEventFlow<number>();
-      });
-
-      test.each([
-        ["on()", () => createOnTestCase(flow, flow)],
-        ["once()", () => createOnceTestCase(flow, flow)],
-        ["off()", () => createOffTestCase(flow, flow)],
-        [
-          "offAll()",
-          () =>
-            createOffAllTestCase(
-              flow.filter(() => true),
-              flow
-            ),
-        ],
-        [
-          "offAllInBranch()",
-          () =>
-            createOffAllInBranchTestCase(
-              flow.filter(() => true),
-              flow
-            ),
-        ],
-      ])("%s", (_, testCase) => {
-        testCase()();
-      });
+      testOnFunc(createEventFlow(), (source) => source);
+      testOnceFunc(createEventFlow(), (source) => source);
+      testOffFunc(createEventFlow(), (source) => source);
+      testOffAllFunc(createEventFlow(), (source) => source);
     });
   });
 
   describe("filter()", () => {
     describe("functions test", () => {
-      let sourceFlow: IEventFlow<number> = createEventFlow<number>();
-      let flow: IEventFlowHandler<number> = sourceFlow
-        .filter(() => true)
-        .filter(() => true);
-      beforeEach(() => {
-        sourceFlow = createEventFlow<number>();
-        flow = sourceFlow.filter(() => true);
-      });
-
-      test.each([
-        ["on()", () => createOnTestCase(flow, sourceFlow)],
-        ["once()", () => createOnceTestCase(flow, sourceFlow)],
-        ["off()", () => createOffTestCase(flow, sourceFlow)],
-        ["offAll()", () => createOffAllTestCase(flow, sourceFlow)],
-        [
-          "offAllInBranch()",
-          () => createOffAllInBranchTestCase(flow, sourceFlow),
-        ],
-      ])("%s", (_, testCase) => {
-        testCase()();
-      });
+      testOnFunc(createEventFlow(), (source) => source.filter(() => true));
+      testOnceFunc(createEventFlow(), (source) => source.filter(() => true));
+      testOffFunc(createEventFlow(), (source) => source.filter(() => true));
+      testOffAllFunc(createEventFlow(), (source) => source.filter(() => true));
+      testOffAllInBranchFunc(createEventFlow(), (source) =>
+        source.filter(() => true)
+      );
     });
 
     test("元のflowに影響を与えない", () => {
@@ -256,25 +118,15 @@ describe("utils/eventFlow", () => {
 
   describe("map()", () => {
     describe("functions test", () => {
-      let sourceFlow: IEventFlow<number> = createEventFlow<number>();
-      let flow: IEventFlowHandler<number> = sourceFlow.map((value) => value);
-      beforeEach(() => {
-        sourceFlow = createEventFlow<number>();
-        flow = sourceFlow.map((value) => value);
-      });
-
-      test.each([
-        ["on()", () => createOnTestCase(flow, sourceFlow)],
-        ["once()", () => createOnceTestCase(flow, sourceFlow)],
-        ["off()", () => createOffTestCase(flow, sourceFlow)],
-        ["offAll()", () => createOffAllTestCase(flow, sourceFlow)],
-        [
-          "offAllInBranch()",
-          () => createOffAllInBranchTestCase(flow, sourceFlow),
-        ],
-      ])("%s", (_, testCase) => {
-        testCase()();
-      });
+      testOnFunc(createEventFlow(), (source) => source.map((value) => value));
+      testOnceFunc(createEventFlow(), (source) => source.map((value) => value));
+      testOffFunc(createEventFlow(), (source) => source.map((value) => value));
+      testOffAllFunc(createEventFlow(), (source) =>
+        source.map((value) => value)
+      );
+      testOffAllInBranchFunc(createEventFlow(), (source) =>
+        source.map((value) => value)
+      );
     });
 
     test("元のflowに影響を与えない", () => {
@@ -304,25 +156,11 @@ describe("utils/eventFlow", () => {
 
   describe("tap()", () => {
     describe("functions test", () => {
-      let sourceFlow: IEventFlow<number> = createEventFlow<number>();
-      let flow: IEventFlowHandler<number> = sourceFlow.tap({});
-      beforeEach(() => {
-        sourceFlow = createEventFlow<number>();
-        flow = sourceFlow.tap({});
-      });
-
-      test.each([
-        ["on()", () => createOnTestCase(flow, sourceFlow)],
-        ["once()", () => createOnceTestCase(flow, sourceFlow)],
-        ["off()", () => createOffTestCase(flow, sourceFlow)],
-        ["offAll()", () => createOffAllTestCase(flow, sourceFlow)],
-        [
-          "offAllInBranch()",
-          () => createOffAllInBranchTestCase(flow, sourceFlow),
-        ],
-      ])("%s", (_, testCase) => {
-        testCase()();
-      });
+      testOnFunc(createEventFlow(), (source) => source.tap({}));
+      testOnceFunc(createEventFlow(), (source) => source.tap({}));
+      testOffFunc(createEventFlow(), (source) => source.tap({}));
+      testOffAllFunc(createEventFlow(), (source) => source.tap({}));
+      testOffAllInBranchFunc(createEventFlow(), (source) => source.tap({}));
     });
 
     test("元のflowに影響を与えない", () => {
@@ -352,4 +190,106 @@ describe("utils/eventFlow", () => {
       expect(post).toHaveBeenCalledWith(0);
     });
   });
+
+  const testOnFunc = (
+    sourceFlow: IEventFlow<number>,
+    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
+  ) => {
+    test("on()", () => {
+      const branchFlow = createBranchFlow(sourceFlow);
+      const handlers = [vi.fn(), vi.fn()] as const;
+
+      branchFlow.on(handlers[0]);
+      branchFlow.on(handlers[1]);
+
+      sourceFlow.emit(0);
+      sourceFlow.emit(2);
+
+      expect(handlers[0]).toHaveBeenCalledWith(0);
+      expect(handlers[1]).toHaveBeenCalledWith(0);
+
+      expect(handlers[0]).toHaveBeenCalledWith(2);
+      expect(handlers[1]).toHaveBeenCalledWith(2);
+
+      expect(handlers[0]).toHaveBeenCalledTimes(2);
+      expect(handlers[1]).toHaveBeenCalledTimes(2);
+    });
+  };
+
+  const testOnceFunc = (
+    sourceFlow: IEventFlow<number>,
+    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
+  ) => {
+    test("once()", () => {
+      const branchFlow = createBranchFlow(sourceFlow);
+      const handler = vi.fn();
+
+      branchFlow.once(handler);
+
+      sourceFlow.emit(0);
+      sourceFlow.emit(1);
+
+      expect(handler).toBeCalledTimes(1);
+    });
+  };
+
+  const testOffFunc = (
+    sourceFlow: IEventFlow<number>,
+    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
+  ) => {
+    test("off()", () => {
+      const branchFlow = createBranchFlow(sourceFlow);
+      const handler = vi.fn();
+
+      branchFlow.on(handler);
+      branchFlow.off(handler);
+
+      branchFlow.on(handler).off();
+
+      sourceFlow.emit(0);
+      expect(handler).not.toBeCalled();
+    });
+  };
+
+  const testOffAllFunc = (
+    sourceFlow: IEventFlow<number>,
+    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
+  ) => {
+    test("offAll()", () => {
+      const branchFlow = createBranchFlow(sourceFlow);
+      const handlers = [vi.fn(), vi.fn(), vi.fn()] as const;
+
+      branchFlow.on(handlers[0]);
+      branchFlow.on(handlers[1]);
+      sourceFlow.on(handlers[2]);
+
+      branchFlow.offAll();
+
+      sourceFlow.emit(0);
+      expect(handlers[0]).not.toBeCalled();
+      expect(handlers[1]).not.toBeCalled();
+      expect(handlers[2]).not.toBeCalled();
+    });
+  };
+
+  const testOffAllInBranchFunc = (
+    sourceFlow: IEventFlow<number>,
+    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
+  ) => {
+    test("offAllInBranch()", () => {
+      const branchFlow = createBranchFlow(sourceFlow);
+      const handlers = [vi.fn(), vi.fn(), vi.fn()] as const;
+      branchFlow.on(handlers[0]);
+      branchFlow.on(handlers[1]);
+      sourceFlow.on(handlers[2]);
+
+      branchFlow.offAllInBranch();
+
+      sourceFlow.emit(0);
+
+      expect(handlers[0]).not.toBeCalled();
+      expect(handlers[1]).not.toBeCalled();
+      expect(handlers[2]).toBeCalled();
+    });
+  };
 });
