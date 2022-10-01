@@ -1,7 +1,7 @@
 {
-  "name": "@elecdeer/event-flow",
-  "version": "1.1.0",
-  "description": "event emitter that can be filtered, mapped, etc.",
+  "name": "discord-inquirer",
+  "version": "0.0.0",
+  "description": "interactive interface using discord components API",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "typings": "./dist/index.d.ts",
@@ -22,6 +22,9 @@
     "url": "https://github.com/elecdeer/discord-inquirer/issues"
   },
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
+  "dependencies": {
+    "@elecdeer/event-flow": "*"
+  },
   "devDependencies": {
     "@monorepo/eslint-config": "*",
     "@monorepo/tsconfig": "*"
