@@ -13,26 +13,18 @@ export const createEventFlow = <
   return createEventFlowSource<THandlerParam>();
 };
 
-const createEventFlowSource = <T>(): IEventFlow<T> => {
+const createEventFlowSource = <T>(
+  sourceFlow?: IEventFlow<unknown>
+): IEventFlow<T> => {
   const handlers: Set<Handler<T>> = new Set();
   const branchFlows: IEventFlowHandler<unknown>[] = [];
 
-  const createBranchNode = <T>(): IEventFlow<T> => {
-    const branchFlow: IEventFlow<T> = {
-      ...createEventFlowSource<T>(),
-      offAll() {
-        //sourceのを削除
-        //源流までリフトアップされ、そこからoffAllInBranchで全て削除される
-        methods.offAll();
-      },
-    };
-
-    branchFlows.push(branchFlow as IEventFlowHandler<unknown>);
-    return branchFlow;
-  };
-
-  const methods = {
-    createBranchNode,
+  return {
+    createBranchNode<U>(): IEventFlow<U> {
+      const branchFlow = createEventFlowSource<U>(this as IEventFlow<unknown>);
+      branchFlows.push(branchFlow as IEventFlowHandler<unknown>);
+      return branchFlow;
+    },
     emit(value: T): void {
       handlers.forEach((handler) => void handler(value));
     },
@@ -41,27 +33,31 @@ const createEventFlowSource = <T>(): IEventFlow<T> => {
       return {
         handler,
         off: () => {
-          methods.off(handler);
+          this.off(handler);
         },
       };
     },
     once(handler: Handler<T>): HookReturn<T> {
       const onceHandler = (value: T) => {
         void handler(value);
-        methods.off(onceHandler);
+        this.off(onceHandler);
       };
-      return methods.on(onceHandler);
+      return this.on(onceHandler);
     },
     wait(): Promise<T> {
       return new Promise((resolve) => {
-        methods.once(resolve);
+        this.once(resolve);
       });
     },
     off(handler: Handler<T>): void {
       handlers.delete(handler);
     },
     offAll(): void {
-      this.offAllInBranch();
+      if (sourceFlow !== undefined) {
+        sourceFlow.offAll();
+      } else {
+        this.offAllInBranch();
+      }
     },
     offAllInBranch(): void {
       handlers.clear();
@@ -70,7 +66,7 @@ const createEventFlowSource = <T>(): IEventFlow<T> => {
       });
     },
     filter(...filters: Filter<T>[]): IEventFlowHandler<T> {
-      const branch = createBranchNode<T>();
+      const branch = this.createBranchNode<T>();
       this.on((value: T) => {
         if (filters.some((filter) => !filter(value))) return;
         branch.emit(value);
@@ -79,7 +75,7 @@ const createEventFlowSource = <T>(): IEventFlow<T> => {
       return branch;
     },
     map<U>(mapper: Mapper<T, U>): IEventFlowHandler<U> {
-      const branch = createBranchNode<U>();
+      const branch = this.createBranchNode<U>();
       this.on((value: T) => {
         branch.emit(mapper(value));
       });
@@ -90,7 +86,7 @@ const createEventFlowSource = <T>(): IEventFlow<T> => {
       pre?: (value: T) => void;
       post?: (value: T) => void;
     }): IEventFlow<T> {
-      const branch = createBranchNode<T>();
+      const branch = this.createBranchNode<T>();
       this.on((value: T) => {
         branch.emit(value);
       });
@@ -105,6 +101,4 @@ const createEventFlowSource = <T>(): IEventFlow<T> => {
       };
     },
   };
-
-  return methods;
 };
