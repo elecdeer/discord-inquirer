@@ -191,6 +191,40 @@ describe("/eventFlow.ts", () => {
     });
   });
 
+  describe("wait()", () => {
+    vi.useFakeTimers();
+
+    test("emitされるとresolve", async () => {
+      const flow = createEventFlow<number>();
+
+      const promise = flow.wait();
+      flow.emit(0);
+      await expect(promise).resolves.toBe(0);
+    });
+
+    test("引数で指定された時間が経過するとreject", async () => {
+      const flow = createEventFlow<number>();
+
+      const promise = flow.wait(1000);
+
+      vi.runAllTimers();
+      flow.emit(0);
+
+      await expect(promise).rejects.toThrowError("timeout");
+    });
+
+    test("引数を指定しない場合はタイムアウトしない", async () => {
+      const flow = createEventFlow<number>();
+
+      const promise = flow.wait();
+
+      vi.runAllTimers();
+      flow.emit(0);
+
+      await expect(promise).resolves.toBe(0);
+    });
+  });
+
   const testOnFunc = (
     sourceFlow: IEventFlow<number>,
     createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
