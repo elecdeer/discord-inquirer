@@ -44,9 +44,15 @@ const createEventFlowSource = <T>(
       };
       return this.on(onceHandler);
     },
-    wait(): Promise<T> {
-      return new Promise((resolve) => {
+    wait(timeoutMs?: number): Promise<T> {
+      return new Promise((resolve, reject) => {
         this.once(resolve);
+
+        if (timeoutMs !== undefined) {
+          setTimeout(() => {
+            reject(new Error("timeout"));
+          }, timeoutMs);
+        }
       });
     },
     off(handler: Handler<T>): void {

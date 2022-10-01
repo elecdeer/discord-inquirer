@@ -51,9 +51,10 @@ export interface IEventFlowHandler<T> {
   once(handler: Handler<T>): HookReturn<T>;
 
   /**
-   * 次にemitされた値を持ったPromiseを返す
+   * 次のemitを待つPromiseを返す
+   * @param timeoutMs
    */
-  wait(): Promise<T>;
+  wait(timeoutMs?: number): Promise<T>;
 
   /**
    * handlerを削除する
@@ -76,7 +77,6 @@ export interface IEventFlowHandler<T> {
    * @param filters
    */
   filter(...filters: Filter<T>[]): IEventFlowHandler<T>;
-
   filter<U extends T = T>(
     ...filters: TypeGuardFilter<T, U>[]
   ): IEventFlowHandler<U>;
