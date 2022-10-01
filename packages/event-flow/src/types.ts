@@ -6,84 +6,97 @@ export type TypeGuardFilter<T, U extends T> = (value: T) => value is U;
 export type Mapper<T, U> = (value: T) => U;
 
 export type HookReturn<T> = {
-	/**
-	 * 登録されたhandler
-	 */
-	handler: Handler<T>;
+  /**
+   * 登録されたhandler
+   */
+  handler: Handler<T>;
 
-	/**
-	 * handlerをoffする
-	 */
-	off: () => void;
+  /**
+   * handlerをoffする
+   */
+  off: () => void;
 };
 
 export interface IEventFlowEmitter<T> {
-	emit(value: T): void;
+  /**
+   * 登録されたhandlerを呼び出す
+   * 呼び出しは同期的に順に行われる
+   *
+   * @param value
+   */
+  emit(value: T): void;
 }
 
 export interface IEventFlowHandler<T> {
-	/**
-	 * 子EventFlowを生成する
-	 * この方法で生成されたEventFlowはoffAllが伝播する
-	 *
-	 * @returns eventFlow
-	 */
-	createBranchNode: <U>() => IEventFlow<U>;
+  /**
+   * 子EventFlowを生成する
+   * この方法で生成されたEventFlowはoffAllが伝播する
+   *
+   * @returns eventFlow
+   */
+  createBranchNode: <U>() => IEventFlow<U>;
 
-	/**
-	 * handlerを登録する
-	 * 同じhandlerは登録されない
-	 * @param handler
-	 */
-	on(handler: Handler<T>): HookReturn<T>;
+  /**
+   * handlerを登録する
+   * 同じhandlerは登録されない
+   * @param handler
+   */
+  on(handler: Handler<T>): HookReturn<T>;
 
-	/**
-	 * 1度のみ呼ばれるhandlerを登録する
-	 * 同じhandlerは登録されない
-	 * @param handler
-	 */
-	once(handler: Handler<T>): HookReturn<T>;
+  /**
+   * 1度のみ呼ばれるhandlerを登録する
+   * 同じhandlerは登録されない
+   * @param handler
+   */
+  once(handler: Handler<T>): HookReturn<T>;
 
-	/**
-	 * 次にemitされた値を持ったPromiseを返す
-	 */
-	wait(): Promise<T>;
+  /**
+   * 次のemitを待つPromiseを返す
+   * @param timeoutMs
+   */
+  wait(timeoutMs?: number): Promise<T>;
 
-	/**
-	 * handlerを削除する
-	 * @param handler
-	 */
-	off(handler: Handler<T>): void;
+  /**
+   * handlerを削除する
+   * @param handler
+   */
+  off(handler: Handler<T>): void;
 
-	/**
-	 * 接続するEventFlowの全てのhandlerを削除する
-	 */
-	offAll(): void;
+  /**
+   * 接続するEventFlowの全てのhandlerを削除する
+   */
+  offAll(): void;
 
-	/**
-	 * このeventFlow以下の全てのhandlerを削除する
-	 */
-	offAllInBranch(): void;
+  /**
+   * このeventFlow以下の全てのhandlerを削除する
+   */
+  offAllInBranch(): void;
 
-	/**
-	 * filterを通過したemitのみを受け取るEventFlowを作成する
-	 * @param filters
-	 */
-	filter(...filters: Filter<T>[]): IEventFlowHandler<T>;
+  /**
+   * filterを通過したemitのみを受け取るEventFlowを作成する
+   * @param filters
+   */
+  filter(...filters: Filter<T>[]): IEventFlowHandler<T>;
+  filter<U extends T = T>(
+    ...filters: TypeGuardFilter<T, U>[]
+  ): IEventFlowHandler<U>;
 
-	filter<U extends T = T>(...filters: TypeGuardFilter<T, U>[]): IEventFlowHandler<U>;
+  /**
+   * 変換された値をhandlerで受け取るEventFlowを作成する
+   * @param mapper
+   */
+  map<U>(mapper: Mapper<T, U>): IEventFlowHandler<U>;
 
-	/**
-	 * 変換された値をhandlerで受け取るEventFlowを作成する
-	 * @param mapper
-	 */
-	map<U>(mapper: Mapper<T, U>): IEventFlowHandler<U>;
-
-	/**
-	 * handler全体が呼ばれる前と後に関数呼び出しを挟むEventFlowを作成する
-	 * @param param
-	 */
-	tap(param: { pre?: (value: T) => void; post?: (value: T) => void }): IEventFlow<T>;
+  /**
+   * handler全体が呼ばれる前と後に関数呼び出しを挟むEventFlowを作成する
+   * @param param
+   */
+  tap(param: {
+    pre?: (value: T) => void;
+    post?: (value: T) => void;
+  }): IEventFlow<T>;
 }
 
-export interface IEventFlow<T> extends IEventFlowEmitter<T>, IEventFlowHandler<T> {}
+export interface IEventFlow<T>
+  extends IEventFlowEmitter<T>,
+    IEventFlowHandler<T> {}
