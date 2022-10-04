@@ -14,7 +14,7 @@ import type {
 
 //実際にadaptor実装するときはzodでスキーマ書いて、discordjsのオブジェクトをtoJSON()してぶち込み、該当type以外のをはじきつつtransformしてやると良さそう
 
-interface DiscordAdaptor {
+export interface DiscordAdaptor {
   sendMessage: (
     channelId: Snowflake,
     payload: MessagePayload
