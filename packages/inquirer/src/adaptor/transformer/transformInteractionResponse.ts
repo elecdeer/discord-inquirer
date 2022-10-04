@@ -6,14 +6,12 @@ import {
 } from "./transformMessagePayload";
 
 import type {
+  InteractionResponse,
+  InteractionResponseDeferredReply,
   InteractionResponseDeferredUpdate,
   InteractionResponsePatch,
-} from "../structure/interactionResponse";
-import type {
-  InteractionResponseDeferredReply,
   InteractionResponseReply,
-} from "../structure/interactionResponse";
-import type { InteractionResponse } from "../structure/interactionResponse";
+} from "../structure";
 import type {
   APIInteractionResponse,
   APIInteractionResponseChannelMessageWithSource,

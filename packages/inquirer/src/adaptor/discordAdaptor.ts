@@ -1,16 +1,13 @@
-import type { Emoji } from "./structure/component";
 import type {
+  Emoji,
   FollowupPayload,
   FollowupPayloadPatch,
-} from "./structure/followupPayload";
-import type { InteractionResponse } from "./structure/interactionResponse";
-import type {
+  InteractionResponse,
+  InteractionResponsePatch,
   MessagePayload,
   MessagePayloadPatch,
-} from "./structure/messagePayload";
+} from "./structure";
 import type { Snowflake } from "discord-api-types/v10";
-
-type InteractionResponsePatch = MessagePayloadPatch;
 
 //スレッドの作成はスコープ外
 
@@ -27,38 +24,24 @@ interface DiscordAdaptor {
   ) => Promise<Snowflake>;
   deleteMessage: (messageId: Snowflake) => Promise<void>;
 
-  /**
-   * Messageとして返す
-   * reply()
-   */
   sendReply: (
     interactionId: Snowflake,
     token: string,
     payload: InteractionResponse
   ) => Promise<void>;
-
-  //interactionへの返答はmessageIdとかを返さないのでこれが必要かも
   getReply: (token: string) => Promise<Snowflake>;
-
   editReply: (
     token: string,
     payload: InteractionResponsePatch
   ) => Promise<Snowflake>;
-
   deleteReply: (token: string) => Promise<void>;
 
-  /**
-   * 追加回答や回答保留していた返答を送る
-   * followup
-   */
   sendFollowUp: (token: string, payload: FollowupPayload) => Promise<Snowflake>;
-
   editFollowup: (
     messageId: Snowflake,
     token: string,
     payload: FollowupPayloadPatch
   ) => Promise<Snowflake>;
-
   deleteFollowup: (messageId: Snowflake, token: string) => Promise<void>;
 
   subscribeInteraction: (

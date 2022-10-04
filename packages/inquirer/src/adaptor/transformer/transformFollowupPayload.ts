@@ -3,7 +3,7 @@ import {
   transformMessagePayloadPatch,
 } from "./transformMessagePayload";
 
-import type { FollowupPayload, FollowupPayloadPatch } from "../structure/followupPayload";
+import type { FollowupPayload, FollowupPayloadPatch } from "../structure";
 import type {
   RESTPatchAPIInteractionFollowupJSONBody,
   RESTPostAPIInteractionFollowupJSONBody,

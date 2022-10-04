@@ -8,7 +8,7 @@ import type {
   MessagePayload,
   MessagePayloadPatch,
   MessageReference,
-} from "../structure/messagePayload";
+} from "../structure";
 import type {
   APIAllowedMentions,
   APIMessageReferenceSend,

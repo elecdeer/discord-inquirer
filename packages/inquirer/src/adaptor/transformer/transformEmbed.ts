@@ -1,11 +1,11 @@
-import type { Embed } from "../structure/embed";
 import type {
+  Embed,
   EmbedAuthor,
   EmbedField,
   EmbedFooter,
   EmbedImage,
   EmbedThumbnail,
-} from "../structure/embed";
+} from "../structure";
 import type {
   APIEmbed,
   APIEmbedAuthor,

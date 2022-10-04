@@ -12,7 +12,7 @@ import type {
   SelectMenuComponent,
   SelectOption,
   TextInputComponent,
-} from "../structure/component";
+} from "../structure";
 import type {
   APIActionRowComponent,
   APIButtonComponent,
