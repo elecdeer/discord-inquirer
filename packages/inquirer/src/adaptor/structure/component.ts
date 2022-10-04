@@ -3,7 +3,7 @@
  */
 import type { PartialEmoji } from "./emoji";
 
-export interface ActionRowComponent {
+export interface MessageActionRowComponent {
   type: "row";
   components:
     | [ButtonComponent | SelectMenuComponent<unknown>]
@@ -19,7 +19,13 @@ export interface ActionRowComponent {
       ];
 }
 
-export type Component = ButtonComponent | SelectMenuComponent<unknown>;
+export interface ModalActionRowComponent {
+  type: "row";
+  components: [TextInputComponent];
+}
+
+export type MessageComponent = ButtonComponent | SelectMenuComponent<unknown>;
+export type ModalComponent = TextInputComponent;
 
 /**
  * {@link https://discord.com/developers/docs/interactions/message-components#component-object}

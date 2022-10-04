@@ -5,33 +5,35 @@ import {
 } from "discord-api-types/v10";
 
 import type {
-  ActionRowComponent,
+  MessageActionRowComponent,
   ButtonComponent,
-  Component,
+  MessageComponent,
   PartialEmoji,
   SelectMenuComponent,
   SelectOption,
   TextInputComponent,
 } from "../structure";
+import type { ModalActionRowComponent } from "../structure";
+import type { APIModalActionRowComponent } from "discord-api-types/payloads/v10/channel";
 import type {
   APIActionRowComponent,
   APIButtonComponent,
+  APIMessageActionRowComponent,
   APIMessageComponentEmoji,
   APISelectMenuComponent,
   APISelectMenuOption,
   APITextInputComponent,
-  APIMessageActionRowComponent,
 } from "discord-api-types/v10";
 
 export const transformActionRowComponent = (
-  component: ActionRowComponent
+  component: MessageActionRowComponent
 ): APIActionRowComponent<APIMessageActionRowComponent> => ({
   type: ComponentType.ActionRow,
   components: component.components.map(transformComponent),
 });
 
 export const transformComponent = (
-  component: Component
+  component: MessageComponent
 ): APIMessageActionRowComponent => {
   switch (component.type) {
     case "button":
@@ -39,6 +41,15 @@ export const transformComponent = (
     case "menu":
       return transformSelectComponent(component);
   }
+};
+
+export const transformModalActionRowComponent = (
+  component: ModalActionRowComponent
+): APIActionRowComponent<APIModalActionRowComponent> => {
+  return {
+    type: ComponentType.ActionRow,
+    components: component.components.map(transformTextInputComponent),
+  };
 };
 
 const transformEmoji = (emoji: PartialEmoji): APIMessageComponentEmoji => ({

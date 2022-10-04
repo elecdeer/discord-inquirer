@@ -1,5 +1,5 @@
 import type { SetNullable } from "../../util/types";
-import type { ActionRowComponent } from "./component";
+import type { MessageActionRowComponent } from "./component";
 import type { Embed } from "./embed";
 
 type Snowflake = string;
@@ -40,7 +40,7 @@ export interface MessagePayload {
    * Components to include with the message
    * メッセージに含めるコンポーネント
    */
-  components?: ActionRowComponent[];
+  components?: MessageActionRowComponent[];
 
   /**
    * IDs of up to 3 stickers in the server to send in the message

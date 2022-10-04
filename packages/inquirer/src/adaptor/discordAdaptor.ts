@@ -1,14 +1,14 @@
 import type {
   FollowupPayload,
   FollowupPayloadPatch,
+  Interaction,
   InteractionResponse,
   InteractionResponsePatch,
   MessagePayload,
   MessagePayloadPatch,
+  MessageReaction,
+  Snowflake,
 } from "./structure";
-import type { Interaction } from "./structure/interaction";
-import type { MessageReaction } from "./structure/messageReaction";
-import type { Snowflake } from "discord-api-types/v10";
 
 //スレッドの作成はスコープ外
 
@@ -25,17 +25,17 @@ interface DiscordAdaptor {
   ) => Promise<Snowflake>;
   deleteMessage: (messageId: Snowflake) => Promise<void>;
 
-  sendReply: (
+  sendInteractionResponse: (
     interactionId: Snowflake,
     token: string,
     payload: InteractionResponse
   ) => Promise<void>;
-  getReply: (token: string) => Promise<Snowflake>;
-  editReply: (
+  getInteractionResponse: (token: string) => Promise<Snowflake>;
+  editInteractionResponse: (
     token: string,
     payload: InteractionResponsePatch
   ) => Promise<Snowflake>;
-  deleteReply: (token: string) => Promise<void>;
+  deleteInteractionResponse: (token: string) => Promise<void>;
 
   sendFollowUp: (token: string, payload: FollowupPayload) => Promise<Snowflake>;
   editFollowup: (
@@ -52,4 +52,6 @@ interface DiscordAdaptor {
   subscribeMessageReaction: (
     handleReaction: (reaction: MessageReaction) => void
   ) => () => void;
+
+  //messageDeleteもいるかも
 }

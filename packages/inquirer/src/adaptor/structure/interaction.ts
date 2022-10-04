@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord-api-types/v10";
 
 /**
- * {@link https://discord.com/developers/docs/interactions/slash-commands#interaction}
+ * {@link https://discord.com/developers/docs/interactions/slash-commands#interaction }
  */
 export type Interaction =
   | InteractionButton

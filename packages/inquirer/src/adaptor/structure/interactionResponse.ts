@@ -1,13 +1,15 @@
 import type { SetNullable } from "../../util/types";
+import type { ModalActionRowComponent } from "./component";
 import type { MessagePayload } from "./messagePayload";
 
 /**
- * {@link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object}
+ * {@link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object }
  */
 export type InteractionResponse =
   | InteractionResponseReply
   | InteractionResponseDeferredReply
-  | InteractionResponseDeferredUpdate;
+  | InteractionResponseDeferredUpdate
+  | InteractionResponseModal;
 
 /**
  * Messageとして返信する
@@ -37,7 +39,50 @@ export interface InteractionResponseDeferredReply {
  * MessageComponentによるInteractionにのみ使用できる
  */
 export interface InteractionResponseDeferredUpdate {
-  type: "deferredMessageUpdate"; // 6
+  type: "deferredUpdateMessage"; // 6
+}
+
+/**
+ * Modalを開く
+ */
+export interface InteractionResponseModal {
+  type: "modal";
+  data: {
+    /**
+     * a developer-defined identifier for the component, max 100 characters
+     */
+    customId: string;
+
+    /**
+     * the title of the popup modal, max 45 characters
+     */
+    title: string;
+
+    /**
+     * between 1 and 5 (inclusive) components that make up the modal
+     */
+    components:
+      | [ModalActionRowComponent]
+      | [ModalActionRowComponent, ModalActionRowComponent]
+      | [
+          ModalActionRowComponent,
+          ModalActionRowComponent,
+          ModalActionRowComponent
+        ]
+      | [
+          ModalActionRowComponent,
+          ModalActionRowComponent,
+          ModalActionRowComponent,
+          ModalActionRowComponent
+        ]
+      | [
+          ModalActionRowComponent,
+          ModalActionRowComponent,
+          ModalActionRowComponent,
+          ModalActionRowComponent,
+          ModalActionRowComponent
+        ];
+  };
 }
 
 /**
