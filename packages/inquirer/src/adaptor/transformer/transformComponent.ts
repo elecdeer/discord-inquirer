@@ -8,7 +8,7 @@ import type {
   ActionRowComponent,
   ButtonComponent,
   Component,
-  Emoji,
+  PartialEmoji,
   SelectMenuComponent,
   SelectOption,
   TextInputComponent,
@@ -41,9 +41,9 @@ export const transformComponent = (
   }
 };
 
-const transformEmoji = (emoji: Emoji): APIMessageComponentEmoji => ({
-  id: emoji.id,
-  name: emoji.name,
+const transformEmoji = (emoji: PartialEmoji): APIMessageComponentEmoji => ({
+  id: emoji.id ?? undefined,
+  name: emoji.name ?? undefined,
   animated: emoji.animated,
 });
 

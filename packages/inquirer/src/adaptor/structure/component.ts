@@ -1,6 +1,8 @@
 /**
  * {@link https://discord.com/developers/docs/interactions/message-components#component-object}
  */
+import type { PartialEmoji } from "./emoji";
+
 export interface ActionRowComponent {
   type: "row";
   components:
@@ -24,12 +26,6 @@ export type Component = ButtonComponent | SelectMenuComponent<unknown>;
  */
 export type ButtonComponent = LinkButtonComponent | NonLinkButtonComponent;
 
-export interface Emoji {
-  id?: string;
-  name?: string;
-  animated?: boolean;
-}
-
 export interface ButtonComponentBase {
   type: "button";
 
@@ -41,7 +37,7 @@ export interface ButtonComponentBase {
   /**
    * emoji to display to the left of the text
    */
-  emoji?: Emoji;
+  emoji?: PartialEmoji;
 
   /**
    * whether the button is disabled
@@ -141,7 +137,7 @@ export interface SelectOption<T> {
   /**
    * the emoji to display to the left of the option
    */
-  emoji?: Emoji;
+  emoji?: PartialEmoji;
 
   /**
    * whether this option should be enabled by default

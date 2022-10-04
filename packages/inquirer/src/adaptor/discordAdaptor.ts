@@ -1,5 +1,4 @@
 import type {
-  Emoji,
   FollowupPayload,
   FollowupPayloadPatch,
   InteractionResponse,
@@ -7,6 +6,8 @@ import type {
   MessagePayload,
   MessagePayloadPatch,
 } from "./structure";
+import type { Interaction } from "./structure/interaction";
+import type { MessageReaction } from "./structure/messageReaction";
 import type { Snowflake } from "discord-api-types/v10";
 
 //スレッドの作成はスコープ外
@@ -52,52 +53,3 @@ interface DiscordAdaptor {
     handleReaction: (reaction: MessageReaction) => void
   ) => () => void;
 }
-
-type Interaction =
-  | InteractionButton
-  | InteractionSelect
-  | InteractionModalSubmit;
-
-type InteractionBase = {
-  id: Snowflake;
-  token: string;
-  userId: Snowflake;
-  guildId?: Snowflake;
-  channelId?: Snowflake;
-};
-
-type InteractionButton = InteractionBase & {
-  type: 3; //MESSAGE_COMPONENT
-  data: {
-    customId: string;
-    componentType: 2; //Button
-  };
-};
-
-type InteractionSelect = InteractionBase & {
-  type: 3; //MESSAGE_COMPONENT
-  data: {
-    customId: string;
-    componentType: 3; //	Select Menu
-    values: string[];
-  };
-};
-
-type InteractionModalSubmit = InteractionBase & {
-  type: 5; //MODAL_SUBMIT
-  data: {
-    customId: string;
-
-    //transformed
-    fields: Record<string, string>; //customId, value
-  };
-};
-
-type MessageReaction = {
-  action: "add" | "remove";
-  userId: Snowflake;
-  channelId: Snowflake;
-  messageId: Snowflake;
-  guildId?: Snowflake;
-  emoji: Emoji;
-};
