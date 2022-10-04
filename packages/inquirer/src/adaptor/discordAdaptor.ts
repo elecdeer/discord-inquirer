@@ -20,10 +20,11 @@ export interface DiscordAdaptor {
     payload: MessagePayload
   ) => Promise<Snowflake>;
   editMessage: (
+    channelId: Snowflake,
     messageId: Snowflake,
     payload: MessagePayloadPatch
   ) => Promise<Snowflake>;
-  deleteMessage: (messageId: Snowflake) => Promise<void>;
+  deleteMessage: (channelId: Snowflake, messageId: Snowflake) => Promise<void>;
 
   sendInteractionResponse: (
     interactionId: Snowflake,
