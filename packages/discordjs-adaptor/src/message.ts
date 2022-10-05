@@ -5,11 +5,11 @@ import {
   transformFlags,
 } from "discord-inquirer";
 
-import type { DiscordJsAdaptor } from "./index";
 import type {
   MessagePayload,
   Snowflake,
   MessagePayloadPatch,
+  DiscordAdaptor,
 } from "discord-inquirer";
 import type {
   MessageCreateOptions,
@@ -20,7 +20,7 @@ import type { Client } from "discord.js";
 import type { ChannelManager } from "discord.js";
 
 export const sendMessage =
-  (client: Client): DiscordJsAdaptor["sendMessage"] =>
+  (client: Client): DiscordAdaptor["sendMessage"] =>
   async (channelId, payload) => {
     const channel = await fetchTextChannel(client.channels, channelId);
     const message = await channel.send(createMessageOption(payload));
@@ -29,7 +29,7 @@ export const sendMessage =
   };
 
 export const editMessage =
-  (client: Client): DiscordJsAdaptor["editMessage"] =>
+  (client: Client): DiscordAdaptor["editMessage"] =>
   async (channelId, messageId, payload) => {
     const channel = await fetchTextChannel(client.channels, channelId);
     const res = await channel.messages.edit(
@@ -40,7 +40,7 @@ export const editMessage =
   };
 
 export const deleteMessage =
-  (client: Client): DiscordJsAdaptor["deleteMessage"] =>
+  (client: Client): DiscordAdaptor["deleteMessage"] =>
   async (channelId, messageId) => {
     const channel = await fetchTextChannel(client.channels, channelId);
     await channel.messages.delete(messageId);
@@ -58,7 +58,7 @@ const fetchTextChannel = (
   return channel;
 };
 
-const createMessageOption = (
+export const createMessageOption = (
   payload: MessagePayload & {
     files?: MessageCreateOptions["files"];
   }
@@ -79,7 +79,7 @@ const createMessageOption = (
   };
 };
 
-const createMessageEditOption = (
+export const createMessageEditOption = (
   payload: MessagePayloadPatch & {
     files?: MessageCreateOptions["files"];
   }
