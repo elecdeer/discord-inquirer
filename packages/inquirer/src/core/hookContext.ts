@@ -1,4 +1,4 @@
-import type { Message } from "discord.js";
+import type { Snowflake } from "../adaptor";
 
 export type HookContext = {
   index: number;
@@ -7,7 +7,7 @@ export type HookContext = {
     hookType: string;
     index: number;
   }[];
-  mountHooks: ((message: Message) => void)[];
+  mountHooks: ((messageId: Snowflake) => void)[];
   unmountHooks: (() => void)[];
   dispatch: () => void;
 };
@@ -53,8 +53,8 @@ export const createHookContext = (dispatch: () => void) => {
     unbindHookContext();
   };
 
-  const afterMount = (message: Message) => {
-    context.mountHooks.forEach((hook) => hook(message));
+  const afterMount = (messageId: Snowflake) => {
+    context.mountHooks.forEach((hook) => hook(messageId));
     context.mountHooks = [];
   };
 
