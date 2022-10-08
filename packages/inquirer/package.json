@@ -25,6 +25,7 @@
   "dependencies": {
     "@elecdeer/event-flow": "*",
     "discord-api-types": "^0.37.11",
+    "node-object-hash": "^2.3.10",
     "type-fest": "^3.0.0"
   },
   "devDependencies": {
