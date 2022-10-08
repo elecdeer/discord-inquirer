@@ -47,42 +47,44 @@ export interface InteractionResponseDeferredUpdate {
  */
 export interface InteractionResponseModal {
   type: "modal";
-  data: {
-    /**
-     * a developer-defined identifier for the component, max 100 characters
-     */
-    customId: string;
+  data: InteractionResponseModalData;
+}
 
-    /**
-     * the title of the popup modal, max 45 characters
-     */
-    title: string;
+export interface InteractionResponseModalData {
+  /**
+   * a developer-defined identifier for the component, max 100 characters
+   */
+  customId: string;
 
-    /**
-     * between 1 and 5 (inclusive) components that make up the modal
-     */
-    components:
-      | [ModalActionRowComponent]
-      | [ModalActionRowComponent, ModalActionRowComponent]
-      | [
-          ModalActionRowComponent,
-          ModalActionRowComponent,
-          ModalActionRowComponent
-        ]
-      | [
-          ModalActionRowComponent,
-          ModalActionRowComponent,
-          ModalActionRowComponent,
-          ModalActionRowComponent
-        ]
-      | [
-          ModalActionRowComponent,
-          ModalActionRowComponent,
-          ModalActionRowComponent,
-          ModalActionRowComponent,
-          ModalActionRowComponent
-        ];
-  };
+  /**
+   * the title of the popup modal, max 45 characters
+   */
+  title: string;
+
+  /**
+   * between 1 and 5 (inclusive) components that make up the modal
+   */
+  components:
+    | [ModalActionRowComponent]
+    | [ModalActionRowComponent, ModalActionRowComponent]
+    | [
+        ModalActionRowComponent,
+        ModalActionRowComponent,
+        ModalActionRowComponent
+      ]
+    | [
+        ModalActionRowComponent,
+        ModalActionRowComponent,
+        ModalActionRowComponent,
+        ModalActionRowComponent
+      ]
+    | [
+        ModalActionRowComponent,
+        ModalActionRowComponent,
+        ModalActionRowComponent,
+        ModalActionRowComponent,
+        ModalActionRowComponent
+      ];
 }
 
 /**
