@@ -45,11 +45,13 @@ export const createHookContext = (dispatch: () => void) => {
   };
 
   const startRender = () => {
+    console.log("bind");
     context.index = 0;
     bindHookContext(context);
   };
 
   const endRender = () => {
+    console.log("unbind");
     unbindHookContext();
   };
 

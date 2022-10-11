@@ -87,10 +87,15 @@ export const inquire = <T extends Record<string, unknown>>(
   };
 
   const update = async () => {
+    hookContext.startRender();
+
+    //毎回unmountしているけど、renderでチェックした方が良い
     hookContext.beforeUnmount();
     const promptResult = prompt(answer, close);
     const { messageId } = await screen.render(promptResult);
     hookContext.afterMount(messageId);
+
+    hookContext.endRender();
   };
 
   const hookContext = createHookContext(update);
