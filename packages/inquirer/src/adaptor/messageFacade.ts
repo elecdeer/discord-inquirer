@@ -37,11 +37,17 @@ export type MessageMutualPayload = Omit<
   "messageReference" | "stickerIds"
 >;
 
+type SendResult = {
+  messageId: Snowflake;
+  edit: (payload: MessageMutualPayload) => Promise<void>;
+  del: () => Promise<void>;
+};
+
 export const messageFacade = (adaptor: DiscordAdaptor) => {
   const sendChannel = async (
     target: ChannelTarget,
     payload: MessageMutualPayload
-  ) => {
+  ): Promise<SendResult> => {
     const channelId = target.channelId;
     const messageId = await adaptor.sendMessage(channelId, payload);
 
@@ -59,7 +65,7 @@ export const messageFacade = (adaptor: DiscordAdaptor) => {
   const sendReply = async (
     target: ReplyTarget,
     payload: MessageMutualPayload
-  ) => {
+  ): Promise<SendResult> => {
     const { channelId, messageId } = target;
 
     const replyMessageId = await adaptor.sendMessage(channelId, {
@@ -83,7 +89,7 @@ export const messageFacade = (adaptor: DiscordAdaptor) => {
   const sendInteraction = async (
     target: InteractionTarget,
     payload: MessageMutualPayload
-  ) => {
+  ): Promise<SendResult> => {
     const { interactionId, token, ephemeral } = target;
     await adaptor.sendInteractionResponse(interactionId, token, {
       type: "channelMessageWithSource",
@@ -93,7 +99,10 @@ export const messageFacade = (adaptor: DiscordAdaptor) => {
       },
     });
 
+    const messageId = await adaptor.getInteractionResponse(token);
+
     return {
+      messageId: messageId,
       edit: async (payload: MessageMutualPayload) => {
         await adaptor.editInteractionResponse(token, {
           ...payload,
@@ -108,7 +117,7 @@ export const messageFacade = (adaptor: DiscordAdaptor) => {
   const sendInteractionFollowup = async (
     target: InteractionFollowupTarget,
     payload: MessageMutualPayload
-  ) => {
+  ): Promise<SendResult> => {
     const { token, ephemeral } = target;
     const messageId = await adaptor.sendFollowUp(token, {
       ...payload,
@@ -127,7 +136,10 @@ export const messageFacade = (adaptor: DiscordAdaptor) => {
   };
 
   return {
-    send: (target: MessageTarget, payload: MessagePayload) => {
+    send: (
+      target: MessageTarget,
+      payload: MessagePayload
+    ): Promise<SendResult> => {
       switch (target.type) {
         case "channel":
           return sendChannel(target, payload);

@@ -2,7 +2,7 @@ import nodeObjectHash from "node-object-hash";
 
 import { messageFacade } from "../adaptor/messageFacade";
 
-import type { DiscordAdaptor } from "../adaptor";
+import type { DiscordAdaptor, Snowflake } from "../adaptor";
 import type { MessageMutualPayload } from "../adaptor/messageFacade";
 import type { MessageTarget } from "../adaptor/messageFacade";
 import type { SetNullable } from "../util/types";
@@ -19,6 +19,7 @@ interface ScreenConfig {
 type RenderState = {
   initial: boolean;
   updated: boolean;
+  messageId: Snowflake;
 };
 
 export const createScreen = (
@@ -30,11 +31,14 @@ export const createScreen = (
 
   let editor: {
     latestPayload: MessageMutualPayload;
+    messageId: Snowflake;
     edit: (payload: MessageMutualPayload) => Promise<void>;
     del: () => Promise<void>;
   } | null = null;
 
-  const render = async (payload: MessageMutualPayload) => {
+  const render = async (
+    payload: MessageMutualPayload
+  ): Promise<RenderState> => {
     if (editor === null) {
       const controller = await facade.send(target, payload);
       editor = {
@@ -44,6 +48,7 @@ export const createScreen = (
       return {
         initial: true,
         updated: true,
+        messageId: editor.messageId,
       };
     } else {
       const difference = createMessagePayloadPatch(
@@ -55,11 +60,13 @@ export const createScreen = (
         return {
           initial: false,
           updated: true,
+          messageId: editor.messageId,
         };
       } else {
         return {
           initial: false,
           updated: false,
+          messageId: editor.messageId,
         };
       }
     }
