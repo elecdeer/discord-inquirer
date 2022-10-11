@@ -1,0 +1,32 @@
+{
+  "name": "discord-inquirer-example",
+  "private": true,
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "scripts": {
+    "start": "tsup && node --enable-source-maps --trace-uncaught ./dist/index.mjs",
+    "lint": "eslint --cache 'src/**/*.ts' 'src/*.ts' --max-warnings 0",
+    "format": "prettier --cache --write 'src/**/*.ts' 'src/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elecdeer/discord-inquirer.git"
+  },
+  "author": "elecdeer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/elecdeer/discord-inquirer/issues"
+  },
+  "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
+  "dependencies": {
+    "discord-inquirer": "*",
+    "discord-inquirer-adaptor-discordjs": "*",
+    "discord.js": "^14.6.0"
+  },
+  "devDependencies": {
+    "@monorepo/eslint-config": "*",
+    "@monorepo/tsconfig": "*"
+  }
+}
