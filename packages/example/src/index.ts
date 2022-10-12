@@ -53,14 +53,6 @@ client.on("ready", async (readyClient) => {
 
       const customId = useCustomId("increment");
 
-      useEffect((messageId) => {
-        client.channels.fetch(interaction.channelId).then((channel) => {
-          if (channel && channel.isTextBased()) {
-            channel.messages.fetch(messageId);
-          }
-        });
-      });
-
       useEffect(() => {
         answer("count", count);
 
