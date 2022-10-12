@@ -30,7 +30,15 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
         },
       });
 
-      expect(handle).toBeCalledWith("interactionId", ["value1", "value2"]);
+      expect(handle).toBeCalledWith(
+        {
+          id: "interactionId",
+          token: "interactionToken",
+          userId: "userId",
+        },
+        ["value1", "value2"],
+        expect.anything()
+      );
       expect(handle).toBeCalledTimes(1);
 
       controller.close();

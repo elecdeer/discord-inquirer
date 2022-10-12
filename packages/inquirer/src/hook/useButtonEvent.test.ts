@@ -29,7 +29,14 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
         },
       });
 
-      expect(handle).toBeCalledWith("interactionId");
+      expect(handle).toBeCalledWith(
+        {
+          id: "interactionId",
+          token: "interactionToken",
+          userId: "userId",
+        },
+        expect.anything()
+      );
       expect(handle).toBeCalledTimes(1);
 
       controller.close();

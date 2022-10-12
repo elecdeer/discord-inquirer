@@ -1,10 +1,16 @@
-import { inquire, createScreen, useState, useEffect } from "discord-inquirer";
+import {
+  inquire,
+  createScreen,
+  useState,
+  useEffect,
+  useButtonEvent,
+  useCustomId,
+} from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
 import { config } from "dotenv";
 
 import type { Prompt } from "discord-inquirer/src/core/inquire";
-import type { Interaction } from "discord.js";
 
 config();
 
@@ -43,6 +49,8 @@ client.on("ready", async (readyClient) => {
     }> = (answer, close) => {
       const [count, setCount] = useState(0);
 
+      const customId = useCustomId("increment");
+
       useEffect(() => {
         answer("count", count);
 
@@ -51,28 +59,9 @@ client.on("ready", async (readyClient) => {
         }
       }, [count]);
 
-      useEffect((messageId) => {
-        const handle = (interaction: Interaction) => {
-          if (!interaction.isButton()) return;
-          if (
-            interaction.message.id === messageId &&
-            interaction.customId === "customId"
-          ) {
-            interaction.deferUpdate();
-            console.log("Button clicked");
-
-            // setCount((c) => c + 1);
-            setCount((c) => (Math.random() < 0.5 ? c + 1 : c));
-          }
-        };
-
-        console.log("handle");
-        readyClient.on("interactionCreate", handle);
-
-        return () => {
-          console.log("unhandle");
-          readyClient.off("interactionCreate", handle);
-        };
+      useButtonEvent(customId, (interaction, deferUpdate) => {
+        deferUpdate();
+        setCount((count) => count + 1);
       });
 
       return {
@@ -85,7 +74,7 @@ client.on("ready", async (readyClient) => {
                 type: "button",
                 label: "increment",
                 style: "primary",
-                customId: "customId",
+                customId: customId,
               },
             ],
           },
