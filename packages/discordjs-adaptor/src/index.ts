@@ -6,7 +6,7 @@ import {
   sendInteractionResponse,
 } from "./interactionResponse";
 import { deleteMessage, editMessage, sendMessage } from "./message";
-import { subscribeInteraction, subscribeMessageReaction } from "./subscribe";
+import { subscribeInteraction } from "./subscribe";
 
 import type { DiscordAdaptor } from "discord-inquirer";
 import type { Client } from "discord.js";
@@ -29,6 +29,5 @@ export const createDiscordJsAdaptor = (
     editFollowup: editFollowUp(client),
     deleteFollowup: deleteFollowUp(client),
     subscribeInteraction: subscribeInteraction(client),
-    subscribeMessageReaction: subscribeMessageReaction(client),
   };
 };

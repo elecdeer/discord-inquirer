@@ -6,7 +6,6 @@ import type {
   InteractionResponsePatch,
   MessagePayload,
   MessagePayloadPatch,
-  MessageReaction,
   Snowflake,
 } from "./structure";
 
@@ -44,9 +43,5 @@ export interface DiscordAdaptor {
 
   subscribeInteraction: (
     handleInteraction: (interaction: Interaction) => void
-  ) => () => void;
-
-  subscribeMessageReaction: (
-    handleReaction: (reaction: MessageReaction) => void
   ) => () => void;
 }
