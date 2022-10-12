@@ -6,10 +6,10 @@ export { useRef } from "./useRef";
 export { useCustomId } from "./useCustomId";
 export { useButtonEvent } from "./useButtonEvent";
 export { useSelectMenuEvent } from "./useSelectMenuEvent";
+export { useReducer } from "./useReducer";
 
 /*
 実装予定
-useReducer
 useReactionEvent
 
 useCheckBoxButtonComponent
