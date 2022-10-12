@@ -2,6 +2,7 @@ import type { InteractionResponseModalData, Snowflake } from "../adaptor";
 
 export { useEffect } from "./useEffect";
 export { useState } from "./useState";
+export { useRef } from "./useRef";
 
 /*
 実装予定
