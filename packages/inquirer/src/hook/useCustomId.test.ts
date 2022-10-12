@@ -1,12 +1,13 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../core/hookContext";
+import { createDiscordAdaptorMock } from "../mock";
 import { useCustomId } from "./useCustomId";
 
 describe("packages/inquirer/src/hook/useCustomId", () => {
   describe("useCustomId()", () => {
     test("ユニークなIdを生成し保持する", () => {
-      const controller = createHookContext(vi.fn());
+      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       controller.startRender();
       const customId = useCustomId("this-is-prefix");

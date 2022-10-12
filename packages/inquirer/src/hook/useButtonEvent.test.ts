@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createDiscordAdaptorMock } from "../adaptor";
 import { createHookContext } from "../core/hookContext";
+import { createDiscordAdaptorMock } from "../mock";
 import { useButtonEvent } from "./useButtonEvent";
 
 describe("packages/inquirer/src/hook/useButtonEvent", () => {

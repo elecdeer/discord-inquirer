@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 
-import type { DiscordAdaptor } from "./discordAdaptor";
-import type { Interaction, MessageReaction } from "./structure";
+import type { DiscordAdaptor } from "../adaptor";
+import type { Interaction, MessageReaction } from "../adaptor";
 
 export const createDiscordAdaptorMock = (): DiscordAdaptor & {
   emitInteraction: ((interaction: Interaction) => void) | undefined;

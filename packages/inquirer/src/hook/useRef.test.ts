@@ -1,12 +1,13 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../core/hookContext";
+import { createDiscordAdaptorMock } from "../mock";
 import { useRef } from "./useRef";
 
 describe("packages/inquirer/src/hook/useRef", () => {
   describe("useRef()", () => {
     test("値を保持する", () => {
-      const controller = createHookContext(vi.fn());
+      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       {
         controller.startRender();
@@ -35,7 +36,10 @@ describe("packages/inquirer/src/hook/useRef", () => {
 
     test("値を変更してもdispatchは呼ばれない", () => {
       const dispatch = vi.fn();
-      const controller = createHookContext(dispatch);
+      const controller = createHookContext(
+        createDiscordAdaptorMock(),
+        dispatch
+      );
 
       {
         controller.startRender();
