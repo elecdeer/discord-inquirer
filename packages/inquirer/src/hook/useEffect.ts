@@ -29,7 +29,7 @@ export const useEffectWithContext =
     const changed =
       prevDeps === undefined ||
       deps === undefined ||
-      deps.some((dep, i) => dep !== prevDeps[i]);
+      deps.some((dep, i) => !Object.is(dep, prevDeps[i]));
 
     if (changed) {
       //前回のrender時とdepsが変わっていたらcb実行を予約

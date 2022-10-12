@@ -62,19 +62,16 @@ export const createHookContext = (dispatch: () => Promise<void>) => {
   };
 
   const afterMount = (messageId: Snowflake) => {
-    console.log("mount");
     context.mountHooks.forEach((hook) => hook(messageId));
     context.mountHooks = [];
   };
 
   const beforeUnmount = () => {
-    console.log("unmount");
     context.unmountHooks.forEach((hook) => hook());
     context.unmountHooks = [];
   };
 
   const close = () => {
-    console.log("close");
     beforeUnmount();
   };
 

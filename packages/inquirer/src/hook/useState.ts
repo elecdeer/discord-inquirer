@@ -36,7 +36,6 @@ export const useStateWithContext =
         const nextValue = resolveLazy(dispatchValue, prevValue);
 
         if (Object.is(prevValue, nextValue)) {
-          console.log("skip");
           return;
         }
 
