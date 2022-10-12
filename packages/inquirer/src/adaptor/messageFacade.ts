@@ -43,7 +43,24 @@ type SendResult = {
   del: () => Promise<void>;
 };
 
-export const messageFacade = (adaptor: DiscordAdaptor) => {
+export type MessageFacade = {
+  deferReply: (
+    interactionId: Snowflake,
+    token: string,
+    ephemeral?: boolean
+  ) => Promise<void>;
+  openModal: (
+    interactionId: Snowflake,
+    token: string,
+    payload: InteractionResponseModalData
+  ) => Promise<void>;
+  send: (target: MessageTarget, payload: MessagePayload) => Promise<SendResult>;
+  deferUpdate: (interactionId: Snowflake, token: string) => Promise<void>;
+};
+
+export const messageFacade: (adaptor: DiscordAdaptor) => MessageFacade = (
+  adaptor: DiscordAdaptor
+) => {
   const sendChannel = async (
     target: ChannelTarget,
     payload: MessageMutualPayload
