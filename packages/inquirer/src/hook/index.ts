@@ -7,10 +7,10 @@ export { useCustomId } from "./useCustomId";
 export { useButtonEvent } from "./useButtonEvent";
 export { useSelectMenuEvent } from "./useSelectMenuEvent";
 export { useReducer } from "./useReducer";
+export { useReactionEvent } from "./useReactionEvent";
 
 /*
 実装予定
-useReactionEvent
 
 useCheckBoxButtonComponent
 	状態値とコンポーネントを返す
