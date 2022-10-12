@@ -57,12 +57,20 @@ export const createScreen = (
       );
       if (difference !== null) {
         await editor.edit(payload);
+        editor = {
+          ...editor,
+          latestPayload: payload,
+        };
         return {
           initial: false,
           updated: true,
           messageId: editor.messageId,
         };
       } else {
+        editor = {
+          ...editor,
+          latestPayload: payload,
+        };
         return {
           initial: false,
           updated: false,

@@ -1,13 +1,14 @@
 import {
-  inquire,
   createScreen,
-  useState,
-  useEffect,
+  inquire,
   useButtonEvent,
   useCustomId,
+  useEffect,
+  useReactionEvent,
+  useState,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
-import { Client, SlashCommandBuilder } from "discord.js";
+import { Client, Partials, SlashCommandBuilder } from "discord.js";
 import { config } from "dotenv";
 
 import type { Prompt } from "discord-inquirer/src/core/inquire";
@@ -15,7 +16,8 @@ import type { Prompt } from "discord-inquirer/src/core/inquire";
 config();
 
 const client = new Client({
-  intents: [],
+  intents: ["Guilds", "GuildMessages", "GuildMessageReactions"],
+  partials: [Partials.Message, Partials.Reaction, Partials.User],
 });
 
 client.on("ready", async (readyClient) => {
@@ -51,6 +53,14 @@ client.on("ready", async (readyClient) => {
 
       const customId = useCustomId("increment");
 
+      useEffect((messageId) => {
+        client.channels.fetch(interaction.channelId).then((channel) => {
+          if (channel && channel.isTextBased()) {
+            channel.messages.fetch(messageId);
+          }
+        });
+      });
+
       useEffect(() => {
         answer("count", count);
 
@@ -62,6 +72,15 @@ client.on("ready", async (readyClient) => {
       useButtonEvent(customId, (interaction, deferUpdate) => {
         deferUpdate();
         setCount((count) => count + 1);
+      });
+
+      useReactionEvent((reaction) => {
+        console.log("reaction", reaction);
+        if (reaction.action === "add") {
+          setCount((count) => count + 1);
+        } else {
+          setCount((count) => count - 1);
+        }
       });
 
       return {
