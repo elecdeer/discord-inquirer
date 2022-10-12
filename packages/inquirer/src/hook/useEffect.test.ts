@@ -1,12 +1,13 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { createDiscordAdaptorMock } from "../adaptor";
 import { createHookContext } from "../core/hookContext";
 import { useEffect } from "./useEffect";
 
 describe("packages/inquirer/src/hook/useEffect", () => {
   describe("useEffect()", () => {
     test("mount時に正しくコールバックが呼ばれる", () => {
-      const controller = createHookContext(vi.fn());
+      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
@@ -27,7 +28,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("unmount時に正しくクリーンナップが呼ばれる", () => {
-      const controller = createHookContext(vi.fn());
+      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       const cleanup = vi.fn();
 
@@ -42,7 +43,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("マウントが行われない場合はコールバックは呼ばれない", () => {
-      const controller = createHookContext(vi.fn());
+      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
@@ -54,7 +55,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("depsを指定しない場合は毎回呼ばれる", () => {
-      const controller = createHookContext(vi.fn());
+      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
@@ -79,7 +80,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("depsが空配列の場合は初回のみ呼ばれる", () => {
-      const controller = createHookContext(vi.fn());
+      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
@@ -101,7 +102,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("depsが指定されている場合はdepsが変わるまで呼ばれない", () => {
-      const controller = createHookContext(vi.fn());
+      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
