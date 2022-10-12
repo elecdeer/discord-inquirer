@@ -1,5 +1,6 @@
 import { createEventFlow } from "@elecdeer/event-flow";
 
+import { immediateThrottle } from "../util/immediateThrottle";
 import { createHookContext } from "./hookContext";
 
 import type { MessageMutualPayload } from "../adaptor/messageFacade";
@@ -98,7 +99,13 @@ export const inquire = <T extends Record<string, unknown>>(
     hookContext.endRender();
   };
 
-  const hookContext = createHookContext(update);
+  const queueUpdate = immediateThrottle(() => {
+    void update();
+  });
+
+  const hookContext = createHookContext(() => {
+    queueUpdate();
+  });
 
   setImmediate(async () => {
     await update();

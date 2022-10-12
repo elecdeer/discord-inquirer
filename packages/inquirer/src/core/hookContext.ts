@@ -36,22 +36,27 @@ const unbindHookContext = () => {
 };
 
 export const createHookContext = (dispatch: () => void) => {
+  let closed = false;
+
   const context: HookContext = {
     index: 0,
     hookValues: [],
     mountHooks: [],
     unmountHooks: [],
-    dispatch: dispatch,
+    dispatch: () => {
+      if (closed) {
+        return;
+      }
+      dispatch();
+    },
   };
 
   const startRender = () => {
-    console.log("bind");
     context.index = 0;
     bindHookContext(context);
   };
 
   const endRender = () => {
-    console.log("unbind");
     unbindHookContext();
   };
 
@@ -67,6 +72,7 @@ export const createHookContext = (dispatch: () => void) => {
 
   const close = () => {
     beforeUnmount();
+    closed = true;
   };
 
   return { startRender, endRender, afterMount, beforeUnmount, close };

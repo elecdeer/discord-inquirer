@@ -57,13 +57,20 @@ client.on("ready", async (readyClient) => {
             ) {
               interaction.deferUpdate();
               console.log("Button clicked");
-              setCount(count + 1);
+
+              //これ呼び出すとそのまま同期的にdispatchが呼ばれるが、途中のメッセージ編集とかがasyncなため、途中で処理がこっちに帰ってくる⁇
+              setCount((c) => c + 1);
+              setCount((c) => c + 1);
+
+              //setImmediateとかでスロットルするしかないか？
             }
           };
 
+          console.log("handle");
           readyClient.on("interactionCreate", handle);
 
           return () => {
+            console.log("unhandle");
             readyClient.off("interactionCreate", handle);
           };
         });
