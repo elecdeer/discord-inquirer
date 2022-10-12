@@ -89,12 +89,11 @@ export const inquire = <T extends Record<string, unknown>>(
     //close時はmountしない
     const promptResult = prompt(answer, close);
     await screen.render(promptResult);
-
     await screen.close();
     hookContext.endRender();
   });
 
-  const update = async () => {
+  const update = immediateThrottle(async () => {
     hookContext.startRender();
 
     hookContext.beforeUnmount();
@@ -103,15 +102,12 @@ export const inquire = <T extends Record<string, unknown>>(
     hookContext.afterMount(messageId);
 
     hookContext.endRender();
-  };
-
-  const hookContext = createHookContext(async () => {
-    await update();
   });
 
-  setImmediate(async () => {
-    await update();
-  });
+  const hookContext = createHookContext(update);
+
+  //初回送信
+  update();
 
   return {
     resultEvent: event,

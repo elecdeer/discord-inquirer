@@ -1,5 +1,3 @@
-import { immediateThrottle } from "../util/immediateThrottle";
-
 import type { Snowflake } from "../adaptor";
 
 export type HookContext = {
@@ -37,20 +35,14 @@ const unbindHookContext = () => {
   hookContext = undefined;
 };
 
-export const createHookContext = (dispatch: () => Promise<void>) => {
+export const createHookContext = (dispatch: () => void) => {
   const context: HookContext = {
     index: 0,
     hookValues: [],
     mountHooks: [],
     unmountHooks: [],
-    dispatch: () => {
-      queueUpdate();
-    },
+    dispatch: dispatch,
   };
-
-  const queueUpdate = immediateThrottle(() => {
-    void dispatch();
-  });
 
   const startRender = () => {
     context.index = 0;
