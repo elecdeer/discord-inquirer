@@ -10,10 +10,6 @@ import type {
   Snowflake,
 } from "./structure";
 
-//スレッドの作成はスコープ外
-
-//実際にadaptor実装するときはzodでスキーマ書いて、discordjsのオブジェクトをtoJSON()してぶち込み、該当type以外のをはじきつつtransformしてやると良さそう
-
 export interface DiscordAdaptor {
   sendMessage: (
     channelId: Snowflake,
@@ -53,6 +49,4 @@ export interface DiscordAdaptor {
   subscribeMessageReaction: (
     handleReaction: (reaction: MessageReaction) => void
   ) => () => void;
-
-  //messageDeleteもいるかも
 }

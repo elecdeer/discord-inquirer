@@ -1,12 +1,13 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../core/hookContext";
+import { createDiscordAdaptorMock } from "../mock";
 import { useState } from "./useState";
 
 describe("packages/inquirer/src/hook/useState", () => {
   describe("useState()", () => {
     test("初期値が保持される", () => {
-      const controller = createHookContext(vi.fn());
+      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       {
         controller.startRender();
@@ -26,7 +27,7 @@ describe("packages/inquirer/src/hook/useState", () => {
     });
 
     test("setStateで正しく状態が保存される", () => {
-      const controller = createHookContext(vi.fn());
+      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       {
         controller.startRender();
@@ -59,7 +60,10 @@ describe("packages/inquirer/src/hook/useState", () => {
 
     test("setStateの呼び出しでdispatchが呼ばれる", () => {
       const dispatch = vi.fn();
-      const controller = createHookContext(dispatch);
+      const controller = createHookContext(
+        createDiscordAdaptorMock(),
+        dispatch
+      );
 
       {
         controller.startRender();

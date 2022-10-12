@@ -1,15 +1,23 @@
-import { inquire, createScreen, useState, useEffect } from "discord-inquirer";
+import {
+  createScreen,
+  inquire,
+  useButtonEvent,
+  useCustomId,
+  useEffect,
+  useReactionEvent,
+  useState,
+} from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
-import { Client, SlashCommandBuilder } from "discord.js";
+import { Client, Partials, SlashCommandBuilder } from "discord.js";
 import { config } from "dotenv";
 
 import type { Prompt } from "discord-inquirer/src/core/inquire";
-import type { Interaction } from "discord.js";
 
 config();
 
 const client = new Client({
-  intents: [],
+  intents: ["Guilds", "GuildMessages", "GuildMessageReactions"],
+  partials: [Partials.Message, Partials.Reaction, Partials.User],
 });
 
 client.on("ready", async (readyClient) => {
@@ -25,8 +33,9 @@ client.on("ready", async (readyClient) => {
       return;
     }
 
+    const adaptor = createDiscordJsAdaptor(readyClient);
     const screen = createScreen(
-      createDiscordJsAdaptor(readyClient),
+      adaptor,
       {
         type: "interaction",
         interactionId: interaction.id,
@@ -42,6 +51,8 @@ client.on("ready", async (readyClient) => {
     }> = (answer, close) => {
       const [count, setCount] = useState(0);
 
+      const customId = useCustomId("increment");
+
       useEffect(() => {
         answer("count", count);
 
@@ -50,28 +61,18 @@ client.on("ready", async (readyClient) => {
         }
       }, [count]);
 
-      useEffect((messageId) => {
-        const handle = (interaction: Interaction) => {
-          if (!interaction.isButton()) return;
-          if (
-            interaction.message.id === messageId &&
-            interaction.customId === "customId"
-          ) {
-            interaction.deferUpdate();
-            console.log("Button clicked");
+      useButtonEvent(customId, (interaction, deferUpdate) => {
+        deferUpdate();
+        setCount((count) => count + 1);
+      });
 
-            // setCount((c) => c + 1);
-            setCount((c) => (Math.random() < 0.5 ? c + 1 : c));
-          }
-        };
-
-        console.log("handle");
-        readyClient.on("interactionCreate", handle);
-
-        return () => {
-          console.log("unhandle");
-          readyClient.off("interactionCreate", handle);
-        };
+      useReactionEvent((reaction) => {
+        console.log("reaction", reaction);
+        if (reaction.action === "add") {
+          setCount((count) => count + 1);
+        } else {
+          setCount((count) => count - 1);
+        }
       });
 
       return {
@@ -84,7 +85,7 @@ client.on("ready", async (readyClient) => {
                 type: "button",
                 label: "increment",
                 style: "primary",
-                customId: "customId",
+                customId: customId,
               },
             ],
           },
@@ -94,6 +95,7 @@ client.on("ready", async (readyClient) => {
 
     const result = inquire(prompt, {
       screen,
+      adaptor,
       defaultResult: {
         count: -1,
       },

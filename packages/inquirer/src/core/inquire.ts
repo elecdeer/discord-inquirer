@@ -3,6 +3,7 @@ import { createEventFlow } from "@elecdeer/event-flow";
 import { immediateThrottle } from "../util/immediateThrottle";
 import { createHookContext } from "./hookContext";
 
+import type { DiscordAdaptor } from "../adaptor";
 import type { MessageMutualPayload } from "../adaptor/messageFacade";
 import type { Screen } from "./screen";
 import type { IEventFlowHandler } from "@elecdeer/event-flow/src/types";
@@ -28,6 +29,7 @@ export type Inquire<T extends Record<string, unknown>> = (
 
 interface InquireConfig<T extends Record<string, unknown>> {
   screen: Screen;
+  adaptor: DiscordAdaptor;
 
   defaultResult?: Partial<T>;
 
@@ -56,7 +58,7 @@ export const inquire = <T extends Record<string, unknown>>(
   prompt: Prompt<T>,
   config: InquireConfig<T>
 ): InquireResult<T> => {
-  const { screen, defaultResult, time, idle } = config;
+  const { screen, adaptor, defaultResult, time, idle } = config;
 
   const result: Partial<T> = defaultResult ?? {};
   const event = createEventFlow<
@@ -102,7 +104,7 @@ export const inquire = <T extends Record<string, unknown>>(
     hookContext.endRender();
   });
 
-  const hookContext = createHookContext(update);
+  const hookContext = createHookContext(adaptor, update);
 
   //初回送信
   update();
