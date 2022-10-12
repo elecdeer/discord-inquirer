@@ -29,10 +29,10 @@ export const useStateWithContext =
       };
     }
 
-    const prevValue = ctx.hookValues[current].value as T;
     return [
-      prevValue,
+      ctx.hookValues[current].value as T,
       (dispatchValue: Lazy<T, T>) => {
+        const prevValue = ctx.hookValues[current].value as T;
         const nextValue = resolveLazy(dispatchValue, prevValue);
 
         if (Object.is(prevValue, nextValue)) {
