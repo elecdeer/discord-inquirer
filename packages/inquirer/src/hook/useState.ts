@@ -29,11 +29,19 @@ export const useStateWithContext =
       };
     }
 
+    const prevValue = ctx.hookValues[current].value as T;
     return [
-      ctx.hookValues[current].value as T,
+      prevValue,
       (dispatchValue: Lazy<T, T>) => {
+        const nextValue = resolveLazy(dispatchValue, prevValue);
+
+        if (Object.is(prevValue, nextValue)) {
+          console.log("skip");
+          return;
+        }
+
         ctx.hookValues[current] = {
-          value: resolveLazy(dispatchValue, ctx.hookValues[current].value as T),
+          value: nextValue,
           hookType: hookType,
           index: current,
         };
