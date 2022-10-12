@@ -25,8 +25,9 @@ client.on("ready", async (readyClient) => {
       return;
     }
 
+    const adaptor = createDiscordJsAdaptor(readyClient);
     const screen = createScreen(
-      createDiscordJsAdaptor(readyClient),
+      adaptor,
       {
         type: "interaction",
         interactionId: interaction.id,
@@ -94,6 +95,7 @@ client.on("ready", async (readyClient) => {
 
     const result = inquire(prompt, {
       screen,
+      adaptor,
       defaultResult: {
         count: -1,
       },

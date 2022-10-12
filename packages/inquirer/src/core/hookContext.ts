@@ -1,4 +1,4 @@
-import type { Snowflake } from "../adaptor";
+import type { DiscordAdaptor, Snowflake } from "../adaptor";
 
 export type HookContext = {
   index: number;
@@ -9,6 +9,7 @@ export type HookContext = {
   }[];
   mountHooks: ((messageId: Snowflake) => void)[];
   unmountHooks: (() => void)[];
+  adaptor: DiscordAdaptor;
   dispatch: () => void;
 };
 
@@ -35,12 +36,16 @@ const unbindHookContext = () => {
   hookContext = undefined;
 };
 
-export const createHookContext = (dispatch: () => void) => {
+export const createHookContext = (
+  adaptor: DiscordAdaptor,
+  dispatch: () => void
+) => {
   const context: HookContext = {
     index: 0,
     hookValues: [],
     mountHooks: [],
     unmountHooks: [],
+    adaptor: adaptor,
     dispatch: dispatch,
   };
 
