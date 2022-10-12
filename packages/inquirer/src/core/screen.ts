@@ -91,8 +91,7 @@ export const createScreen = (
   };
 };
 
-//TODO テスト書く
-const createMessagePayloadPatch = (
+export const createMessagePayloadPatch = (
   prev: MessageMutualPayload,
   next: MessageMutualPayload
 ): SetNullable<MessageMutualPayload> | null => {
@@ -139,7 +138,12 @@ const createMessagePayloadPatch = (
 };
 
 const hasher = nodeObjectHash({
-  sort: true,
+  sort: {
+    object: true,
+    map: true,
+    array: false,
+    set: false,
+  },
   coerce: false,
 });
 
