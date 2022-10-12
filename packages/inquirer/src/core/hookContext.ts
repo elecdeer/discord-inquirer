@@ -1,3 +1,5 @@
+import { immediateThrottle } from "../util/immediateThrottle";
+
 import type { Snowflake } from "../adaptor";
 
 export type HookContext = {
@@ -35,21 +37,20 @@ const unbindHookContext = () => {
   hookContext = undefined;
 };
 
-export const createHookContext = (dispatch: () => void) => {
-  let closed = false;
-
+export const createHookContext = (dispatch: () => Promise<void>) => {
   const context: HookContext = {
     index: 0,
     hookValues: [],
     mountHooks: [],
     unmountHooks: [],
     dispatch: () => {
-      if (closed) {
-        return;
-      }
-      dispatch();
+      queueUpdate();
     },
   };
+
+  const queueUpdate = immediateThrottle(() => {
+    void dispatch();
+  });
 
   const startRender = () => {
     context.index = 0;
@@ -61,18 +62,20 @@ export const createHookContext = (dispatch: () => void) => {
   };
 
   const afterMount = (messageId: Snowflake) => {
+    console.log("mount");
     context.mountHooks.forEach((hook) => hook(messageId));
     context.mountHooks = [];
   };
 
   const beforeUnmount = () => {
+    console.log("unmount");
     context.unmountHooks.forEach((hook) => hook());
     context.unmountHooks = [];
   };
 
   const close = () => {
+    console.log("close");
     beforeUnmount();
-    closed = true;
   };
 
   return { startRender, endRender, afterMount, beforeUnmount, close };

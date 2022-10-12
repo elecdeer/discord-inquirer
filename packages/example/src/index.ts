@@ -43,7 +43,7 @@ client.on("ready", async (readyClient) => {
         useEffect(() => {
           answer("count", count);
 
-          if (count >= 10) {
+          if (count >= 6) {
             close();
           }
         }, [count]);
@@ -58,11 +58,8 @@ client.on("ready", async (readyClient) => {
               interaction.deferUpdate();
               console.log("Button clicked");
 
-              //これ呼び出すとそのまま同期的にdispatchが呼ばれるが、途中のメッセージ編集とかがasyncなため、途中で処理がこっちに帰ってくる⁇
-              setCount((c) => c + 1);
-              setCount((c) => c + 1);
-
-              //setImmediateとかでスロットルするしかないか？
+              // setCount((c) => c + 1);
+              setCount((c) => (Math.random() < 0.5 ? c + 1 : c));
             }
           };
 
@@ -76,7 +73,7 @@ client.on("ready", async (readyClient) => {
         });
 
         return {
-          content: `count: ${count}`,
+          content: count >= 6 ? "closed" : `count: ${count}`,
           components: [
             {
               type: "row",

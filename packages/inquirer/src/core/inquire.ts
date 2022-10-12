@@ -81,16 +81,22 @@ export const inquire = <T extends Record<string, unknown>>(
     });
   };
 
-  const close = async () => {
+  const close = immediateThrottle(async () => {
+    hookContext.startRender();
     event.offAll();
     hookContext.close();
+
+    //close時はmountしない
+    const promptResult = prompt(answer, close);
+    await screen.render(promptResult);
+
     await screen.close();
-  };
+    hookContext.endRender();
+  });
 
   const update = async () => {
     hookContext.startRender();
 
-    //毎回unmountしているけど、renderでチェックした方が良い
     hookContext.beforeUnmount();
     const promptResult = prompt(answer, close);
     const { messageId } = await screen.render(promptResult);
@@ -99,12 +105,8 @@ export const inquire = <T extends Record<string, unknown>>(
     hookContext.endRender();
   };
 
-  const queueUpdate = immediateThrottle(() => {
-    void update();
-  });
-
-  const hookContext = createHookContext(() => {
-    queueUpdate();
+  const hookContext = createHookContext(async () => {
+    await update();
   });
 
   setImmediate(async () => {
