@@ -3,14 +3,13 @@ import type { InteractionResponseModalData, Snowflake } from "../adaptor";
 export { useEffect } from "./useEffect";
 export { useState } from "./useState";
 export { useRef } from "./useRef";
+export { useCustomId } from "./useCustomId";
 
 /*
 実装予定
-useCustomId
 useButtonEvent
 useSelectEvent
 useReducer
-useRef
 useReactionEvent
 
 useCheckBoxButtonComponent
