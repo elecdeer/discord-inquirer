@@ -59,7 +59,8 @@ export interface LinkButtonComponent extends ButtonComponentBase {
    * a url for link-style buttons
    */
   url: string;
-  customId: undefined;
+
+  customId?: never;
 }
 
 export interface NonLinkButtonComponent extends ButtonComponentBase {
@@ -69,7 +70,8 @@ export interface NonLinkButtonComponent extends ButtonComponentBase {
    * a developer-defined identifier for the button, max 100 characters
    */
   customId: string;
-  url: undefined;
+
+  url?: never;
 }
 
 /**

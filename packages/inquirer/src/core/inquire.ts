@@ -17,9 +17,7 @@ type InquireResult<T extends Record<string, unknown>> = {
       };
     }[keyof T]
   >;
-  /**
-   * この値はprompt内に持ち込まれるべきでは無い
-   */
+
   result: () => Partial<T>;
 };
 
