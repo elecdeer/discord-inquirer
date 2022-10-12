@@ -1,5 +1,3 @@
-import type { InteractionResponseModalData, Snowflake } from "../adaptor";
-
 export { useEffect } from "./useEffect";
 export { useState } from "./useState";
 export { useRef } from "./useRef";
@@ -7,7 +5,6 @@ export { useCustomId } from "./useCustomId";
 export { useButtonEvent } from "./useButtonEvent";
 export { useSelectMenuEvent } from "./useSelectMenuEvent";
 export { useReducer } from "./useReducer";
-export { useReactionEvent } from "./useReactionEvent";
 
 /*
 実装予定
@@ -22,9 +19,6 @@ useCounterComponent
 useSelectPaging
 	option[]を受け取って、page値とsetPageとページ内のoption[]を返す
 
-
-
-
  */
 
 /*
@@ -34,12 +28,12 @@ useSelectPaging
  */
 
 //interactionにhookして
-type useModal = (
-  //これジェネリクスで型付けしたいかも
-  //InteractionResponseModalDataを簡略化した形にすると良さそう
-  modalData: InteractionResponseModalData
-) => {
-  result: Record<string, string> | null;
-  open: (interactionId: Snowflake, token: string) => void;
-  //
-};
+// type useModal = (
+//   //これジェネリクスで型付けしたいかも
+//   //InteractionResponseModalDataを簡略化した形にすると良さそう
+//   modalData: InteractionResponseModalData
+// ) => {
+//   result: Record<string, string> | null;
+//   open: (interactionId: Snowflake, token: string) => void;
+//   //
+// };

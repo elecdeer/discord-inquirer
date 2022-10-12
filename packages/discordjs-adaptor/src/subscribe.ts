@@ -1,10 +1,4 @@
 import type { DiscordAdaptor } from "discord-inquirer";
-import type {
-  MessageReaction,
-  PartialMessageReaction,
-  PartialUser,
-  User,
-} from "discord.js";
 import type { Client, Interaction } from "discord.js";
 
 export const subscribeInteraction =
@@ -68,39 +62,5 @@ export const subscribeInteraction =
 
     return () => {
       client.off("interactionCreate", listener);
-    };
-  };
-
-export const subscribeMessageReaction =
-  (client: Client<true>): DiscordAdaptor["subscribeMessageReaction"] =>
-  (handler) => {
-    const listener =
-      (action: "add" | "remove") =>
-      (
-        reaction: MessageReaction | PartialMessageReaction,
-        user: User | PartialUser
-      ) => {
-        handler({
-          action: action,
-          messageId: reaction.message.id,
-          channelId: reaction.message.channelId,
-          emoji: {
-            id: reaction.emoji.id,
-            name: reaction.emoji.name,
-            animated: reaction.emoji.animated ?? false,
-          },
-          userId: user.id,
-        });
-      };
-
-    const addReactionListener = listener("add");
-    const removeReactionListener = listener("remove");
-
-    client.on("messageReactionAdd", addReactionListener);
-    client.on("messageReactionRemove", removeReactionListener);
-
-    return () => {
-      client.off("messageReactionAdd", addReactionListener);
-      client.off("messageReactionRemove", removeReactionListener);
     };
   };
