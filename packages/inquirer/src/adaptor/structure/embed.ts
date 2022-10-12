@@ -30,27 +30,27 @@ export interface Embed {
   /**
    * footer information
    */
-  footer: EmbedFooter;
+  footer?: EmbedFooter;
 
   /**
    * image information
    */
-  image: EmbedImage;
+  image?: EmbedImage;
 
   /**
    * thumbnail information
    */
-  thumbnail: EmbedThumbnail;
+  thumbnail?: EmbedThumbnail;
 
   /**
    * author information
    */
-  author: EmbedAuthor;
+  author?: EmbedAuthor;
 
   /**
    * fields information
    */
-  fields: EmbedField[];
+  fields?: EmbedField[];
 }
 
 /**

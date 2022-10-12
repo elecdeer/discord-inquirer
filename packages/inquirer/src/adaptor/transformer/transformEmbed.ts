@@ -21,11 +21,11 @@ export const transformEmbed = (embed: Embed): APIEmbed => ({
   url: embed.url,
   timestamp: transformTimeStamp?.(embed.timestamp),
   color: transformColor(embed.color),
-  footer: transformEmbedFooter(embed.footer),
-  image: transformEmbedImage(embed.image),
-  thumbnail: transformEmbedThumbnail(embed.thumbnail),
-  author: transformEmbedAuthor(embed.author),
-  fields: embed.fields.map(transformEmbedField),
+  footer: embed.footer && transformEmbedFooter(embed.footer),
+  image: embed.image && transformEmbedImage(embed.image),
+  thumbnail: embed.thumbnail && transformEmbedThumbnail(embed.thumbnail),
+  author: embed.author && transformEmbedAuthor(embed.author),
+  fields: embed.fields && embed.fields.map(transformEmbedField),
 });
 
 export const transformTimeStamp = (
