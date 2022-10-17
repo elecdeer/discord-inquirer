@@ -1,10 +1,12 @@
 import { createEventFlow } from "@elecdeer/event-flow";
 
 import { immediateThrottle } from "../util/immediateThrottle";
+import { createTimer } from "../util/timer";
 import { createHookContext } from "./hookContext";
 
 import type { DiscordAdaptor } from "../adaptor";
 import type { MessageMutualPayload } from "../adaptor/messageFacade";
+import type { Timer } from "../util/timer";
 import type { Screen } from "./screen";
 import type { IEventFlowHandler } from "@elecdeer/event-flow/src/types";
 
@@ -91,6 +93,8 @@ export const inquire = <T extends Record<string, unknown>>(
     await screen.render(promptResult);
     await screen.close();
     hookContext.endRender();
+
+    dispose();
   });
 
   const update = immediateThrottle(async () => {
@@ -102,6 +106,8 @@ export const inquire = <T extends Record<string, unknown>>(
     hookContext.afterMount(messageId);
 
     hookContext.endRender();
+
+    resetIdleTimer();
   });
 
   const hookContext = createHookContext(adaptor, update);
@@ -109,8 +115,51 @@ export const inquire = <T extends Record<string, unknown>>(
   //初回送信
   update();
 
+  const { resetIdleTimer, dispose } = createInquireTimer({ time, idle }, close);
+
   return {
     resultEvent: event,
     result: () => result,
+  };
+};
+
+const createInquireTimer = (
+  config: Pick<InquireConfig<never>, "idle" | "time">,
+  close: () => void
+) => {
+  let timeoutTimer: Timer | null = null;
+  if (config.time !== undefined) {
+    timeoutTimer = createTimer(config.time);
+    timeoutTimer.start(() => {
+      close();
+    });
+  }
+
+  let idleTimer: Timer | null = null;
+  if (config.idle !== undefined) {
+    idleTimer = createTimer(config.idle);
+    idleTimer.start(() => {
+      close();
+    });
+  }
+
+  const resetIdleTimer = () => {
+    if (idleTimer !== null) {
+      idleTimer.reset();
+    }
+  };
+
+  const dispose = () => {
+    if (timeoutTimer !== null) {
+      timeoutTimer.dispose();
+    }
+    if (idleTimer !== null) {
+      idleTimer.dispose();
+    }
+  };
+
+  return {
+    dispose,
+    resetIdleTimer,
   };
 };
