@@ -105,7 +105,7 @@ export const transformSelectOption = (
   option: SelectOption<unknown>
 ): APISelectMenuOption => ({
   label: option.label,
-  value: option.key,
+  value: option.value,
   description: option.description,
   emoji: option.emoji && transformEmoji(option.emoji),
   default: option.default,
