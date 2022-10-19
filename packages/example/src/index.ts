@@ -1,10 +1,8 @@
 import {
   createScreen,
   inquire,
-  useButtonEvent,
-  useCustomId,
-  useEffect,
-  useState,
+  renderRowComponent,
+  useSelectComponent,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -45,40 +43,46 @@ client.on("ready", async (readyClient) => {
     );
 
     const prompt: Prompt<{
-      count: number;
+      selected: number[];
     }> = (answer, close) => {
-      const [count, setCount] = useState(0);
+      const [result, renderSelect] = useSelectComponent(
+        {
+          options: [
+            {
+              label: "1",
+              payload: 1,
+            },
+            {
+              label: "2",
+              payload: 2,
+            },
+            {
+              label: "3",
+              payload: 3,
+            },
+          ],
+          maxValues: 2,
+          minValues: 1,
+        },
+        (result) => {
+          const selected = result
+            .filter((item) => item.selected)
+            .map((item) => item.payload);
 
-      const customId = useCustomId("increment");
-
-      useEffect(() => {
-        answer("count", count);
-
-        if (count >= 6) {
-          close();
+          answer("selected", selected);
         }
-      }, [count]);
+      );
 
-      useButtonEvent(customId, (interaction, deferUpdate) => {
-        deferUpdate();
-        setCount((count) => count + 1);
-      });
+      // useEffect(() => {
+      //   const selected = result
+      //     .filter((item) => item.selected)
+      //     .map((item) => item.payload);
+      //
+      //   answer("selected", selected);
+      // }, [result]);
 
       return {
-        content: count >= 6 ? "closed" : `count: ${count}`,
-        components: [
-          {
-            type: "row",
-            components: [
-              {
-                type: "button",
-                label: "increment",
-                style: "primary",
-                customId: customId,
-              },
-            ],
-          },
-        ],
+        components: [renderRowComponent(renderSelect({}))],
       };
     };
 
@@ -86,7 +90,7 @@ client.on("ready", async (readyClient) => {
       screen,
       adaptor,
       defaultResult: {
-        count: -1,
+        selected: [] as number[],
       },
     });
 

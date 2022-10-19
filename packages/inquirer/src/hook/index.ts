@@ -5,6 +5,8 @@ export { useCustomId } from "./useCustomId";
 export { useButtonEvent } from "./useButtonEvent";
 export { useSelectMenuEvent } from "./useSelectMenuEvent";
 export { useReducer } from "./useReducer";
+export { useMap } from "./useMap";
+export { useSelectComponent } from "./useSelectComponent";
 
 /*
 実装予定
