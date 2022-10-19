@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../core/hookContext";
 import { createDiscordAdaptorMock } from "../mock";
@@ -6,15 +6,25 @@ import { useEffect } from "./useEffect";
 
 describe("packages/inquirer/src/hook/useEffect", () => {
   describe("useEffect()", () => {
+    let controller: ReturnType<typeof createHookContext> | undefined;
+
+    afterEach(() => {
+      try {
+        controller?.endRender();
+      } catch (e) {
+        // skip
+      }
+    });
+
     test("mount時に正しくコールバックが呼ばれる", () => {
-      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
       const render = () => {
-        controller.startRender();
+        controller!.startRender();
         useEffect(callback);
-        controller.endRender();
+        controller!.endRender();
       };
 
       render();
@@ -28,7 +38,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("unmount時に正しくクリーンナップが呼ばれる", () => {
-      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       const cleanup = vi.fn();
 
@@ -43,7 +53,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("マウントが行われない場合はコールバックは呼ばれない", () => {
-      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
@@ -55,18 +65,18 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("depsを指定しない場合は毎回呼ばれる", () => {
-      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
       const renderWithMount = () => {
         callback.mockClear();
 
-        controller.beforeUnmount();
-        controller.startRender();
+        controller!.beforeUnmount();
+        controller!.startRender();
         useEffect(callback);
-        controller.endRender();
-        controller.afterMount("dummyMessageId-0");
+        controller!.endRender();
+        controller!.afterMount("dummyMessageId-0");
       };
 
       renderWithMount();
