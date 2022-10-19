@@ -1,4 +1,10 @@
-import { assertHookValue, getHookContext } from "../core/hookContext";
+import {
+  assertHookValue,
+  getHookContext,
+  isInitial,
+  stockHookValue,
+  takeIndex,
+} from "../core/hookContext";
 import { resolveLazy } from "../util/lazy";
 
 import type { HookContext } from "../core/hookContext";
@@ -6,6 +12,7 @@ import type { Lazy } from "../util/lazy";
 
 const hookType = "useState";
 const assertHook = assertHookValue(hookType);
+const stockValue = stockHookValue(hookType);
 
 export const useState = <T>(initial: Lazy<T>) => {
   const ctx = getHookContext();
@@ -15,18 +22,13 @@ export const useState = <T>(initial: Lazy<T>) => {
 export const useStateWithContext =
   (ctx: HookContext) =>
   <T>(initial: Lazy<T>): [T, (dispatch: Lazy<T, T>) => void] => {
-    const current = ctx.index;
-    ctx.index++;
+    const current = takeIndex(ctx);
 
     assertHook(ctx, current);
 
     //前の値が無いなら初期化
-    if (!(current in ctx.hookValues)) {
-      ctx.hookValues[current] = {
-        value: resolveLazy(initial),
-        hookType: hookType,
-        index: current,
-      };
+    if (isInitial(ctx, current)) {
+      stockValue(ctx, current, resolveLazy(initial));
     }
 
     return [
@@ -39,11 +41,7 @@ export const useStateWithContext =
           return;
         }
 
-        ctx.hookValues[current] = {
-          value: nextValue,
-          hookType: hookType,
-          index: current,
-        };
+        stockValue(ctx, current, nextValue);
         ctx.dispatch();
       },
     ];
