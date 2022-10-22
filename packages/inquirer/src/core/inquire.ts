@@ -8,7 +8,7 @@ import { createHookContext } from "./hookContext";
 import type { DiscordAdaptor, MessageMutualPayload } from "../adaptor";
 import type { Timer } from "../util/timer";
 import type { Screen } from "./screen";
-import type { IEventFlowHandler } from "@elecdeer/event-flow/src/types";
+import type { IEventFlowHandler } from "@elecdeer/event-flow";
 
 type InquireResult<T extends Record<string, unknown>> = {
   resultEvent: IEventFlowHandler<
