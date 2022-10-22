@@ -7,6 +7,7 @@ export { useSelectMenuEvent } from "./useSelectMenuEvent";
 export { useReducer } from "./useReducer";
 export { useCollection } from "./useCollection";
 export { useSelectComponent } from "./useSelectComponent";
+export { useCountButtonComponent } from "./useCountButtonComponent";
 
 /*
 実装予定
