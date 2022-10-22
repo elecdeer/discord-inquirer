@@ -1,6 +1,6 @@
 import { createEventFlow } from "@elecdeer/event-flow";
-import nodeObjectHash from "node-object-hash";
 
+import { isMatchHash } from "../util/hash";
 import { immediateThrottle } from "../util/immediateThrottle";
 import { createTimer } from "../util/timer";
 import { createHookContext } from "./hookContext";
@@ -76,7 +76,7 @@ export const inquire = <T extends Record<string, unknown>>(
   const answer: AnswerPrompt<T> = (key, value) => {
     const prev = result[key];
     // 値が変わっていない場合は何もしない
-    if (checkAnswerValueEquality(prev, value)) return;
+    if (isMatchHash(prev, value)) return;
 
     result[key] = value;
     event.emit({
@@ -124,21 +124,6 @@ export const inquire = <T extends Record<string, unknown>>(
     resultEvent: event,
     result: () => result,
   };
-};
-
-const hasher = nodeObjectHash({
-  sort: {
-    object: true,
-    map: true,
-    array: false,
-    set: false,
-  },
-  coerce: false,
-});
-
-const checkAnswerValueEquality = (a: unknown, b: unknown): boolean => {
-  if (Object.is(a, b)) return true;
-  return hasher.hash(a) === hasher.hash(b);
 };
 
 const createInquireTimer = (
