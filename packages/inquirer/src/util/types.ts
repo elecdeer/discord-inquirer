@@ -4,3 +4,5 @@ export type SetNullable<T, K extends keyof T = keyof T> = Pick<
 > & {
   [P in K]: T[P] | null;
 };
+
+export type Awaitable<T> = T | PromiseLike<T>;

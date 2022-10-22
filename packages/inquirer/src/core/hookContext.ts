@@ -75,11 +75,47 @@ export const createHookContext = (
   return { startRender, endRender, afterMount, beforeUnmount, close };
 };
 
+export const takeIndex = (ctx: HookContext) => {
+  const index = ctx.index;
+  ctx.index++;
+  return index;
+};
+
+export const isInitial = (ctx: HookContext, index: number) => {
+  //undefinedが入っている可能性があるため、inで判定する
+  return !(index in ctx.hookValues);
+};
+
+export const stockHookValue =
+  (hookType: string) => (ctx: HookContext, index: number, value: unknown) => {
+    ctx.hookValues[index] = {
+      value,
+      hookType,
+      index,
+    };
+  };
+
+export const takeValue = <T>(ctx: HookContext, index: number): T => {
+  return ctx.hookValues[index]?.value as T;
+};
+
+export const isDepsChanged = (
+  prevDeps: unknown[] | undefined,
+  deps: unknown[] | undefined
+) => {
+  return (
+    prevDeps === undefined ||
+    deps === undefined ||
+    deps.some((dep, i) => !Object.is(dep, prevDeps[i]))
+  );
+};
+
 export const assertHookValue =
   (hookType: string) => (ctx: HookContext, current: number) => {
     if (ctx.hookValues[current] === undefined) {
       return;
     }
+
     if (
       ctx.hookValues[current].hookType !== hookType ||
       ctx.hookValues[current].index !== current

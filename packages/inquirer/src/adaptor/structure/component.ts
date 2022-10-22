@@ -126,16 +126,9 @@ export interface SelectOption<T> {
   label: string;
 
   /**
-   * the dev-defined value of the option, max 100 characters
-   *
-   * corresponds to value
+   * the dev-define value of the option, max 100 characters
    */
-  key: string;
-
-  /**
-   * the value to return when this option is selected
-   */
-  payload: T;
+  value: string;
 
   /**
    * an additional description of the option, max 100 characters

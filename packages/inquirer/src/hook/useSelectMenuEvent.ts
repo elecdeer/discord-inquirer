@@ -3,7 +3,7 @@ import { getHookContext } from "../core/hookContext";
 import { useEffect } from "./useEffect";
 
 import type { InteractionBase } from "../adaptor";
-import type { Awaitable } from "@elecdeer/event-flow/src/types";
+import type { Awaitable } from "../util/types";
 
 export const useSelectMenuEvent = (
   customId: string,

@@ -1,10 +1,10 @@
 import {
   createScreen,
   inquire,
-  useButtonEvent,
-  useCustomId,
+  renderRowComponent,
   useEffect,
-  useState,
+  useSelectComponent,
+  useConfirmButton,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -45,39 +45,55 @@ client.on("ready", async (readyClient) => {
     );
 
     const prompt: Prompt<{
-      count: number;
+      selected: number[];
     }> = (answer, close) => {
-      const [count, setCount] = useState(0);
-
-      const customId = useCustomId("increment");
-
-      useEffect(() => {
-        answer("count", count);
-
-        if (count >= 6) {
-          close();
-        }
-      }, [count]);
-
-      useButtonEvent(customId, (interaction, deferUpdate) => {
-        deferUpdate();
-        setCount((count) => count + 1);
+      const [result, renderSelect] = useSelectComponent({
+        options: [
+          {
+            label: "1",
+            payload: 1,
+          },
+          {
+            label: "2",
+            payload: 2,
+          },
+          {
+            label: "3",
+            payload: 3,
+          },
+        ],
+        maxValues: 2,
+        minValues: 1,
       });
 
+      const [{ ok: confirmed }, renderButton] = useConfirmButton(() => ({
+        ok: result.length > 0,
+      }));
+
+      useEffect(() => {
+        if (!confirmed) return;
+
+        const selected = result
+          .filter((item) => item.selected)
+          .map((item) => item.payload);
+
+        answer("selected", selected);
+
+        close();
+      }, [confirmed]);
+
       return {
-        content: count >= 6 ? "closed" : `count: ${count}`,
+        content: confirmed
+          ? `selected: ${result
+              .filter((item) => item.selected)
+              .map((item) => item.payload)
+              .join(",")}`
+          : "Select 1 or 2 numbers",
         components: [
-          {
-            type: "row",
-            components: [
-              {
-                type: "button",
-                label: "increment",
-                style: "primary",
-                customId: customId,
-              },
-            ],
-          },
+          renderRowComponent(renderSelect({})),
+          renderRowComponent(
+            renderButton({ style: "success", label: "confirm" })
+          ),
         ],
       };
     };
@@ -86,7 +102,7 @@ client.on("ready", async (readyClient) => {
       screen,
       adaptor,
       defaultResult: {
-        count: -1,
+        selected: [] as number[],
       },
     });
 
