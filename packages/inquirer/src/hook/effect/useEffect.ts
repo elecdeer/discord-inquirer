@@ -5,10 +5,10 @@ import {
   stockHookValue,
   takeIndex,
   takeValue,
-} from "../core/hookContext";
+} from "../../core/hookContext";
 
-import type { Snowflake } from "../adaptor";
-import type { HookContext } from "../core/hookContext";
+import type { Snowflake } from "../../adaptor";
+import type { HookContext } from "../../core/hookContext";
 
 const hookType = "useEffect";
 const assertHook = assertHookValue(hookType);

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 
-import { createHookContext } from "../core/hookContext";
-import { createDiscordAdaptorMock } from "../mock";
+import { createHookContext } from "../../core/hookContext";
+import { createDiscordAdaptorMock } from "../../mock";
 import { useCollection } from "./useCollection";
 
 describe("packages/inquirer/src/hook/useCollection", () => {
@@ -205,7 +205,5 @@ describe("packages/inquirer/src/hook/useCollection", () => {
         controller.close();
       });
     });
-
-
   });
 });

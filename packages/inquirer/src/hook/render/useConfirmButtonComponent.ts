@@ -1,11 +1,11 @@
-import { renderButtonComponent } from "../component";
-import { useButtonEvent } from "./useButtonEvent";
-import { useCustomId } from "./useCustomId";
-import { useState } from "./useState";
+import { renderButtonComponent } from "../../component";
+import { useButtonEvent } from "../effect/useButtonEvent";
+import { useCustomId } from "../state/useCustomId";
+import { useState } from "../state/useState";
 
-import type { ButtonComponent } from "../adaptor";
-import type { ButtonProps } from "../component";
-import type { Awaitable } from "../util/types";
+import type { ButtonComponent } from "../../adaptor";
+import type { ButtonProps } from "../../component";
+import type { Awaitable } from "../../util/types";
 
 export type ValidateResult<T> = ValidateOkResult | ValidateErrorResult<T>;
 export type ValidateOkResult = {
