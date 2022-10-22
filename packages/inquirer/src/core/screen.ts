@@ -1,10 +1,13 @@
 import nodeObjectHash from "node-object-hash";
 
-import { messageFacade } from "../adaptor/messageFacade";
+import { messageFacade } from "../adaptor";
 
-import type { DiscordAdaptor, Snowflake } from "../adaptor";
-import type { MessageMutualPayload } from "../adaptor/messageFacade";
-import type { MessageTarget } from "../adaptor/messageFacade";
+import type {
+  DiscordAdaptor,
+  MessageMutualPayload,
+  MessageTarget,
+  Snowflake,
+} from "../adaptor";
 import type { SetNullable } from "../util/types";
 
 export interface Screen {
@@ -12,7 +15,7 @@ export interface Screen {
   close: () => Promise<void>;
 }
 
-interface ScreenConfig {
+export interface ScreenConfig {
   onClose?: "deleteMessage" | "deleteComponent" | "keep";
 }
 

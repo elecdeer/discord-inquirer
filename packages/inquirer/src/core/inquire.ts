@@ -5,8 +5,7 @@ import { immediateThrottle } from "../util/immediateThrottle";
 import { createTimer } from "../util/timer";
 import { createHookContext } from "./hookContext";
 
-import type { DiscordAdaptor } from "../adaptor";
-import type { MessageMutualPayload } from "../adaptor/messageFacade";
+import type { DiscordAdaptor, MessageMutualPayload } from "../adaptor";
 import type { Timer } from "../util/timer";
 import type { Screen } from "./screen";
 import type { IEventFlowHandler } from "@elecdeer/event-flow/src/types";
