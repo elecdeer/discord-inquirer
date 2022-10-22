@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createHookContext } from "../core/hookContext";
-import { createDiscordAdaptorMock } from "../mock";
+import { createHookContext } from "../../core/hookContext";
+import { createDiscordAdaptorMock } from "../../mock";
 import { useCustomId } from "./useCustomId";
 
 describe("packages/inquirer/src/hook/useCustomId", () => {

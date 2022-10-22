@@ -6,9 +6,9 @@ import {
   stockHookValue,
   takeIndex,
   takeValue,
-} from "../core/hookContext";
+} from "../../core/hookContext";
 
-import type { HookContext } from "../core/hookContext";
+import type { HookContext } from "../../core/hookContext";
 
 const hookType = "useMemo";
 const assertHook = assertHookValue(hookType);

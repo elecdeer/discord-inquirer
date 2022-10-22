@@ -1,9 +1,9 @@
-import { messageFacade } from "../adaptor/messageFacade";
-import { getHookContext } from "../core/hookContext";
+import { messageFacade } from "../../adaptor/messageFacade";
+import { getHookContext } from "../../core/hookContext";
 import { useEffect } from "./useEffect";
 
-import type { InteractionBase } from "../adaptor";
-import type { Awaitable } from "../util/types";
+import type { InteractionBase } from "../../adaptor";
+import type { Awaitable } from "../../util/types";
 
 export const useSelectMenuEvent = (
   customId: string,

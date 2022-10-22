@@ -1,11 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createHookContext } from "../core/hookContext";
-import { createDiscordAdaptorMock } from "../mock";
-import { useSelectMenuEvent } from "./useSelectMenuEvent";
+import { createHookContext } from "../../core/hookContext";
+import { createDiscordAdaptorMock } from "../../mock";
+import { useButtonEvent } from "./useButtonEvent";
 
-describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
-  describe("useSelectMenuEvent()", () => {
+describe("packages/inquirer/src/hook/useButtonEvent", () => {
+  describe("useButtonEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
       const controller = createHookContext(adaptorMock, vi.fn());
@@ -13,7 +13,7 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
 
       controller.startRender();
 
-      useSelectMenuEvent("customId", handle);
+      useButtonEvent("customId", handle);
 
       controller.afterMount("messageId");
       controller.endRender();
@@ -24,9 +24,8 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
         token: "interactionToken",
         userId: "userId",
         data: {
-          componentType: "selectMenu",
+          componentType: "button",
           customId: "customId",
-          values: ["value1", "value2"],
         },
       });
 
@@ -36,7 +35,6 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
           token: "interactionToken",
           userId: "userId",
         },
-        ["value1", "value2"],
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
@@ -51,7 +49,7 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
 
       controller.startRender();
 
-      useSelectMenuEvent("customId", handle);
+      useButtonEvent("customId", handle);
 
       controller.afterMount("messageId");
       controller.endRender();
@@ -62,9 +60,8 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
         token: "interactionToken",
         userId: "userId",
         data: {
-          componentType: "selectMenu",
+          componentType: "button",
           customId: "customIdUnMatch",
-          values: [],
         },
       });
 
@@ -74,8 +71,9 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
         token: "interactionToken",
         userId: "userId",
         data: {
-          componentType: "button",
+          componentType: "selectMenu",
           customId: "customId",
+          values: [],
         },
       });
 

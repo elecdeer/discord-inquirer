@@ -1,7 +1,7 @@
-import { resolveLazy } from "../util/lazy";
+import { resolveLazy } from "../../util/lazy";
 import { useState } from "./useState";
 
-import type { Lazy } from "../util/lazy";
+import type { Lazy } from "../../util/lazy";
 
 export const useCollection = <K, V>(
   initialState: Lazy<Map<K, V> | [K, V][]>

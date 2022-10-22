@@ -1,15 +1,12 @@
 import { vi } from "vitest";
 
 import type { DiscordAdaptor } from "../adaptor";
-import type { Interaction, MessageReaction } from "../adaptor";
+import type { Interaction } from "../adaptor";
 
 export const createDiscordAdaptorMock = (): DiscordAdaptor & {
   emitInteraction: ((interaction: Interaction) => void) | undefined;
-  emitMessageReaction: ((reaction: MessageReaction) => void) | undefined;
 } => {
   let emitInteraction: ((interaction: Interaction) => void) | undefined =
-    undefined;
-  let emitMessageReaction: ((reaction: MessageReaction) => void) | undefined =
     undefined;
 
   return {
@@ -31,19 +28,9 @@ export const createDiscordAdaptorMock = (): DiscordAdaptor & {
         };
       }
     ),
-    subscribeMessageReaction: vi.fn(
-      (handleReaction: (reaction: MessageReaction) => void) => {
-        emitMessageReaction = handleReaction;
-        return () => {
-          //	noop
-        };
-      }
-    ),
+
     emitInteraction: (interaction) => {
       emitInteraction?.(interaction);
-    },
-    emitMessageReaction: (reaction) => {
-      emitMessageReaction?.(reaction);
     },
   };
 };

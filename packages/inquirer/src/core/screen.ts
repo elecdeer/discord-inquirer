@@ -1,10 +1,12 @@
-import nodeObjectHash from "node-object-hash";
+import { messageFacade } from "../adaptor";
+import { isMatchHash } from "../util/hash";
 
-import { messageFacade } from "../adaptor/messageFacade";
-
-import type { DiscordAdaptor, Snowflake } from "../adaptor";
-import type { MessageMutualPayload } from "../adaptor/messageFacade";
-import type { MessageTarget } from "../adaptor/messageFacade";
+import type {
+  DiscordAdaptor,
+  MessageMutualPayload,
+  MessageTarget,
+  Snowflake,
+} from "../adaptor";
 import type { SetNullable } from "../util/types";
 
 export interface Screen {
@@ -12,7 +14,7 @@ export interface Screen {
   close: () => Promise<void>;
 }
 
-interface ScreenConfig {
+export interface ScreenConfig {
   onClose?: "deleteMessage" | "deleteComponent" | "keep";
 }
 
@@ -112,21 +114,21 @@ export const createMessagePayloadPatch = (
     };
   }
 
-  if (isDifferentHash(prev.embeds, next.embeds)) {
+  if (!isMatchHash(prev.embeds, next.embeds)) {
     result = {
       ...(result ?? {}),
       embeds: next.embeds === undefined ? null : next.embeds,
     };
   }
 
-  if (isDifferentHash(prev.components, next.components)) {
+  if (!isMatchHash(prev.components, next.components)) {
     result = {
       ...(result ?? {}),
       components: next.components === undefined ? null : next.components,
     };
   }
 
-  if (isDifferentHash(prev.allowedMentions, next.allowedMentions)) {
+  if (!isMatchHash(prev.allowedMentions, next.allowedMentions)) {
     result = {
       ...(result ?? {}),
       allowedMentions:
@@ -143,23 +145,4 @@ export const createMessagePayloadPatch = (
   }
 
   return result;
-};
-
-const hasher = nodeObjectHash({
-  sort: {
-    object: true,
-    map: true,
-    array: false,
-    set: false,
-  },
-  coerce: false,
-});
-
-/**
- * オブジェクトをハッシュ値で比較する
- */
-const isDifferentHash = (a: unknown, b: unknown) => {
-  const aHash = hasher.hash(a);
-  const bHash = hasher.hash(b);
-  return aHash !== bHash;
 };

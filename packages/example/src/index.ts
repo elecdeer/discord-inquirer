@@ -4,13 +4,13 @@ import {
   renderRowComponent,
   useEffect,
   useSelectComponent,
-  useConfirmButton,
+  useConfirmButtonComponent,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
 import { config } from "dotenv";
 
-import type { Prompt } from "discord-inquirer/src/core/inquire";
+import type { Prompt } from "discord-inquirer";
 
 config();
 
@@ -66,9 +66,11 @@ client.on("ready", async (readyClient) => {
         minValues: 1,
       });
 
-      const [{ ok: confirmed }, renderButton] = useConfirmButton(() => ({
-        ok: result.length > 0,
-      }));
+      const [{ ok: confirmed }, renderButton] = useConfirmButtonComponent(
+        () => ({
+          ok: result.length > 0,
+        })
+      );
 
       useEffect(() => {
         if (!confirmed) return;

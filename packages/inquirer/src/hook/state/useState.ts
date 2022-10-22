@@ -4,11 +4,11 @@ import {
   isInitial,
   stockHookValue,
   takeIndex,
-} from "../core/hookContext";
-import { resolveLazy } from "../util/lazy";
+} from "../../core/hookContext";
+import { resolveLazy } from "../../util/lazy";
 
-import type { HookContext } from "../core/hookContext";
-import type { Lazy } from "../util/lazy";
+import type { HookContext } from "../../core/hookContext";
+import type { Lazy } from "../../util/lazy";
 
 const hookType = "useState";
 const assertHook = assertHookValue(hookType);
