@@ -2,6 +2,7 @@ import {
   createScreen,
   inquire,
   renderRowComponent,
+  useEffect,
   useSelectComponent,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
@@ -45,41 +46,32 @@ client.on("ready", async (readyClient) => {
     const prompt: Prompt<{
       selected: number[];
     }> = (answer, close) => {
-      const [result, renderSelect] = useSelectComponent(
-        {
-          options: [
-            {
-              label: "1",
-              payload: 1,
-            },
-            {
-              label: "2",
-              payload: 2,
-            },
-            {
-              label: "3",
-              payload: 3,
-            },
-          ],
-          maxValues: 2,
-          minValues: 1,
-        },
-        (result) => {
-          const selected = result
-            .filter((item) => item.selected)
-            .map((item) => item.payload);
+      const [result, renderSelect] = useSelectComponent({
+        options: [
+          {
+            label: "1",
+            payload: 1,
+          },
+          {
+            label: "2",
+            payload: 2,
+          },
+          {
+            label: "3",
+            payload: 3,
+          },
+        ],
+        maxValues: 2,
+        minValues: 1,
+      });
 
-          answer("selected", selected);
-        }
-      );
+      useEffect(() => {
+        const selected = result
+          .filter((item) => item.selected)
+          .map((item) => item.payload);
 
-      // useEffect(() => {
-      //   const selected = result
-      //     .filter((item) => item.selected)
-      //     .map((item) => item.payload);
-      //
-      //   answer("selected", selected);
-      // }, [result]);
+        answer("selected", selected);
+      }, [result]);
 
       return {
         components: [renderRowComponent(renderSelect({}))],
