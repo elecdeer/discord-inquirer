@@ -4,7 +4,7 @@ import {
   renderRowComponent,
   useEffect,
   useSelectComponent,
-  useCountButtonComponent,
+  useConfirmButton,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -66,10 +66,12 @@ client.on("ready", async (readyClient) => {
         minValues: 1,
       });
 
-      const [count, renderButton] = useCountButtonComponent();
+      const [{ ok: confirmed }, renderButton] = useConfirmButton(() => ({
+        ok: result.length > 0,
+      }));
 
       useEffect(() => {
-        if (count <= 0) return;
+        if (!confirmed) return;
 
         const selected = result
           .filter((item) => item.selected)
@@ -78,14 +80,19 @@ client.on("ready", async (readyClient) => {
         answer("selected", selected);
 
         close();
-      }, [count]);
+      }, [confirmed]);
 
       return {
-        content: "Select 1 or 2 numbers",
+        content: confirmed
+          ? `selected: ${result
+              .filter((item) => item.selected)
+              .map((item) => item.payload)
+              .join(",")}`
+          : "Select 1 or 2 numbers",
         components: [
           renderRowComponent(renderSelect({})),
           renderRowComponent(
-            renderButton({ style: "success", label: "button" })
+            renderButton({ style: "success", label: "confirm" })
           ),
         ],
       };

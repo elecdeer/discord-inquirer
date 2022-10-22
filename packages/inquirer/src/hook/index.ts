@@ -8,6 +8,7 @@ export { useReducer } from "./useReducer";
 export { useCollection } from "./useCollection";
 export { useSelectComponent } from "./useSelectComponent";
 export { useCountButtonComponent } from "./useCountButtonComponent";
+export { useConfirmButtonComponent } from "./useConfirmButtonComponent";
 
 /*
 実装予定
