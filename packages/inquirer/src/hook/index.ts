@@ -5,7 +5,7 @@ export { useCustomId } from "./useCustomId";
 export { useButtonEvent } from "./useButtonEvent";
 export { useSelectMenuEvent } from "./useSelectMenuEvent";
 export { useReducer } from "./useReducer";
-export { useMap } from "./useMap";
+export { useCollection } from "./useCollection";
 export { useSelectComponent } from "./useSelectComponent";
 
 /*

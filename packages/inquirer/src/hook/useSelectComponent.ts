@@ -1,6 +1,6 @@
 import { renderSelectComponent } from "../component";
+import { useCollection } from "./useCollection";
 import { useCustomId } from "./useCustomId";
-import { useMap } from "./useMap";
 import { useSelectMenuEvent } from "./useSelectMenuEvent";
 
 import type { SelectMenuComponent, SelectOption } from "../adaptor";
@@ -31,24 +31,32 @@ export const useSelectComponent = <T>(
 ): UseSelectComponentResult<T> => {
   const customId = useCustomId("select");
 
-  const items = supplementItemKey(param.options);
+  const items = initialSelectItems(param.options);
 
-  const { setAll, get } = useMap(
-    items.reduce<Record<string, boolean>>((acc, item) => {
-      acc[item.key] = item.default ?? false;
-      return acc;
-    }, {})
+  const { setEach, get } = useCollection(
+    items.map((item) => [
+      item.key,
+      {
+        key: item.key,
+        selected: item.selected,
+      },
+    ])
   );
 
   useSelectMenuEvent(customId, async (interaction, values, deferUpdate) => {
     await deferUpdate();
 
-    const next = items.reduce<Record<string, boolean>>((acc, item) => {
-      acc[item.key] = values.includes(item.key);
-      return acc;
-    }, {});
-
-    setAll(next);
+    setEach((prev, key) => {
+      const selected = values.includes(key);
+      if (prev.selected == selected) {
+        return prev;
+      } else {
+        return {
+          ...prev,
+          selected,
+        };
+      }
+    });
   });
 
   const renderComponent = renderSelectComponent(customId, {
@@ -57,27 +65,27 @@ export const useSelectComponent = <T>(
       .map((item) => ({
         ...item,
         value: item.key,
-        default: get(item.key) ?? false,
+        default: get(item.key)?.selected ?? false,
       }))
       .filter((item) => !(item.inactive ?? false)),
   });
 
-  const getResult = (): SelectItemResult<T>[] => {
-    return items.map((item) => ({
+  const result = () =>
+    items.map((item) => ({
       ...item,
-      selected: get(item.key) ?? false,
+      selected: get(item.key)?.selected ?? false,
     }));
-  };
 
-  return [getResult(), renderComponent];
+  return [result(), renderComponent];
 };
 
-const supplementItemKey = <T>(
+const initialSelectItems = <T>(
   items: readonly PartialSelectItem<T>[]
-): SelectItem<T>[] => {
+): SelectItemResult<T>[] => {
   return items.map((item, index) => {
     return {
       ...item,
+      selected: item.default ?? false,
       key: item.key ?? `select-item-${index}`,
     };
   });
