@@ -15,7 +15,7 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
 
       useSelectMenuEvent("customId", handle);
 
-      controller.afterMount("messageId");
+      controller.mount("messageId");
       controller.endRender();
 
       adaptorMock.emitInteraction!({
@@ -41,7 +41,7 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
       );
       expect(handle).toBeCalledTimes(1);
 
-      controller.close();
+      controller.unmount();
     });
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
@@ -53,7 +53,7 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
 
       useSelectMenuEvent("customId", handle);
 
-      controller.afterMount("messageId");
+      controller.mount("messageId");
       controller.endRender();
 
       adaptorMock.emitInteraction!({
@@ -81,7 +81,7 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
 
       expect(handle).not.toHaveBeenCalled();
 
-      controller.close();
+      controller.unmount();
     });
   });
 });

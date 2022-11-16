@@ -10,7 +10,7 @@ import type {
 import type { SetNullable } from "../util/types";
 
 export interface Screen {
-  render: (payload: MessageMutualPayload) => Promise<RenderState>;
+  commit: (payload: MessageMutualPayload) => Promise<CommitResult>;
   close: () => Promise<void>;
 }
 
@@ -18,7 +18,7 @@ export interface ScreenConfig {
   onClose?: "deleteMessage" | "deleteComponent" | "keep";
 }
 
-type RenderState = {
+type CommitResult = {
   initial: boolean;
   updated: boolean;
   messageId: Snowflake;
@@ -38,9 +38,9 @@ export const createScreen = (
     del: () => Promise<void>;
   } | null = null;
 
-  const render = async (
+  const commit = async (
     payload: MessageMutualPayload
-  ): Promise<RenderState> => {
+  ): Promise<CommitResult> => {
     if (editor === null) {
       const controller = await facade.send(target, payload);
       editor = {
@@ -88,7 +88,7 @@ export const createScreen = (
       return;
     }
     if (config.onClose === "deleteComponent") {
-      await render({
+      await commit({
         components: [],
       });
       return;
@@ -96,7 +96,7 @@ export const createScreen = (
   };
 
   return {
-    render,
+    commit,
     close,
   };
 };

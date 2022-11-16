@@ -32,8 +32,6 @@ describe("packages/inquirer/src/hook/useState", () => {
         expect(state).toBe(3);
         controller.endRender();
       }
-
-      controller.close();
     });
 
     test("setStateで正しく状態が保存される", () => {
@@ -64,8 +62,6 @@ describe("packages/inquirer/src/hook/useState", () => {
         expect(state).toBe(3 + 2 + 3);
         controller.endRender();
       }
-
-      controller.close();
     });
 
     test("setStateの呼び出しでdispatchが呼ばれる", () => {
@@ -87,8 +83,6 @@ describe("packages/inquirer/src/hook/useState", () => {
         expect(dispatch).toHaveBeenCalledTimes(2);
         controller.endRender();
       }
-
-      controller.close();
     });
 
     test("context外で呼び出すとエラーになる", () => {

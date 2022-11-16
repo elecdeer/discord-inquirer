@@ -32,8 +32,6 @@ describe("packages/inquirer/src/hook/useMemo", () => {
         expect(memo).toBe(3);
         controller.endRender();
       }
-
-      controller.close();
     });
 
     test("depsが変更されなかった場合はfactory()が呼ばれない", () => {
@@ -76,8 +74,6 @@ describe("packages/inquirer/src/hook/useMemo", () => {
         expect(factory).toHaveBeenCalled();
         controller.endRender();
       }
-
-      controller.close();
     });
   });
 });

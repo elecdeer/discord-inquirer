@@ -44,8 +44,6 @@ describe("packages/inquirer/src/hook/useReducer", () => {
         expect(state).toBe(0);
         controller.endRender();
       }
-
-      controller.close();
     });
   });
 });
