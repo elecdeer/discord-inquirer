@@ -24,7 +24,7 @@
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
   "dependencies": {
     "@elecdeer/event-flow": "*",
-    "discord-api-types": "^0.37.11",
+    "discord-api-types": "^0.37.18",
     "node-object-hash": "^2.3.10",
     "type-fest": "^3.0.0"
   },
