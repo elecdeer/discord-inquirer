@@ -1,4 +1,4 @@
-import { messageFacade } from "../../adaptor/messageFacade";
+import { messageFacade } from "../../adaptor";
 import { getHookContext } from "../../core/hookContext";
 import { useEffect } from "./useEffect";
 
@@ -12,8 +12,8 @@ export const useButtonEvent = (
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
+  const adapter = getHookContext().adaptor;
   useEffect(() => {
-    const adapter = getHookContext().adaptor;
     const facade = messageFacade(adapter);
 
     const clear = adapter.subscribeInteraction((interaction) => {

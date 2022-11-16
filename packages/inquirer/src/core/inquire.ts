@@ -86,39 +86,50 @@ export const inquire = <T extends Record<string, unknown>>(
     });
   };
 
-  const close = immediateThrottle(async () => {
+  const open = async () => {
     hookContext.startRender();
-    event.offAll();
-    hookContext.close();
-
-    //close時はmountしない
     const promptResult = prompt(answer, close);
-    await screen.render(promptResult);
-    await screen.close();
     hookContext.endRender();
 
-    dispose();
-  });
+    const { messageId } = await screen.commit(promptResult);
+
+    hookContext.mount(messageId);
+
+    resetIdleTimer();
+  };
 
   const update = immediateThrottle(async () => {
     hookContext.startRender();
-
-    hookContext.beforeUnmount();
     const promptResult = prompt(answer, close);
-    const { messageId } = await screen.render(promptResult);
-    hookContext.afterMount(messageId);
-
     hookContext.endRender();
+
+    const { messageId } = await screen.commit(promptResult);
+
+    hookContext.update(messageId);
 
     resetIdleTimer();
   });
 
+  const close = immediateThrottle(async () => {
+    event.offAll();
+
+    hookContext.startRender();
+    const promptResult = prompt(answer, close);
+    hookContext.endRender();
+
+    await screen.commit(promptResult);
+    await screen.close();
+
+    hookContext.unmount();
+
+    dispose();
+  });
+
   const hookContext = createHookContext(adaptor, update);
+  const { resetIdleTimer, dispose } = createInquireTimer({ time, idle }, close);
 
   //初回送信
-  update();
-
-  const { resetIdleTimer, dispose } = createInquireTimer({ time, idle }, close);
+  setImmediate(open);
 
   return {
     resultEvent: event,

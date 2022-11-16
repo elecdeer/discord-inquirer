@@ -18,8 +18,6 @@ describe("packages/inquirer/src/hook/useCustomId", () => {
       const customId2 = useCustomId("this-is-prefix");
       expect(customId2).toBe(customId);
       controller.endRender();
-
-      controller.close();
     });
   });
 });

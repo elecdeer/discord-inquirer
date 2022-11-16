@@ -4,6 +4,7 @@ import {
   isInitial,
   stockHookValue,
   takeIndex,
+  takeValue,
 } from "../../core/hookContext";
 import { resolveLazy } from "../../util/lazy";
 
@@ -32,9 +33,9 @@ export const useStateWithContext =
     }
 
     return [
-      ctx.hookValues[current].value as T,
+      takeValue<T>(ctx, current),
       (dispatchValue: Lazy<T, T>) => {
-        const prevValue = ctx.hookValues[current].value as T;
+        const prevValue = takeValue<T>(ctx, current);
         const nextValue = resolveLazy(dispatchValue, prevValue);
 
         if (Object.is(prevValue, nextValue)) {

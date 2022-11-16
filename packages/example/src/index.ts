@@ -67,12 +67,16 @@ client.on("ready", async (readyClient) => {
       });
 
       const [{ ok: confirmed }, renderButton] = useConfirmButtonComponent(
-        () => ({
-          ok: result.length > 0,
-        })
+        () => {
+          console.log(result);
+          return {
+            ok: result.filter(({ selected }) => selected).length > 1,
+          };
+        }
       );
 
       useEffect(() => {
+        console.log(`check confirmed: ${confirmed}`);
         if (!confirmed) return;
 
         const selected = result

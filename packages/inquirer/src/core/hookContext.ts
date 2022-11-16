@@ -58,21 +58,28 @@ export const createHookContext = (
     unbindHookContext();
   };
 
-  const afterMount = (messageId: Snowflake) => {
+  const mount = (messageId: Snowflake) => {
     context.mountHooks.forEach((hook) => hook(messageId));
     context.mountHooks = [];
   };
 
-  const beforeUnmount = () => {
+  const update = (messageId: Snowflake) => {
+    unmount();
+    mount(messageId);
+  };
+
+  const unmount = () => {
     context.unmountHooks.forEach((hook) => hook());
     context.unmountHooks = [];
   };
 
-  const close = () => {
-    beforeUnmount();
+  return {
+    startRender,
+    endRender,
+    mount,
+    unmount,
+    update,
   };
-
-  return { startRender, endRender, afterMount, beforeUnmount, close };
 };
 
 export const takeIndex = (ctx: HookContext) => {

@@ -39,8 +39,6 @@ describe("packages/inquirer/src/hook/useCollection", () => {
           expect(get(3)).toEqual({ value: "3" });
           controller.endRender();
         }
-
-        controller.close();
       });
 
       test("前回と異なる値をsetするとdispatchされる", () => {
@@ -58,8 +56,6 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
           expect(dispatch).toHaveBeenCalled();
         }
-
-        controller.close();
       });
 
       test("前回と同じ値をsetするとdispatchされない", () => {
@@ -79,8 +75,6 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
           expect(dispatch).not.toHaveBeenCalled();
         }
-
-        controller.close();
       });
     });
 
@@ -112,7 +106,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
           controller.endRender();
         }
 
-        controller.close();
+        controller.unmount();
       });
 
       test("全てのエントリに変化が無い場合はdispatchされない", () => {
@@ -131,7 +125,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
           controller.endRender();
         }
 
-        controller.close();
+        controller.unmount();
       });
     });
 
@@ -161,8 +155,6 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
           controller.endRender();
         }
-
-        controller.close();
       });
     });
 
@@ -201,8 +193,6 @@ describe("packages/inquirer/src/hook/useCollection", () => {
           ]);
           expect(get(3)).toBeUndefined();
         }
-
-        controller.close();
       });
     });
   });

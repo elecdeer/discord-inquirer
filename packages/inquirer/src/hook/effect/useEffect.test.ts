@@ -28,12 +28,12 @@ describe("packages/inquirer/src/hook/useEffect", () => {
       };
 
       render();
-      controller.afterMount("dummyMessageId-0");
+      controller.mount("dummyMessageId-0");
       expect(callback).toBeCalledTimes(1);
 
-      controller.beforeUnmount();
+      controller.unmount();
       render();
-      controller.afterMount("dummyMessageId-1");
+      controller.mount("dummyMessageId-1");
       expect(callback).toBeCalledTimes(2);
     });
 
@@ -46,9 +46,9 @@ describe("packages/inquirer/src/hook/useEffect", () => {
       useEffect(() => cleanup);
       controller.endRender();
 
-      controller.afterMount("dummyMessageId-0");
+      controller.mount("dummyMessageId-0");
       expect(cleanup).not.toHaveBeenCalled();
-      controller.beforeUnmount();
+      controller.unmount();
       expect(cleanup).toBeCalledTimes(1);
     });
 
@@ -72,11 +72,11 @@ describe("packages/inquirer/src/hook/useEffect", () => {
       const renderWithMount = () => {
         callback.mockClear();
 
-        controller!.beforeUnmount();
+        controller!.unmount();
         controller!.startRender();
         useEffect(callback);
         controller!.endRender();
-        controller!.afterMount("dummyMessageId-0");
+        controller!.mount("dummyMessageId-0");
       };
 
       renderWithMount();
@@ -97,11 +97,11 @@ describe("packages/inquirer/src/hook/useEffect", () => {
       const renderWithMount = () => {
         callback.mockClear();
 
-        controller.beforeUnmount();
+        controller.unmount();
         controller.startRender();
         useEffect(callback, []);
         controller.endRender();
-        controller.afterMount("dummyMessageId-0");
+        controller.mount("dummyMessageId-0");
       };
 
       renderWithMount();
@@ -119,11 +119,11 @@ describe("packages/inquirer/src/hook/useEffect", () => {
       const renderWithMount = (depsValue: unknown[]) => {
         callback.mockClear();
 
-        controller.beforeUnmount();
+        controller.unmount();
         controller.startRender();
         useEffect(callback, depsValue);
         controller.endRender();
-        controller.afterMount("dummyMessageId-0");
+        controller.mount("dummyMessageId-0");
       };
 
       renderWithMount([0]);

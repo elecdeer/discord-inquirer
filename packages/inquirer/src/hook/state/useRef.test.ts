@@ -30,8 +30,6 @@ describe("packages/inquirer/src/hook/useRef", () => {
         expect(ref.current).toBe(20);
         controller.endRender();
       }
-
-      controller.close();
     });
 
     test("値を変更してもdispatchは呼ばれない", () => {
@@ -48,8 +46,6 @@ describe("packages/inquirer/src/hook/useRef", () => {
 
         controller.endRender();
       }
-
-      controller.close();
 
       expect(dispatch).not.toHaveBeenCalled();
     });
