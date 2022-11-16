@@ -16,7 +16,7 @@ updates:
       - "root"
 
   - package-ecosystem: "npm"
-    directory: "/inquirer"
+    directory: "/packages/inquirer"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -26,7 +26,7 @@ updates:
       - "inquirer"
 
   - package-ecosystem: "npm"
-    directory: "/discordjs-adaptor"
+    directory: "/packages/discordjs-adaptor"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
