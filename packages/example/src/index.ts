@@ -1,7 +1,7 @@
 import {
   createScreen,
   inquire,
-  renderRowComponent,
+  Row,
   useEffect,
   useSelectComponent,
   useConfirmButtonComponent,
@@ -47,7 +47,7 @@ client.on("ready", async (readyClient) => {
     const prompt: Prompt<{
       selected: number[];
     }> = (answer, close) => {
-      const [result, renderSelect] = useSelectComponent({
+      const [result, Select] = useSelectComponent({
         options: [
           {
             label: "1",
@@ -66,7 +66,7 @@ client.on("ready", async (readyClient) => {
         minValues: 1,
       });
 
-      const [{ ok: confirmed }, renderButton] = useConfirmButtonComponent(
+      const [{ ok: confirmed }, ConfirmButton] = useConfirmButtonComponent(
         () => {
           console.log(result);
           return {
@@ -96,10 +96,8 @@ client.on("ready", async (readyClient) => {
               .join(",")}`
           : "Select 1 or 2 numbers",
         components: [
-          renderRowComponent(renderSelect({})),
-          renderRowComponent(
-            renderButton({ style: "success", label: "confirm" })
-          ),
+          Row(Select({})),
+          Row(ConfirmButton({ style: "success", label: "confirm" })),
         ],
       };
     };

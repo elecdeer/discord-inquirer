@@ -1,6 +1,6 @@
 import type { MessageActionRowComponent } from "../adaptor";
 
-export const renderRowComponent = (
+export const Row = (
   ...components: MessageActionRowComponent["components"]
 ): MessageActionRowComponent => {
   return {

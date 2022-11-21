@@ -1,4 +1,4 @@
-import { renderSelectComponent } from "../../component";
+import { Select } from "../../component";
 import { useSelectMenuEvent } from "../effect/useSelectMenuEvent";
 import { useCollection } from "../state/useCollection";
 import { useCustomId } from "../state/useCustomId";
@@ -20,8 +20,8 @@ export type SelectItemResult<T> = SelectItem<T> & {
 };
 
 export type UseSelectComponentResult<T> = [
-  SelectItemResult<T>[],
-  (props: SelectDisplayProps) => SelectMenuComponent<T>
+  selectResult: SelectItemResult<T>[],
+  Select: (props: SelectDisplayProps) => SelectMenuComponent<T>
 ];
 
 export const useSelectComponent = <T>(
@@ -59,7 +59,7 @@ export const useSelectComponent = <T>(
     });
   });
 
-  const renderComponent = renderSelectComponent(customId, {
+  const renderComponent = Select(customId, {
     ...param,
     options: items
       .map((item) => ({
