@@ -5,7 +5,7 @@ export type ButtonProps = Omit<
   "type" | "url" | "customId"
 >;
 
-export const renderButtonComponent =
+const renderButtonComponent =
   (customId: string) =>
   (props: ButtonProps): NonLinkButtonComponent => {
     return {
@@ -14,3 +14,19 @@ export const renderButtonComponent =
       customId,
     };
   };
+
+export function Button(
+  customId: string,
+  props: ButtonProps
+): NonLinkButtonComponent;
+export function Button(
+  customId: string,
+  props?: undefined
+): (props: ButtonProps) => NonLinkButtonComponent;
+export function Button(customId: string, props: ButtonProps | undefined) {
+  if (props === undefined) {
+    return renderButtonComponent(customId);
+  } else {
+    return renderButtonComponent(customId)(props);
+  }
+}

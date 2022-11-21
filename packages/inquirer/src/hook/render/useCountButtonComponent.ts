@@ -1,4 +1,4 @@
-import { renderButtonComponent } from "../../component";
+import { Button } from "../../component";
 import { useButtonEvent } from "../effect/useButtonEvent";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
@@ -8,7 +8,7 @@ import type { ButtonProps } from "../../component";
 
 export type UseCountButtonComponentResult = [
   count: number,
-  renderButton: (props: ButtonProps) => ButtonComponent
+  CountButton: (props: ButtonProps) => ButtonComponent
 ];
 
 export const useCountButtonComponent = (): UseCountButtonComponentResult => {
@@ -20,6 +20,6 @@ export const useCountButtonComponent = (): UseCountButtonComponentResult => {
     setCount((prev) => prev + 1);
   });
 
-  const renderComponent = renderButtonComponent(customId);
+  const renderComponent = Button(customId);
   return [count, renderComponent];
 };

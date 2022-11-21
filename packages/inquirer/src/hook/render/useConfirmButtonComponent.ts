@@ -1,4 +1,4 @@
-import { renderButtonComponent } from "../../component";
+import { Button } from "../../component";
 import { useButtonEvent } from "../effect/useButtonEvent";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
@@ -29,7 +29,7 @@ export type ValidateResultState<T> =
 
 export type UseConfirmButtonResult<T> = [
   result: ValidateResultState<T>,
-  renderButtom: (props: ButtonProps) => ButtonComponent
+  ConfirmButton: (props: ButtonProps) => ButtonComponent
 ];
 
 export const useConfirmButtonComponent = <T = undefined>(
@@ -59,7 +59,7 @@ export const useConfirmButtonComponent = <T = undefined>(
     });
   });
 
-  const renderComponent = renderButtonComponent(customId);
+  const renderComponent = Button(customId);
 
   return [validateResult, renderComponent];
 };

@@ -11,7 +11,7 @@ export type SelectOptionProps = Pick<
 >;
 export type SelectDisplayProps = Pick<SelectProps, "disabled" | "placeholder">;
 
-export const renderSelectComponent =
+const renderSelectComponent =
   (customId: string, optionProps: SelectOptionProps) =>
   (props: SelectDisplayProps): SelectMenuComponent<unknown> => {
     return {
@@ -21,3 +21,25 @@ export const renderSelectComponent =
       customId,
     };
   };
+
+export function Select(
+  customId: string,
+  optionProps: SelectOptionProps,
+  props: SelectDisplayProps
+): SelectMenuComponent<unknown>;
+export function Select(
+  customId: string,
+  optionProps: SelectOptionProps,
+  props?: undefined
+): (props: SelectDisplayProps) => SelectMenuComponent<unknown>;
+export function Select(
+  customId: string,
+  optionProps: SelectOptionProps,
+  props: SelectDisplayProps | undefined
+) {
+  if (props === undefined) {
+    return renderSelectComponent(customId, optionProps);
+  } else {
+    return renderSelectComponent(customId, optionProps)(props);
+  }
+}
