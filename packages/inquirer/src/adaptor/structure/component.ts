@@ -6,7 +6,7 @@ import type { PartialEmoji } from "./emoji";
 export interface MessageActionRowComponent {
   type: "row";
   components:
-    | [ButtonComponent | SelectMenuComponent<unknown>]
+    | [ButtonComponent | StringSelectComponent<unknown>]
     | [ButtonComponent, ButtonComponent]
     | [ButtonComponent, ButtonComponent, ButtonComponent]
     | [ButtonComponent, ButtonComponent, ButtonComponent, ButtonComponent]
@@ -24,7 +24,7 @@ export interface ModalActionRowComponent {
   components: [TextInputComponent];
 }
 
-export type MessageComponent = ButtonComponent | SelectMenuComponent<unknown>;
+export type MessageComponent = ButtonComponent | StringSelectComponent<unknown>;
 export type ModalComponent = TextInputComponent;
 
 /**
@@ -77,8 +77,8 @@ export interface NonLinkButtonComponent extends ButtonComponentBase {
 /**
  * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object}
  */
-export interface SelectMenuComponent<T> {
-  type: "menu";
+export interface StringSelectComponent<T> {
+  type: "stringSelect";
 
   /**
    * custom placeholder text if nothing is selected, max 100 characters

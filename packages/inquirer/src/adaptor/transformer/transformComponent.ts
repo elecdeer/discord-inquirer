@@ -9,7 +9,7 @@ import type {
   ButtonComponent,
   MessageComponent,
   PartialEmoji,
-  SelectMenuComponent,
+  StringSelectComponent,
   SelectOption,
   TextInputComponent,
 } from "../structure";
@@ -38,7 +38,7 @@ export const transformComponent = (
   switch (component.type) {
     case "button":
       return transformButtonComponent(component);
-    case "menu":
+    case "stringSelect":
       return transformSelectComponent(component);
   }
 };
@@ -90,7 +90,7 @@ export const transformButtonComponent = (
 };
 
 export const transformSelectComponent = (
-  component: SelectMenuComponent<unknown>
+  component: StringSelectComponent<unknown>
 ): APISelectMenuComponent => ({
   type: ComponentType.SelectMenu,
   custom_id: component.customId,
