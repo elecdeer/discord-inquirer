@@ -1,10 +1,13 @@
-import { Select } from "../../component";
+import { StringSelect } from "../../component";
 import { useSelectMenuEvent } from "../effect/useSelectMenuEvent";
 import { useCollection } from "../state/useCollection";
 import { useCustomId } from "../state/useCustomId";
 
 import type { StringSelectComponent, SelectOption } from "../../adaptor";
-import type { SelectOptionProps, SelectDisplayProps } from "../../component";
+import type {
+  StringSelectOptionProps,
+  StringSelectDisplayProps,
+} from "../../component";
 import type { SetOptional } from "type-fest";
 
 export type SelectItem<T> = Omit<SelectOption<T>, "value"> & {
@@ -21,11 +24,11 @@ export type SelectItemResult<T> = SelectItem<T> & {
 
 export type UseSelectComponentResult<T> = [
   selectResult: SelectItemResult<T>[],
-  Select: (props: SelectDisplayProps) => StringSelectComponent<T>
+  Select: (props: StringSelectDisplayProps) => StringSelectComponent<T>
 ];
 
 export const useSelectComponent = <T>(
-  param: Omit<SelectOptionProps, "options"> & {
+  param: Omit<StringSelectOptionProps, "options"> & {
     options: readonly PartialSelectItem<T>[];
   }
 ): UseSelectComponentResult<T> => {
@@ -59,7 +62,7 @@ export const useSelectComponent = <T>(
     });
   });
 
-  const renderComponent = Select(customId, {
+  const renderComponent = StringSelect(customId, {
     ...param,
     options: items
       .map((item) => ({

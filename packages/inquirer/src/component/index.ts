@@ -1,3 +1,3 @@
 export * from "./buttonComponent";
-export * from "./selectComponent";
+export * from "./stringSelectComponent";
 export * from "./rowComponent";

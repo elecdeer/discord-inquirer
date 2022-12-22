@@ -97,6 +97,15 @@ client.on("ready", async (readyClient) => {
           : "Select 1 or 2 numbers",
         components: [
           Row(Select({})),
+          {
+            type: "row",
+            components: [
+              {
+                type: "userSelect",
+                customId: "userSelect",
+              },
+            ],
+          },
           Row(ConfirmButton({ style: "success", label: "confirm" })),
         ],
       };
