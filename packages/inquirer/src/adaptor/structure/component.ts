@@ -1,12 +1,20 @@
+import type { ChannelTypes } from "./channel";
+import type { PartialEmoji } from "./emoji";
+
 /**
  * {@link https://discord.com/developers/docs/interactions/message-components#component-object}
  */
-import type { PartialEmoji } from "./emoji";
-
 export interface MessageActionRowComponent {
   type: "row";
   components:
-    | [ButtonComponent | StringSelectComponent<unknown>]
+    | [
+        | ButtonComponent
+        | StringSelectComponent<unknown>
+        | UserSelectComponent
+        | RoleSelectComponent
+        | MentionableSelectComponent
+        | ChannelSelectComponent
+      ]
     | [ButtonComponent, ButtonComponent]
     | [ButtonComponent, ButtonComponent, ButtonComponent]
     | [ButtonComponent, ButtonComponent, ButtonComponent, ButtonComponent]
@@ -24,7 +32,14 @@ export interface ModalActionRowComponent {
   components: [TextInputComponent];
 }
 
-export type MessageComponent = ButtonComponent | StringSelectComponent<unknown>;
+export type MessageComponent =
+  | ButtonComponent
+  | StringSelectComponent<unknown>
+  | UserSelectComponent
+  | RoleSelectComponent
+  | MentionableSelectComponent
+  | ChannelSelectComponent;
+
 export type ModalComponent = TextInputComponent;
 
 /**
@@ -75,20 +90,13 @@ export interface NonLinkButtonComponent extends ButtonComponentBase {
 }
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object}
+ * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
  */
-export interface StringSelectComponent<T> {
-  type: "stringSelect";
-
+export interface SelectComponentBase {
   /**
    * custom placeholder text if nothing is selected, max 100 characters
    */
   customId: string;
-
-  /**
-   * the choices in the select, max 25
-   */
-  options: SelectOption<T>[];
 
   /**
    * custom placeholder text if nothing is selected, max 150 characters
@@ -117,7 +125,19 @@ export interface StringSelectComponent<T> {
 }
 
 /**
- * https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure
+ * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ */
+export interface StringSelectComponent<T> extends SelectComponentBase {
+  type: "stringSelect";
+
+  /**
+   * the choices in the select, max 25
+   */
+  options: SelectOption<T>[];
+}
+
+/**
+ * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure}
  */
 export interface SelectOption<T> {
   /**
@@ -144,6 +164,39 @@ export interface SelectOption<T> {
    * whether this option should be enabled by default
    */
   default?: boolean;
+}
+
+/**
+ * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ */
+export interface UserSelectComponent extends SelectComponentBase {
+  type: "userSelect";
+}
+
+/**
+ * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ */
+export interface RoleSelectComponent extends SelectComponentBase {
+  type: "roleSelect";
+}
+
+/**
+ * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ */
+export interface MentionableSelectComponent extends SelectComponentBase {
+  type: "mentionableSelect";
+}
+
+/**
+ * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ */
+export interface ChannelSelectComponent extends SelectComponentBase {
+  type: "channelSelect";
+
+  /**
+   * List of channel types to include in the channel select component (type 8)
+   */
+  channelTypes?: ChannelTypes[];
 }
 
 /**
