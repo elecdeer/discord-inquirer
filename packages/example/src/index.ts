@@ -2,7 +2,6 @@ import {
   createScreen,
   inquire,
   Row,
-  useEffect,
   useSelectComponent,
   useConfirmButtonComponent,
 } from "discord-inquirer";
@@ -64,6 +63,9 @@ client.on("ready", async (readyClient) => {
         ],
         maxValues: 2,
         minValues: 1,
+        onSelected: (selected) => {
+          console.log("handleSelected", selected);
+        },
       });
 
       const [{ ok: confirmed }, ConfirmButton] = useConfirmButtonComponent(
@@ -72,21 +74,17 @@ client.on("ready", async (readyClient) => {
           return {
             ok: result.filter(({ selected }) => selected).length > 1,
           };
+        },
+        () => {
+          const selected = result
+            .filter((item) => item.selected)
+            .map((item) => item.payload);
+
+          answer("selected", selected);
+
+          close();
         }
       );
-
-      useEffect(() => {
-        console.log(`check confirmed: ${confirmed}`);
-        if (!confirmed) return;
-
-        const selected = result
-          .filter((item) => item.selected)
-          .map((item) => item.payload);
-
-        answer("selected", selected);
-
-        close();
-      }, [confirmed]);
 
       return {
         content: confirmed

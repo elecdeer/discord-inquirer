@@ -1,7 +1,9 @@
 import { Select } from "../../component";
+import { useEffect } from "../effect/useEffect";
 import { useSelectMenuEvent } from "../effect/useSelectMenuEvent";
 import { useCollection } from "../state/useCollection";
 import { useCustomId } from "../state/useCustomId";
+import { useRef } from "../state/useRef";
 
 import type { SelectMenuComponent, SelectOption } from "../../adaptor";
 import type { SelectOptionProps, SelectDisplayProps } from "../../component";
@@ -27,6 +29,7 @@ export type UseSelectComponentResult<T> = [
 export const useSelectComponent = <T>(
   param: Omit<SelectOptionProps, "options"> & {
     options: readonly PartialSelectItem<T>[];
+    onSelected?: (selected: SelectItemResult<T>[]) => void;
   }
 ): UseSelectComponentResult<T> => {
   const customId = useCustomId("select");
@@ -42,6 +45,7 @@ export const useSelectComponent = <T>(
       },
     ])
   );
+  const valueChanged = useRef(false);
 
   useSelectMenuEvent(customId, async (interaction, values, deferUpdate) => {
     await deferUpdate();
@@ -51,12 +55,21 @@ export const useSelectComponent = <T>(
       if (prev.selected == selected) {
         return prev;
       } else {
+        valueChanged.current = true;
         return {
           ...prev,
           selected,
         };
       }
     });
+  });
+
+  //あまり良い実装では無い
+  useEffect(() => {
+    if (valueChanged.current) {
+      param.onSelected?.(result());
+      valueChanged.current = false;
+    }
   });
 
   const renderComponent = Select(customId, {

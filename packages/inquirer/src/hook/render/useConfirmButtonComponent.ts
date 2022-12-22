@@ -1,6 +1,8 @@
 import { Button } from "../../component";
 import { useButtonEvent } from "../effect/useButtonEvent";
+import { useEffect } from "../effect/useEffect";
 import { useCustomId } from "../state/useCustomId";
+import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 
 import type { ButtonComponent } from "../../adaptor";
@@ -34,6 +36,7 @@ export type UseConfirmButtonResult<T> = [
 
 export const useConfirmButtonComponent = <T = undefined>(
   validate: () => Awaitable<ValidateResult<T>>,
+  onConfirm?: () => Awaitable<void>,
   deferInteractionAlways = true
 ): UseConfirmButtonResult<T> => {
   const customId = useCustomId("confirmButton");
@@ -41,6 +44,8 @@ export const useConfirmButtonComponent = <T = undefined>(
     checked: false,
     ok: false,
   });
+
+  const valueChanged = useRef(false);
 
   useButtonEvent(customId, async (_, deferUpdate) => {
     //canConfirmの結果がresolveする前に3秒経ってしまうとinteractionがタイムアウトするため、deferInteractionAlwaysがtrueの場合は先に呼ぶ
@@ -58,6 +63,14 @@ export const useConfirmButtonComponent = <T = undefined>(
       checked: true,
     });
   });
+
+  //あまり良い実装ではない
+  useEffect(() => {
+    if (valueChanged.current && validateResult.ok) {
+      onConfirm?.();
+      valueChanged.current = false;
+    }
+  }, [validateResult]);
 
   const renderComponent = Button(customId);
 
