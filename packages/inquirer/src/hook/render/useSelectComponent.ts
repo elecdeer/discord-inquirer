@@ -1,4 +1,4 @@
-import { Select } from "../../component";
+import { StringSelect } from "../../adaptor";
 import { useEffect } from "../effect/useEffect";
 import { useSelectMenuEvent } from "../effect/useSelectMenuEvent";
 import { useCollection } from "../state/useCollection";
@@ -6,7 +6,7 @@ import { useCustomId } from "../state/useCustomId";
 import { useRef } from "../state/useRef";
 
 import type { StringSelectComponent, SelectOption } from "../../adaptor";
-import type { SelectOptionProps, SelectDisplayProps } from "../../component";
+import type { UnfulfilledCurriedBuilder } from "../../util/curriedBuilder";
 import type { SetOptional } from "type-fest";
 
 export type SelectItem<T> = Omit<SelectOption<T>, "value"> & {
@@ -23,15 +23,17 @@ export type SelectItemResult<T> = SelectItem<T> & {
 
 export type UseSelectComponentResult<T> = [
   selectResult: SelectItemResult<T>[],
-  Select: (props: SelectDisplayProps) => StringSelectComponent<T>
+  Select: UnfulfilledCurriedBuilder<
+    StringSelectComponent<T>,
+    { type: "stringSelect"; customId: string; options: SelectItemResult<T>[] },
+    StringSelectComponent<T>
+  >
 ];
 
-export const useSelectComponent = <T>(
-  param: Omit<SelectOptionProps, "options"> & {
-    options: readonly PartialSelectItem<T>[];
-    onSelected?: (selected: SelectItemResult<T>[]) => void;
-  }
-): UseSelectComponentResult<T> => {
+export const useSelectComponent = <T>(param: {
+  options: readonly PartialSelectItem<T>[];
+  onSelected?: (selected: SelectItemResult<T>[]) => void;
+}): UseSelectComponentResult<T> => {
   const customId = useCustomId("select");
 
   const items = initialSelectItems(param.options);
@@ -72,8 +74,8 @@ export const useSelectComponent = <T>(
     }
   });
 
-  const renderComponent = Select(customId, {
-    ...param,
+  const renderComponent = StringSelect({
+    customId,
     options: items
       .map((item) => ({
         ...item,

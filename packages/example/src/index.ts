@@ -61,8 +61,6 @@ client.on("ready", async (readyClient) => {
             payload: 3,
           },
         ],
-        maxValues: 2,
-        minValues: 1,
         onSelected: (selected) => {
           console.log("handleSelected", selected);
         },
@@ -94,8 +92,13 @@ client.on("ready", async (readyClient) => {
               .join(",")}`
           : "Select 1 or 2 numbers",
         components: [
-          Row(Select({})),
-          Row(ConfirmButton({ style: "success", label: "confirm" })),
+          Row(
+            Select({
+              maxValues: 2,
+              minValues: 1,
+            })()
+          ),
+          Row(ConfirmButton({ style: "success", label: "confirm" })()),
         ],
       };
     };
