@@ -5,5 +5,6 @@ export * from "./followupPayload";
 export * from "./interaction";
 export * from "./interactionResponse";
 export * from "./messagePayload";
+export * from "./channel";
 
 export type Snowflake = string;

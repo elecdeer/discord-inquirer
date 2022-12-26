@@ -1,7 +1,7 @@
-import type { SelectMenuComponent } from "../adaptor";
+import type { StringSelectComponent } from "../adaptor";
 
 export type SelectProps = Omit<
-  SelectMenuComponent<unknown>,
+  StringSelectComponent<unknown>,
   "type" | "customId"
 >;
 
@@ -13,11 +13,11 @@ export type SelectDisplayProps = Pick<SelectProps, "disabled" | "placeholder">;
 
 const renderSelectComponent =
   (customId: string, optionProps: SelectOptionProps) =>
-  (props: SelectDisplayProps): SelectMenuComponent<unknown> => {
+  (props: SelectDisplayProps): StringSelectComponent<unknown> => {
     return {
       ...optionProps,
       ...props,
-      type: "menu",
+      type: "stringSelect",
       customId,
     };
   };
@@ -26,12 +26,12 @@ export function Select(
   customId: string,
   optionProps: SelectOptionProps,
   props: SelectDisplayProps
-): SelectMenuComponent<unknown>;
+): StringSelectComponent<unknown>;
 export function Select(
   customId: string,
   optionProps: SelectOptionProps,
   props?: undefined
-): (props: SelectDisplayProps) => SelectMenuComponent<unknown>;
+): (props: SelectDisplayProps) => StringSelectComponent<unknown>;
 export function Select(
   customId: string,
   optionProps: SelectOptionProps,

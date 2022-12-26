@@ -5,7 +5,7 @@ import { useCollection } from "../state/useCollection";
 import { useCustomId } from "../state/useCustomId";
 import { useRef } from "../state/useRef";
 
-import type { SelectMenuComponent, SelectOption } from "../../adaptor";
+import type { StringSelectComponent, SelectOption } from "../../adaptor";
 import type { SelectOptionProps, SelectDisplayProps } from "../../component";
 import type { SetOptional } from "type-fest";
 
@@ -23,7 +23,7 @@ export type SelectItemResult<T> = SelectItem<T> & {
 
 export type UseSelectComponentResult<T> = [
   selectResult: SelectItemResult<T>[],
-  Select: (props: SelectDisplayProps) => SelectMenuComponent<T>
+  Select: (props: SelectDisplayProps) => StringSelectComponent<T>
 ];
 
 export const useSelectComponent = <T>(
