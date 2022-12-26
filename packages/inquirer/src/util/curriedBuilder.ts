@@ -5,7 +5,11 @@ type IsAllPartial<T> = Equal<T, Partial<T>>;
 
 type If<C, T, F> = C extends true ? T : F;
 
-export type BindableBuilder<Props, Terminal> = Unfulfilled<Props, unknown, Terminal>;
+export type BindableBuilder<Props, Terminal> = Unfulfilled<
+  Props,
+  unknown,
+  Terminal
+>;
 
 type Fulfilled<Props, Applied, Terminal> = Unfulfilled<
   Props,
@@ -29,27 +33,24 @@ type Unfulfilled<Props, Applied, Terminal> = {
 };
 
 const builderImpl = <T extends object, U>(terminalOp: (props: T) => U) => {
-  let obj: Partial<T> = {};
-
-  const set = (props: Partial<T>) => {
+  const set = (obj: Partial<T>, props: Partial<T>) => {
     //上書きしない
-    obj = { ...props, ...obj };
-    return impl;
+    return impl({ ...props, ...obj });
   };
 
-  const build = () => {
+  const build = (obj: Partial<T>) => {
     return terminalOp(obj as T);
   };
 
-  const impl = (props: Partial<T> | undefined) => {
+  const impl = (obj: Partial<T>) => (props: Partial<T> | undefined) => {
     if (props === undefined) {
-      return build();
+      return build(obj);
     } else {
-      return set(props);
+      return set(obj, props);
     }
   };
 
-  return impl;
+  return impl({});
 };
 
 export const createBuilder = <T extends object, U>(
