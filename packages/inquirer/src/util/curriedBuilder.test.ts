@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { createBuilder } from "./curriedBuilder";
+import { createCurriedBuilder } from "./curriedBuilder";
 
 describe("packages/inquirer/src/util/curriedBuilder", () => {
   describe("implementation", () => {
@@ -11,7 +11,7 @@ describe("packages/inquirer/src/util/curriedBuilder", () => {
     };
 
     test("正しく値が設定される", () => {
-      const builder = createBuilder<
+      const builder = createCurriedBuilder<
         Foo,
         {
           result: Foo;
@@ -35,7 +35,7 @@ describe("packages/inquirer/src/util/curriedBuilder", () => {
     });
 
     test("呼び出し結果が独立している", () => {
-      const builder = createBuilder<Foo, Foo>((value) => value);
+      const builder = createCurriedBuilder<Foo>();
 
       const partial = builder({
         foo: "foo",

@@ -53,8 +53,16 @@ const builderImpl = <T extends object, U>(terminalOp: (props: T) => U) => {
   return impl({});
 };
 
-export const createBuilder = <T extends object, U>(
+export function createCurriedBuilder<T extends object>(): BindableBuilder<T, T>;
+export function createCurriedBuilder<T extends object, U>(
   terminalOp: (props: T) => U
-): BindableBuilder<T, U> => {
-  return builderImpl(terminalOp) as BindableBuilder<T, U>;
-};
+): BindableBuilder<T, U>;
+export function createCurriedBuilder<T extends object, U>(
+  terminalOp?: (props: T) => U
+) {
+  if (terminalOp === undefined) {
+    return builderImpl<T, T>((props) => props);
+  } else {
+    return builderImpl<T, U>(terminalOp);
+  }
+}
