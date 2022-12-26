@@ -1,4 +1,4 @@
-import { Button } from "../../component";
+import { Button } from "../../adaptor";
 import { useButtonEvent } from "../effect/useButtonEvent";
 import { useEffect } from "../effect/useEffect";
 import { useCustomId } from "../state/useCustomId";
@@ -6,11 +6,15 @@ import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 
 import type { ButtonComponent } from "../../adaptor";
-import type { ButtonProps } from "../../component";
+import type { UnfulfilledCurriedBuilder } from "../../util/curriedBuilder";
 
 export type UseCountButtonComponentResult = [
   count: number,
-  CountButton: (props: ButtonProps) => ButtonComponent
+  CountButton: UnfulfilledCurriedBuilder<
+    ButtonComponent,
+    { type: "button"; customId: string },
+    ButtonComponent
+  >
 ];
 
 export const useCountButtonComponent = ({
@@ -38,6 +42,6 @@ export const useCountButtonComponent = ({
     }
   }, [count]);
 
-  const renderComponent = Button(customId);
+  const renderComponent = Button({ customId });
   return [count, renderComponent];
 };

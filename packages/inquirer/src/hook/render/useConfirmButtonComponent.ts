@@ -1,4 +1,4 @@
-import { Button } from "../../component";
+import { Button } from "../../adaptor";
 import { useButtonEvent } from "../effect/useButtonEvent";
 import { useEffect } from "../effect/useEffect";
 import { useCustomId } from "../state/useCustomId";
@@ -6,7 +6,7 @@ import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 
 import type { ButtonComponent } from "../../adaptor";
-import type { ButtonProps } from "../../component";
+import type { UnfulfilledCurriedBuilder } from "../../util/curriedBuilder";
 import type { Awaitable } from "../../util/types";
 
 export type ValidateResult<T> = ValidateOkResult | ValidateErrorResult<T>;
@@ -31,7 +31,11 @@ export type ValidateResultState<T> =
 
 export type UseConfirmButtonResult<T> = [
   result: ValidateResultState<T>,
-  ConfirmButton: (props: ButtonProps) => ButtonComponent
+  ConfirmButton: UnfulfilledCurriedBuilder<
+    ButtonComponent,
+    { type: "button"; customId: string },
+    ButtonComponent
+  >
 ];
 
 export const useConfirmButtonComponent = <T = undefined>(
@@ -72,7 +76,9 @@ export const useConfirmButtonComponent = <T = undefined>(
     }
   }, [validateResult]);
 
-  const renderComponent = Button(customId);
+  const renderComponent = Button({
+    customId,
+  });
 
   return [validateResult, renderComponent];
 };

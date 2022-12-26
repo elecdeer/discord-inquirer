@@ -5,30 +5,27 @@ type IsAllPartial<T> = Equal<T, Partial<T>>;
 
 type If<C, T, F> = C extends true ? T : F;
 
-export type BindableBuilder<Props, Terminal> = Unfulfilled<
+export type CurriedBuilder<Props, Terminal> = UnfulfilledCurriedBuilder<
   Props,
   unknown,
   Terminal
 >;
 
-type Fulfilled<Props, Applied, Terminal> = Unfulfilled<
-  Props,
-  Applied,
-  Terminal
-> &
-  Build<Props, Applied, Terminal>;
+export type FulfilledCurriedBuilder<Props, Applied, Terminal> =
+  UnfulfilledCurriedBuilder<Props, Applied, Terminal> &
+    Build<Props, Applied, Terminal>;
 
 type Build<_, __, Terminal> = {
   (): Terminal;
 };
 
-type Unfulfilled<Props, Applied, Terminal> = {
+export type UnfulfilledCurriedBuilder<Props, Applied, Terminal> = {
   <P extends Partial<Omit<Props, keyof Applied>>>(
     props: StrictPropertyCheck<P, Partial<Omit<Props, keyof Applied>>>
   ): If<
     IsAllPartial<Omit<Props, keyof (Applied & P)>>,
-    Fulfilled<Props, Applied & P, Terminal>,
-    Unfulfilled<Props, Applied & P, Terminal>
+    FulfilledCurriedBuilder<Props, Applied & P, Terminal>,
+    UnfulfilledCurriedBuilder<Props, Applied & P, Terminal>
   >;
 };
 
@@ -53,10 +50,10 @@ const builderImpl = <T extends object, U>(terminalOp: (props: T) => U) => {
   return impl({});
 };
 
-export function createCurriedBuilder<T extends object>(): BindableBuilder<T, T>;
+export function createCurriedBuilder<T extends object>(): CurriedBuilder<T, T>;
 export function createCurriedBuilder<T extends object, U>(
   terminalOp: (props: T) => U
-): BindableBuilder<T, U>;
+): CurriedBuilder<T, U>;
 export function createCurriedBuilder<T extends object, U>(
   terminalOp?: (props: T) => U
 ) {
