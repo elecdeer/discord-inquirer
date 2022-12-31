@@ -1,11 +1,14 @@
-import type { Snowflake } from "discord-api-types/v10";
+import type { PartialMember } from "./guild";
+import type { PartialChannel, Snowflake } from "./index";
+import type { Role } from "./permissions";
+import type { User } from "./user";
 
 /**
- * {@link https://discord.com/developers/docs/interactions/slash-commands#interaction }
+ * {@link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-structure }
  */
 export type Interaction =
   | InteractionButton
-  | InteractionSelect
+  | InteractionStringSelect
   | InteractionModalSubmit;
 
 export interface InteractionBase {
@@ -24,12 +27,63 @@ export interface InteractionButton extends InteractionBase {
   };
 }
 
-export interface InteractionSelect extends InteractionBase {
+export interface InteractionStringSelect extends InteractionBase {
   type: "messageComponent";
   data: {
     customId: string;
-    componentType: "selectMenu";
+    componentType: "stringSelect";
     values: string[];
+  };
+}
+
+export interface InteractionUserSelect extends InteractionBase {
+  type: "messageComponent";
+  data: {
+    customId: string;
+    componentType: "userSelect";
+    values: Snowflake[];
+    resolved: {
+      users: Record<Snowflake, User>;
+      members: Record<Snowflake, PartialMember>;
+    };
+  };
+}
+
+export interface InteractionRoleSelect extends InteractionBase {
+  type: "messageComponent";
+  data: {
+    customId: string;
+    componentType: "roleSelect";
+    values: Snowflake[];
+    resolved: {
+      roles: Record<Snowflake, Role>;
+    };
+  };
+}
+
+export interface InteractionMentionableSelect extends InteractionBase {
+  type: "messageComponent";
+  data: {
+    customId: string;
+    componentType: "mentionableSelect";
+    values: Snowflake[];
+    resolved: {
+      users: Record<Snowflake, User>;
+      members: Record<Snowflake, PartialMember>;
+      roles: Record<Snowflake, Role>;
+    };
+  };
+}
+
+export interface InteractionChannelSelect extends InteractionBase {
+  type: "messageComponent";
+  data: {
+    customId: string;
+    componentType: "channelSelect";
+    values: Snowflake[];
+    resolved: {
+      channels: Record<Snowflake, PartialChannel>;
+    };
   };
 }
 
