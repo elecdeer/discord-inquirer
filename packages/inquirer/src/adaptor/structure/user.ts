@@ -28,60 +28,72 @@ export interface User {
 
   /**
    * whether the user belongs to an OAuth2 application
+   *
+   * @default false (if not present)
    */
-  bot?: boolean;
+  bot: boolean;
 
   /**
    * whether the user is an Official Discord System user (part of the urgent message system)
+   *
+   * @default false (if not present)
    */
-  system?: boolean;
+  system: boolean;
 
   /**
    * whether the user has two factor enabled on their account
+   *
+   * @default false (if not present)
    */
-  mfaEnabled?: boolean;
+  mfaEnabled: boolean;
 
   /**
    * the user's banner hash
    * @see https://discord.com/developers/docs/reference#image-formatting
    */
-  banner?: string;
+  banner: string | null;
 
   /**
    * the user's accent color
    */
-  accentColor?: number;
+  accentColor: number | null;
 
   /**
    * the user's chosen language option
    */
-  locale?: string;
+  locale: string | null;
 
   /**
    * whether the email on this account has been verified
    */
-  verified?: boolean;
+  verified: boolean | null;
 
   /**
    * the user's email
    */
-  email?: string;
+  email: string | null;
 
   /**
    * the flags on a user's account
    * @see https://discord.com/developers/docs/resources/user#user-object-user-flags
+   *
+   * @default 0 (if not present)
    */
-  flags?: number;
+  flags: number;
 
   /**
    * the type of Nitro subscription on a user's account
    * @see https://discord.com/developers/docs/resources/user#user-object-premium-types
+   *
+   * @default 0 (if not present)
    */
-  premiumType?: number;
+  premiumType: number;
 
   /**
    * the public flags on a user's account
    * @see https://discord.com/developers/docs/resources/user#user-object-user-flags
+   *
+   * @default 0 (if not present)
    */
-  publicFlags?: number;
+  publicFlags: number;
 }

@@ -1,5 +1,5 @@
 import type { PartialMember } from "./guild";
-import type { PartialChannel, Snowflake } from "./index";
+import type { PartialChannel, PartialChannelBase, Snowflake } from "./index";
 import type { Role } from "./permissions";
 import type { User } from "./user";
 
