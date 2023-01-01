@@ -3,7 +3,7 @@ import type { Snowflake } from "./index";
 /**
  * @see https://discord.com/developers/docs/resources/user#user-object-user-structure
  */
-export interface User {
+export interface AdaptorUser {
   /**
    * the user's id
    */

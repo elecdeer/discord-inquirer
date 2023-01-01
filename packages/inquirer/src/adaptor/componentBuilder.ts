@@ -1,22 +1,22 @@
 import { createCurriedBuilder } from "../util/curriedBuilder";
 
-import type { MentionableSelectComponent } from "./structure";
 import type {
-  ButtonComponent,
-  ChannelSelectComponent,
-  MessageActionRowComponent,
-  RoleSelectComponent,
-  StringSelectComponent,
-  UserSelectComponent,
+  AdaptorButtonComponent,
+  AdaptorChannelSelectComponent,
+  AdaptorMentionableSelectComponent,
+  AdaptorMessageActionRowComponent,
+  AdaptorRoleSelectComponent,
+  AdaptorStringSelectComponent,
+  AdaptorUserSelectComponent,
 } from "./structure";
 
-export const Button = createCurriedBuilder<ButtonComponent>()({
+export const Button = createCurriedBuilder<AdaptorButtonComponent>()({
   type: "button",
 });
 
 export const Row = (
-  ...components: MessageActionRowComponent["components"]
-): MessageActionRowComponent => {
+  ...components: AdaptorMessageActionRowComponent["components"]
+): AdaptorMessageActionRowComponent => {
   return {
     type: "row",
     components: components,
@@ -24,24 +24,25 @@ export const Row = (
 };
 
 export const StringSelect = createCurriedBuilder<
-  StringSelectComponent<unknown>
+  AdaptorStringSelectComponent<unknown>
 >()({
   type: "stringSelect",
 });
 
-export const UserSelect = createCurriedBuilder<UserSelectComponent>()({
+export const UserSelect = createCurriedBuilder<AdaptorUserSelectComponent>()({
   type: "userSelect",
 });
 
-export const RoleSelect = createCurriedBuilder<RoleSelectComponent>()({
+export const RoleSelect = createCurriedBuilder<AdaptorRoleSelectComponent>()({
   type: "roleSelect",
 });
 
 export const MentionableSelect =
-  createCurriedBuilder<MentionableSelectComponent>()({
+  createCurriedBuilder<AdaptorMentionableSelectComponent>()({
     type: "mentionableSelect",
   });
 
-export const ChannelSelect = createCurriedBuilder<ChannelSelectComponent>()({
-  type: "channelSelect",
-});
+export const ChannelSelect =
+  createCurriedBuilder<AdaptorChannelSelectComponent>()({
+    type: "channelSelect",
+  });

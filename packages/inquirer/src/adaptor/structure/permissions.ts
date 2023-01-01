@@ -3,7 +3,7 @@ import type { Snowflake } from "./index";
 /**
  * @see https://discord.com/developers/docs/resources/channel#channel-object-channel-types
  */
-export interface Role {
+export interface AdaptorRole {
   /**
    * Role id
    */
@@ -58,13 +58,13 @@ export interface Role {
   /**
    * the tags this role has
    */
-  tags: RoleTags | null;
+  tags: AdaptorRoleTags | null;
 }
 
 /**
  * @see https://discord.com/developers/docs/topics/permissions#role-object-role-tags-structure
  */
-export interface RoleTags {
+export interface AdaptorRoleTags {
   /**
    * The id of the bot this role belongs to
    */

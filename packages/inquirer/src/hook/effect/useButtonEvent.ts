@@ -2,13 +2,13 @@ import { messageFacade } from "../../adaptor";
 import { getHookContext } from "../../core/hookContext";
 import { useEffect } from "./useEffect";
 
-import type { InteractionBase } from "../../adaptor";
+import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
 export const useButtonEvent = (
   customId: string,
   handle: (
-    interaction: InteractionBase,
+    interaction: AdaptorInteractionBase,
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {

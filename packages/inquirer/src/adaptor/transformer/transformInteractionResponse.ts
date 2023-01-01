@@ -7,24 +7,24 @@ import {
 } from "./transformMessagePayload";
 
 import type {
-  InteractionResponse,
-  InteractionResponseDeferredReply,
-  InteractionResponseDeferredUpdate,
-  InteractionResponseModal,
-  InteractionResponsePatch,
-  InteractionResponseReply,
+  AdaptorInteractionResponse,
+  AdaptorInteractionResponseDeferredReply,
+  AdaptorInteractionResponseDeferredUpdate,
+  AdaptorInteractionResponseModal,
+  AdaptorInteractionResponsePatch,
+  AdaptorInteractionResponseReply,
 } from "../structure";
 import type {
   APIInteractionResponse,
   APIInteractionResponseChannelMessageWithSource,
   APIInteractionResponseDeferredChannelMessageWithSource,
+  APIInteractionResponseDeferredMessageUpdate,
   APIModalInteractionResponse,
   RESTPatchAPIInteractionOriginalResponseJSONBody,
-  APIInteractionResponseDeferredMessageUpdate,
 } from "discord-api-types/v10";
 
 export const transformInteractionResponse = (
-  res: InteractionResponse
+  res: AdaptorInteractionResponse
 ): APIInteractionResponse => {
   switch (res.type) {
     case "channelMessageWithSource":
@@ -39,27 +39,27 @@ export const transformInteractionResponse = (
 };
 
 export const transformInteractionResponseReply = (
-  res: InteractionResponseReply
+  res: AdaptorInteractionResponseReply
 ): APIInteractionResponseChannelMessageWithSource => ({
   type: InteractionResponseType.ChannelMessageWithSource,
   data: transformMessagePayload(res.data),
 });
 
 export const transformInteractionResponseDeferredReply = (
-  res: InteractionResponseDeferredReply
+  res: AdaptorInteractionResponseDeferredReply
 ): APIInteractionResponseDeferredChannelMessageWithSource => ({
   type: InteractionResponseType.DeferredChannelMessageWithSource,
   data: res.data && transformMessagePayload(res.data),
 });
 
 export const transformInteractionResponseDeferredUpdate = (
-  _: InteractionResponseDeferredUpdate
+  _: AdaptorInteractionResponseDeferredUpdate
 ): APIInteractionResponseDeferredMessageUpdate => ({
   type: InteractionResponseType.DeferredMessageUpdate,
 });
 
 export const transformInteractionResponseModal = (
-  res: InteractionResponseModal
+  res: AdaptorInteractionResponseModal
 ): APIModalInteractionResponse => {
   return {
     type: InteractionResponseType.Modal,
@@ -72,7 +72,7 @@ export const transformInteractionResponseModal = (
 };
 
 export const transformInteractionResponsePatch = (
-  res: InteractionResponsePatch
+  res: AdaptorInteractionResponsePatch
 ): RESTPatchAPIInteractionOriginalResponseJSONBody => {
   return transformMessagePayloadPatch(res);
 };

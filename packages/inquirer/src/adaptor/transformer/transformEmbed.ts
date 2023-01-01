@@ -1,10 +1,10 @@
 import type {
-  Embed,
-  EmbedAuthor,
-  EmbedField,
-  EmbedFooter,
-  EmbedImage,
-  EmbedThumbnail,
+  AdaptorEmbed,
+  AdaptorEmbedAuthor,
+  AdaptorEmbedField,
+  AdaptorEmbedFooter,
+  AdaptorEmbedImage,
+  AdaptorEmbedThumbnail,
 } from "../structure";
 import type {
   APIEmbed,
@@ -15,7 +15,7 @@ import type {
   APIEmbedThumbnail,
 } from "discord-api-types/v10";
 
-export const transformEmbed = (embed: Embed): APIEmbed => ({
+export const transformEmbed = (embed: AdaptorEmbed): APIEmbed => ({
   title: embed.title,
   description: embed.description,
   url: embed.url,
@@ -46,28 +46,36 @@ export const transformColor = (
   return parseInt(color.replace("#", ""), 16);
 };
 
-export const transformEmbedFooter = (footer: EmbedFooter): APIEmbedFooter => ({
+export const transformEmbedFooter = (
+  footer: AdaptorEmbedFooter
+): APIEmbedFooter => ({
   text: footer.text,
   icon_url: footer.iconUrl,
 });
 
-export const transformEmbedImage = (image: EmbedImage): APIEmbedImage => ({
+export const transformEmbedImage = (
+  image: AdaptorEmbedImage
+): APIEmbedImage => ({
   url: image.url,
 });
 
 export const transformEmbedThumbnail = (
-  thumbnail: EmbedThumbnail
+  thumbnail: AdaptorEmbedThumbnail
 ): APIEmbedThumbnail => ({
   url: thumbnail.url,
 });
 
-export const transformEmbedAuthor = (author: EmbedAuthor): APIEmbedAuthor => ({
+export const transformEmbedAuthor = (
+  author: AdaptorEmbedAuthor
+): APIEmbedAuthor => ({
   name: author.name,
   url: author.url,
   icon_url: author.iconUrl,
 });
 
-export const transformEmbedField = (field: EmbedField): APIEmbedField => ({
+export const transformEmbedField = (
+  field: AdaptorEmbedField
+): APIEmbedField => ({
   name: field.name,
   value: field.value,
   inline: field.inline,

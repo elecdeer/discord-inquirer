@@ -1,6 +1,9 @@
 import type { DiscordAdaptor } from "./discordAdaptor";
-import type { InteractionResponseModalData } from "./structure";
-import type { MessagePayload, Snowflake } from "./structure";
+import type {
+  AdaptorInteractionResponseModalData,
+  AdaptorMessagePayload,
+  Snowflake,
+} from "./structure";
 
 type InteractionTarget = {
   type: "interaction";
@@ -33,7 +36,7 @@ export type MessageTarget =
   | InteractionFollowupTarget;
 
 export type MessageMutualPayload = Omit<
-  MessagePayload,
+  AdaptorMessagePayload,
   "messageReference" | "stickerIds"
 >;
 
@@ -52,9 +55,12 @@ export type MessageFacade = {
   openModal: (
     interactionId: Snowflake,
     token: string,
-    payload: InteractionResponseModalData
+    payload: AdaptorInteractionResponseModalData
   ) => Promise<void>;
-  send: (target: MessageTarget, payload: MessagePayload) => Promise<SendResult>;
+  send: (
+    target: MessageTarget,
+    payload: AdaptorMessagePayload
+  ) => Promise<SendResult>;
   deferUpdate: (interactionId: Snowflake, token: string) => Promise<void>;
 };
 
@@ -155,7 +161,7 @@ export const messageFacade: (adaptor: DiscordAdaptor) => MessageFacade = (
   return {
     send: (
       target: MessageTarget,
-      payload: MessagePayload
+      payload: AdaptorMessagePayload
     ): Promise<SendResult> => {
       switch (target.type) {
         case "channel":
@@ -188,7 +194,7 @@ export const messageFacade: (adaptor: DiscordAdaptor) => MessageFacade = (
     openModal: (
       interactionId: Snowflake,
       token: string,
-      payload: InteractionResponseModalData
+      payload: AdaptorInteractionResponseModalData
     ) => {
       return adaptor.sendInteractionResponse(interactionId, token, {
         type: "modal",

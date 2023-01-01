@@ -5,11 +5,14 @@ import { useCollection } from "../state/useCollection";
 import { useCustomId } from "../state/useCustomId";
 import { useRef } from "../state/useRef";
 
-import type { StringSelectComponent, SelectOption } from "../../adaptor";
+import type {
+  AdaptorStringSelectComponent,
+  AdaptorSelectOption,
+} from "../../adaptor";
 import type { UnfulfilledCurriedBuilder } from "../../util/curriedBuilder";
 import type { SetOptional } from "type-fest";
 
-export type SelectItem<T> = Omit<SelectOption<T>, "value"> & {
+export type SelectItem<T> = Omit<AdaptorSelectOption<T>, "value"> & {
   key: string;
   payload: T;
   inactive?: boolean;
@@ -24,9 +27,9 @@ export type SelectItemResult<T> = SelectItem<T> & {
 export type UseSelectComponentResult<T> = [
   selectResult: SelectItemResult<T>[],
   Select: UnfulfilledCurriedBuilder<
-    StringSelectComponent<T>,
+    AdaptorStringSelectComponent<T>,
     { type: "stringSelect"; customId: string; options: SelectItemResult<T>[] },
-    StringSelectComponent<T>
+    AdaptorStringSelectComponent<T>
   >
 ];
 

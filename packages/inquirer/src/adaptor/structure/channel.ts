@@ -1,6 +1,6 @@
 import type { Snowflake } from "./index";
 
-export const ChannelTypesMap = {
+export const AdaptorChannelTypesMap = {
   guildText: 0,
   dm: 1,
   guildVoice: 2,
@@ -16,33 +16,35 @@ export const ChannelTypesMap = {
 } as const satisfies Record<string, number>;
 
 /**
- * @see ChannelTypesMap
+ * @see AdaptorChannelTypesMap
  * @see https://discord.com/developers/docs/resources/channel#channel-object-channel-types
  */
-export type ChannelTypes = keyof typeof ChannelTypesMap;
+export type AdaptorChannelTypes = keyof typeof AdaptorChannelTypesMap;
 
 /**
  * Partial Channel objects only have id, name, type and permissions fields.
  *
  * Threads will also have thread_metadata and parent_id fields.
  */
-export type PartialChannel = PartialNonThreadChannel | PartialThreadChannel;
+export type AdaptorPartialChannel =
+  | AdaptorPartialNonThreadChannel
+  | AdaptorPartialThreadChannel;
 
-export type PartialNonThreadChannel = {
+export type AdaptorPartialNonThreadChannel = {
   type: Exclude<
-    ChannelTypes,
+    AdaptorChannelTypes,
     "announcementThread" | "publicThread" | "privateThread"
   >;
-} & PartialChannelBase;
+} & AdaptorPartialChannelBase;
 
-export type PartialThreadChannel = {
+export type AdaptorPartialThreadChannel = {
   type: Extract<
-    ChannelTypes,
+    AdaptorChannelTypes,
     "announcementThread" | "publicThread" | "privateThread"
   >;
-} & PartialThreadChannelBase;
+} & AdaptorPartialThreadChannelBase;
 
-export interface PartialChannelBase {
+export interface AdaptorPartialChannelBase {
   /**
    * the id of this channel
    */
@@ -59,11 +61,12 @@ export interface PartialChannelBase {
   permissions: string | null;
 }
 
-export interface PartialThreadChannelBase extends PartialChannelBase {
+export interface AdaptorPartialThreadChannelBase
+  extends AdaptorPartialChannelBase {
   /**
    * thread-specific fields not needed by other channels
    */
-  threadMetadata: ThreadMetadata | null;
+  threadMetadata: AdaptorThreadMetadata | null;
 
   /**
    * for threads: id of the text channel this thread was created
@@ -74,7 +77,7 @@ export interface PartialThreadChannelBase extends PartialChannelBase {
 /**
  * @see https://discord.com/developers/docs/resources/channel#thread-metadata-object-thread-metadata-structure
  */
-export interface ThreadMetadata {
+export interface AdaptorThreadMetadata {
   /**
    * whether the thread is archived
    */

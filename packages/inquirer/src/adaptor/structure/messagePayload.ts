@@ -1,13 +1,13 @@
 import type { SetNullable } from "../../util/types";
-import type { MessageActionRowComponent } from "./component";
-import type { Embed } from "./embed";
+import type { AdaptorMessageActionRowComponent } from "./component";
+import type { AdaptorEmbed } from "./embed";
 
 type Snowflake = string;
 
 /**
- * {@link https://discord.com/developers/docs/resources/channel#create-message-jsonform-params}
+ * @see https://discord.com/developers/docs/resources/channel#create-message-jsonform-params
  */
-export interface MessagePayload {
+export interface AdaptorMessagePayload {
   /**
    * Message contents (up to 2000 characters)
    * メッセージの平文テキスト (最大 2000 文字)
@@ -18,7 +18,7 @@ export interface MessagePayload {
    * Embedded rich content (up to 6000 characters)
    * 埋め込みコンテンツ (最大 6000 文字)
    */
-  embeds?: Embed[];
+  embeds?: AdaptorEmbed[];
 
   /**
    * Allowed mentions for the message
@@ -26,7 +26,7 @@ export interface MessagePayload {
    *
    * correspond to parameter allowed_mentions
    */
-  allowedMentions?: AllowedMentions;
+  allowedMentions?: AdaptorAllowedMentions;
 
   /**
    * Include to make your message a reply
@@ -34,13 +34,13 @@ export interface MessagePayload {
    *
    * correspond to message_reference
    */
-  messageReference?: MessageReference;
+  messageReference?: AdaptorMessageReference;
 
   /**
    * Components to include with the message
    * メッセージに含めるコンポーネント
    */
-  components?: MessageActionRowComponent[];
+  components?: AdaptorMessageActionRowComponent[];
 
   /**
    * IDs of up to 3 stickers in the server to send in the message
@@ -61,17 +61,20 @@ export interface MessagePayload {
 }
 
 /**
- * {@link https://discord.com/developers/docs/resources/channel#edit-message-jsonform-params}
+ * @see https://discord.com/developers/docs/resources/channel#edit-message-jsonform-params
  */
-export type MessagePayloadPatch = Omit<
-  SetNullable<MessagePayload, Exclude<keyof MessagePayload, "suppressEmbeds">>,
+export type AdaptorMessagePayloadPatch = Omit<
+  SetNullable<
+    AdaptorMessagePayload,
+    Exclude<keyof AdaptorMessagePayload, "suppressEmbeds">
+  >,
   "messageReference" | "stickerIds"
 >;
 
 /**
- * {@link https://discord.com/developers/docs/resources/channel#allowed-mentions-object}
+ * @see https://discord.com/developers/docs/resources/channel#allowed-mentions-object
  */
-export type AllowedMentions = {
+export type AdaptorAllowedMentions = {
   /**
    * `@everyone` へのメンションを許可するかどうか
    * @default false
@@ -98,9 +101,9 @@ export type AllowedMentions = {
 };
 
 /**
- * {@link https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure}
+ * @see https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure
  */
-export type MessageReference = {
+export type AdaptorMessageReference = {
   /**
    * id of the originating
    * リプライ先のメッセージのSnowflakeId

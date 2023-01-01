@@ -1,22 +1,32 @@
 import type { SetNullable } from "../../util/types";
-import type { ModalActionRowComponent } from "./component";
-import type { MessagePayload } from "./messagePayload";
+import type { AdaptorModalActionRowComponent } from "./component";
+import type { AdaptorMessagePayload } from "./messagePayload";
 
 /**
- * {@link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object }
+ * @see https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object
  */
-export type InteractionResponse =
-  | InteractionResponseReply
-  | InteractionResponseDeferredReply
-  | InteractionResponseDeferredUpdate
-  | InteractionResponseModal;
+export type AdaptorInteractionResponse =
+  | AdaptorInteractionResponseReply
+  | AdaptorInteractionResponseDeferredReply
+  | AdaptorInteractionResponseDeferredUpdate
+  | AdaptorInteractionResponseModal;
+
+export const AdaptorInteractionResponseTypeMap = {
+  channelMessageWithSource: 4,
+  deferredChannelMessageWithSource: 5,
+  deferredUpdateMessage: 6,
+  modal: 9,
+} as const satisfies Record<AdaptorInteractionResponse["type"], number>;
 
 /**
  * Messageとして返信する
  */
-export interface InteractionResponseReply {
-  type: "channelMessageWithSource"; //CHANNEL_MESSAGE_WITH_SOURCE 4
-  data: MessagePayload & {
+export interface AdaptorInteractionResponseReply {
+  /**
+   * @see AdaptorInteractionResponseTypeMap
+   */
+  type: "channelMessageWithSource";
+  data: AdaptorMessagePayload & {
     ephemeral?: boolean;
   };
 }
@@ -25,8 +35,11 @@ export interface InteractionResponseReply {
  * 回答保留する
  * ユーザ側には返答待ち状態である旨が表示される
  */
-export interface InteractionResponseDeferredReply {
-  type: "deferredChannelMessageWithSource"; // 5
+export interface AdaptorInteractionResponseDeferredReply {
+  /**
+   * @see AdaptorInteractionResponseTypeMap
+   */
+  type: "deferredChannelMessageWithSource";
   data?: {
     suppressEmbeds?: boolean;
     ephemeral?: boolean;
@@ -38,19 +51,25 @@ export interface InteractionResponseDeferredReply {
  * ユーザ側には返答待ち状態である旨が表示されない
  * MessageComponentによるInteractionにのみ使用できる
  */
-export interface InteractionResponseDeferredUpdate {
-  type: "deferredUpdateMessage"; // 6
+export interface AdaptorInteractionResponseDeferredUpdate {
+  /**
+   * @see AdaptorInteractionResponseTypeMap
+   */
+  type: "deferredUpdateMessage";
 }
 
 /**
  * Modalを開く
  */
-export interface InteractionResponseModal {
+export interface AdaptorInteractionResponseModal {
+  /**
+   * @see AdaptorInteractionResponseTypeMap
+   */
   type: "modal";
-  data: InteractionResponseModalData;
+  data: AdaptorInteractionResponseModalData;
 }
 
-export interface InteractionResponseModalData {
+export interface AdaptorInteractionResponseModalData {
   /**
    * a developer-defined identifier for the component, max 100 characters
    */
@@ -65,35 +84,35 @@ export interface InteractionResponseModalData {
    * between 1 and 5 (inclusive) components that make up the modal
    */
   components:
-    | [ModalActionRowComponent]
-    | [ModalActionRowComponent, ModalActionRowComponent]
+    | [AdaptorModalActionRowComponent]
+    | [AdaptorModalActionRowComponent, AdaptorModalActionRowComponent]
     | [
-        ModalActionRowComponent,
-        ModalActionRowComponent,
-        ModalActionRowComponent
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent
       ]
     | [
-        ModalActionRowComponent,
-        ModalActionRowComponent,
-        ModalActionRowComponent,
-        ModalActionRowComponent
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent
       ]
     | [
-        ModalActionRowComponent,
-        ModalActionRowComponent,
-        ModalActionRowComponent,
-        ModalActionRowComponent,
-        ModalActionRowComponent
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent
       ];
 }
 
 /**
- * {@link https://discord.com/developers/docs/interactions/receiving-and-responding#edit-original-interaction-response}
+ * @see https://discord.com/developers/docs/interactions/receiving-and-responding#edit-original-interaction-response
  */
-export type InteractionResponsePatch = Omit<
+export type AdaptorInteractionResponsePatch = Omit<
   SetNullable<
-    MessagePayload,
-    Exclude<keyof MessagePayload, "suppressEmbeds" | "ephemeral">
+    AdaptorMessagePayload,
+    Exclude<keyof AdaptorMessagePayload, "suppressEmbeds" | "ephemeral">
   >,
   "messageReference" | "stickerIds"
 >;

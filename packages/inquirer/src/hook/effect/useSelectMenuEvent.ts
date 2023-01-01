@@ -2,13 +2,13 @@ import { messageFacade } from "../../adaptor";
 import { getHookContext } from "../../core/hookContext";
 import { useEffect } from "./useEffect";
 
-import type { InteractionBase } from "../../adaptor";
+import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
 export const useSelectMenuEvent = (
   customId: string,
   handle: (
-    interaction: InteractionBase,
+    interaction: AdaptorInteractionBase,
     values: string[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
@@ -19,7 +19,7 @@ export const useSelectMenuEvent = (
 
     const clear = adapter.subscribeInteraction((interaction) => {
       if (interaction.type !== "messageComponent") return;
-      if (interaction.data.componentType !== "selectMenu") return;
+      if (interaction.data.componentType !== "stringSelect") return;
       if (interaction.data.customId !== customId) return;
 
       const deferUpdate = async () => {

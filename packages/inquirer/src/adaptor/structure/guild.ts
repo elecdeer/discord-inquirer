@@ -2,7 +2,7 @@
  * Partial Member objects are missing user, deaf and mute fields
  * @see https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-structure
  */
-export interface PartialMember {
+export interface AdaptorPartialMember {
   /**
    * this users guild nickname
    */

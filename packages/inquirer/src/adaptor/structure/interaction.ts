@@ -1,17 +1,17 @@
-import type { PartialMember } from "./guild";
-import type { PartialChannel, PartialChannelBase, Snowflake } from "./index";
-import type { Role } from "./permissions";
-import type { User } from "./user";
+import type { AdaptorPartialMember } from "./guild";
+import type { AdaptorPartialChannel, Snowflake } from "./index";
+import type { AdaptorRole } from "./permissions";
+import type { AdaptorUser } from "./user";
 
 /**
- * {@link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-structure }
+ * @see https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-structure
  */
-export type Interaction =
-  | InteractionButton
-  | InteractionStringSelect
-  | InteractionModalSubmit;
+export type AdaptorInteraction =
+  | AdaptorInteractionButton
+  | AdaptorInteractionStringSelect
+  | AdaptorInteractionModalSubmit;
 
-export interface InteractionBase {
+export interface AdaptorInteractionBase {
   id: Snowflake;
   token: string;
   userId: Snowflake;
@@ -19,7 +19,7 @@ export interface InteractionBase {
   channelId?: Snowflake;
 }
 
-export interface InteractionButton extends InteractionBase {
+export interface AdaptorInteractionButton extends AdaptorInteractionBase {
   type: "messageComponent";
   data: {
     customId: string;
@@ -27,7 +27,7 @@ export interface InteractionButton extends InteractionBase {
   };
 }
 
-export interface InteractionStringSelect extends InteractionBase {
+export interface AdaptorInteractionStringSelect extends AdaptorInteractionBase {
   type: "messageComponent";
   data: {
     customId: string;
@@ -36,58 +36,60 @@ export interface InteractionStringSelect extends InteractionBase {
   };
 }
 
-export interface InteractionUserSelect extends InteractionBase {
+export interface AdaptorInteractionUserSelect extends AdaptorInteractionBase {
   type: "messageComponent";
   data: {
     customId: string;
     componentType: "userSelect";
     values: Snowflake[];
     resolved: {
-      users: Record<Snowflake, User>;
-      members: Record<Snowflake, PartialMember>;
+      users: Record<Snowflake, AdaptorUser>;
+      members: Record<Snowflake, AdaptorPartialMember>;
     };
   };
 }
 
-export interface InteractionRoleSelect extends InteractionBase {
+export interface AdaptorInteractionRoleSelect extends AdaptorInteractionBase {
   type: "messageComponent";
   data: {
     customId: string;
     componentType: "roleSelect";
     values: Snowflake[];
     resolved: {
-      roles: Record<Snowflake, Role>;
+      roles: Record<Snowflake, AdaptorRole>;
     };
   };
 }
 
-export interface InteractionMentionableSelect extends InteractionBase {
+export interface AdaptorInteractionMentionableSelect
+  extends AdaptorInteractionBase {
   type: "messageComponent";
   data: {
     customId: string;
     componentType: "mentionableSelect";
     values: Snowflake[];
     resolved: {
-      users: Record<Snowflake, User>;
-      members: Record<Snowflake, PartialMember>;
-      roles: Record<Snowflake, Role>;
+      users: Record<Snowflake, AdaptorUser>;
+      members: Record<Snowflake, AdaptorPartialMember>;
+      roles: Record<Snowflake, AdaptorRole>;
     };
   };
 }
 
-export interface InteractionChannelSelect extends InteractionBase {
+export interface AdaptorInteractionChannelSelect
+  extends AdaptorInteractionBase {
   type: "messageComponent";
   data: {
     customId: string;
     componentType: "channelSelect";
     values: Snowflake[];
     resolved: {
-      channels: Record<Snowflake, PartialChannel>;
+      channels: Record<Snowflake, AdaptorPartialChannel>;
     };
   };
 }
 
-export interface InteractionModalSubmit extends InteractionBase {
+export interface AdaptorInteractionModalSubmit extends AdaptorInteractionBase {
   type: "modalSubmit";
   data: {
     customId: string;

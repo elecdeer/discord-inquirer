@@ -3,20 +3,23 @@ import {
   transformMessagePayloadPatch,
 } from "./transformMessagePayload";
 
-import type { FollowupPayload, FollowupPayloadPatch } from "../structure";
+import type {
+  AdaptorFollowupPayload,
+  AdaptorFollowupPayloadPatch,
+} from "../structure";
 import type {
   RESTPatchAPIInteractionFollowupJSONBody,
   RESTPostAPIInteractionFollowupJSONBody,
 } from "discord-api-types/v10";
 
 export const transformFollowupPayload = (
-  payload: FollowupPayload
+  payload: AdaptorFollowupPayload
 ): RESTPostAPIInteractionFollowupJSONBody => {
   return transformMessagePayload(payload);
 };
 
 export const transformFollowupPayloadPatch = (
-  payload: FollowupPayloadPatch
+  payload: AdaptorFollowupPayloadPatch
 ): RESTPatchAPIInteractionFollowupJSONBody => {
   return transformMessagePayloadPatch(payload);
 };

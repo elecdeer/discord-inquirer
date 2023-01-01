@@ -4,20 +4,20 @@ import { transformActionRowComponent } from "./transformComponent";
 import { transformEmbed } from "./transformEmbed";
 
 import type {
-  AllowedMentions,
-  MessagePayload,
-  MessagePayloadPatch,
-  MessageReference,
+  AdaptorAllowedMentions,
+  AdaptorMessagePayload,
+  AdaptorMessagePayloadPatch,
+  AdaptorMessageReference,
 } from "../structure";
 import type {
   APIAllowedMentions,
   APIMessageReferenceSend,
-  RESTPostAPIChannelMessageJSONBody,
   RESTPatchAPIChannelMessageJSONBody,
+  RESTPostAPIChannelMessageJSONBody,
 } from "discord-api-types/v10";
 
 export const transformMessagePayload = (
-  payload: MessagePayload
+  payload: AdaptorMessagePayload
 ): RESTPostAPIChannelMessageJSONBody => {
   return {
     ...payload,
@@ -36,7 +36,7 @@ export const transformMessagePayload = (
 };
 
 export const transformMessagePayloadPatch = (
-  payload: MessagePayloadPatch
+  payload: AdaptorMessagePayloadPatch
 ): RESTPatchAPIChannelMessageJSONBody => {
   return {
     ...payload,
@@ -51,7 +51,7 @@ export const transformMessagePayloadPatch = (
 };
 
 export const transformAllowedMentions = (
-  allowedMentions: AllowedMentions
+  allowedMentions: AdaptorAllowedMentions
 ): APIAllowedMentions => {
   const parse: AllowedMentionsTypes[] = [];
 
@@ -78,7 +78,7 @@ export const transformAllowedMentions = (
 };
 
 export const transformMessageReference = (
-  ref: MessageReference
+  ref: AdaptorMessageReference
 ): APIMessageReferenceSend => {
   return {
     ...ref,
