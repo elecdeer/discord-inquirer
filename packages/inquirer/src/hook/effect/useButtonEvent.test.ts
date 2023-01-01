@@ -71,7 +71,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
         token: "interactionToken",
         userId: "userId",
         data: {
-          componentType: "selectMenu",
+          componentType: "stringSelect",
           customId: "customId",
           values: [],
         },
