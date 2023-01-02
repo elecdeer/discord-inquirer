@@ -26,7 +26,8 @@
     "@elecdeer/event-flow": "*",
     "discord-api-types": "^0.37.24",
     "node-object-hash": "^2.3.10",
-    "type-fest": "^3.4.0"
+    "type-fest": "^3.4.0",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@monorepo/eslint-config": "*",
