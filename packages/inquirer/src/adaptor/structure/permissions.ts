@@ -78,5 +78,5 @@ export interface AdaptorRoleTags {
   /**
    * Whether this is the guild's premium subscriber role
    */
-  premiumSubscriber: null;
+  premiumSubscriber: true | null;
 }

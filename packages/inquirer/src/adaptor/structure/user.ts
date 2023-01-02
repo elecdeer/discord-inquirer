@@ -60,18 +60,27 @@ export interface AdaptorUser {
 
   /**
    * the user's chosen language option
+   *
+   * ドキュメントに定義はされているがOAuth2でのみ取得可能であり、botでは使用できない
+   * @see https://github.com/discordjs/discord.js/issues/3988
    */
-  locale: string | null;
+  locale?: null;
 
   /**
    * whether the email on this account has been verified
+   *
+   * ドキュメントに定義はされているがOAuth2認証系のエンドポイントでのみ取得可能であり、botでは使用できない
+   * @see https://github.com/discordjs/discord.js/issues/3988
    */
-  verified: boolean | null;
+  verified?: null;
 
   /**
    * the user's email
+   *
+   * ドキュメントに定義はされているがOAuth2認証系のエンドポイントでのみ取得可能であり、botでは使用できない
+   * @see https://github.com/discordjs/discord.js/issues/3988
    */
-  email: string | null;
+  email?: null;
 
   /**
    * the flags on a user's account
@@ -85,15 +94,17 @@ export interface AdaptorUser {
    * the type of Nitro subscription on a user's account
    * @see https://discord.com/developers/docs/resources/user#user-object-premium-types
    *
-   * @default 0 (if not present)
+   * ドキュメントに定義はされているがOAuth2認証系のエンドポイントでのみ取得可能であり、botでは使用できない
+   * @see https://github.com/discordjs/discord.js/issues/3988
    */
-  premiumType: number;
+  premiumType?: 0;
 
   /**
    * the public flags on a user's account
    * @see https://discord.com/developers/docs/resources/user#user-object-user-flags
    *
-   * @default 0 (if not present)
+   * ドキュメントに定義はされているがOAuth2認証系のエンドポイントでのみ取得可能であり、botでは使用できない
+   * @see https://github.com/discordjs/discord.js/issues/3988
    */
-  publicFlags: number;
+  publicFlags?: 0;
 }

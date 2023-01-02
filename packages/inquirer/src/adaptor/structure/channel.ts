@@ -1,30 +1,33 @@
 import type { Snowflake } from "./index";
 
-export const AdaptorChannelTypesMap = {
-  guildText: 0,
-  dm: 1,
-  guildVoice: 2,
-  groupDm: 3,
-  guildCategory: 4,
-  guildAnnouncement: 5,
-  announcementThread: 10,
-  publicThread: 11,
-  privateThread: 12,
-  guildStageVoice: 13,
-  guildDirectory: 14,
-  guildForum: 15,
-} as const satisfies Record<string, number>;
+export const adaptorChannelTypesMap = {
+  0: "guildText",
+  1: "dm",
+  2: "guildVoice",
+  3: "groupDm",
+  4: "guildCategory",
+  5: "guildAnnouncement",
+  10: "announcementThread",
+  11: "publicThread",
+  12: "privateThread",
+  13: "guildStageVoice",
+  14: "guildDirectory",
+  15: "guildForum",
+} as const satisfies Record<number, string>;
 
 /**
- * @see AdaptorChannelTypesMap
+ * @see adaptorChannelTypesMap
  * @see https://discord.com/developers/docs/resources/channel#channel-object-channel-types
  */
-export type AdaptorChannelTypes = keyof typeof AdaptorChannelTypesMap;
+export type AdaptorChannelTypes =
+  typeof adaptorChannelTypesMap[keyof typeof adaptorChannelTypesMap];
 
 /**
  * Partial Channel objects only have id, name, type and permissions fields.
  *
  * Threads will also have thread_metadata and parent_id fields.
+ *
+ * @see https://discord.com/developers/docs/resources/channel#channel-object-channel-structure
  */
 export type AdaptorPartialChannel =
   | AdaptorPartialNonThreadChannel
@@ -54,11 +57,6 @@ export interface AdaptorPartialChannelBase {
    * the name of the channel (1-100 characters)
    */
   name: string | null;
-
-  /**
-   * computed permissions for the invoking user in the channel, including overwrites, only included when part of the resolved data received on a slash command interaction
-   */
-  permissions: string | null;
 }
 
 export interface AdaptorPartialThreadChannelBase
@@ -66,12 +64,12 @@ export interface AdaptorPartialThreadChannelBase
   /**
    * thread-specific fields not needed by other channels
    */
-  threadMetadata: AdaptorThreadMetadata | null;
+  threadMetadata: AdaptorThreadMetadata;
 
   /**
    * for threads: id of the text channel this thread was created
    */
-  parentId: Snowflake | null;
+  parentId: Snowflake;
 }
 
 /**

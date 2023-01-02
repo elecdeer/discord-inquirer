@@ -4,8 +4,9 @@ import {
   Row,
   useSelectComponent,
   useConfirmButtonComponent,
-  useEffect,
   ChannelSelect,
+  UserSelect,
+  RoleSelect,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -86,16 +87,16 @@ client.on("ready", async (readyClient) => {
         }
       );
 
-      useEffect(() => {
-        const clear = adaptor.subscribeInteraction((interaction) => {
-          if (interaction.type !== "messageComponent") return;
-          console.log("interaction", interaction);
-        });
-
-        return () => {
-          clear();
-        };
-      });
+      // useEffect(() => {
+      //   const clear = adaptor.subscribeInteraction((interaction) => {
+      //     if (interaction.type !== "messageComponent") return;
+      //     console.log("interaction", interaction);
+      //   });
+      //
+      //   return () => {
+      //     clear();
+      //   };
+      // });
 
       return {
         content: confirmed
@@ -114,6 +115,16 @@ client.on("ready", async (readyClient) => {
           Row(
             ChannelSelect({
               customId: "channel-select",
+            })()
+          ),
+          Row(
+            UserSelect({
+              customId: "user-select",
+            })()
+          ),
+          Row(
+            RoleSelect({
+              customId: "role-select",
             })()
           ),
           Row(ConfirmButton({ style: "success", label: "confirm" })()),

@@ -1,3 +1,5 @@
+import type { Snowflake } from "./index";
+
 /**
  * Partial Member objects are missing user, deaf and mute fields
  * @see https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-structure
@@ -18,7 +20,7 @@ export interface AdaptorPartialMember {
    * when the user joined the guild
    * @see https://discord.com/developers/docs/reference#snowflakes
    */
-  roles: string[];
+  roles: Snowflake[];
 
   /**
    * when the user started boosting the guild

@@ -1,6 +1,19 @@
 import type { AdaptorChannelTypes } from "./channel";
 import type { AdaptorPartialEmoji } from "./emoji";
 
+export const adaptorComponentTypesMap = {
+  row: 1,
+  button: 2,
+  stringSelect: 3,
+  textInput: 4,
+  userSelect: 5,
+  roleSelect: 6,
+  mentionableSelect: 7,
+  channelSelect: 8,
+} as const;
+
+export type AdaptorComponentTypes = keyof typeof adaptorComponentTypesMap;
+
 /**
  * @see https://discord.com/developers/docs/interactions/message-components#component-object
  */

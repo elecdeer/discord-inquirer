@@ -9,6 +9,10 @@ import type { AdaptorUser } from "./user";
 export type AdaptorInteraction =
   | AdaptorInteractionButton
   | AdaptorInteractionStringSelect
+  | AdaptorInteractionUserSelect
+  | AdaptorInteractionRoleSelect
+  | AdaptorInteractionMentionableSelect
+  | AdaptorInteractionChannelSelect
   | AdaptorInteractionModalSubmit;
 
 export interface AdaptorInteractionBase {

@@ -6,18 +6,18 @@ import {
 } from "discord-inquirer";
 
 import type {
-  MessagePayload,
-  Snowflake,
-  MessagePayloadPatch,
+  AdaptorMessagePayload,
+  AdaptorMessagePayloadPatch,
   DiscordAdaptor,
+  Snowflake,
 } from "discord-inquirer";
 import type {
+  ChannelManager,
+  Client,
   MessageCreateOptions,
   MessageEditOptions,
   TextBasedChannel,
 } from "discord.js";
-import type { Client } from "discord.js";
-import type { ChannelManager } from "discord.js";
 
 export const sendMessage =
   (client: Client): DiscordAdaptor["sendMessage"] =>
@@ -59,7 +59,7 @@ const fetchTextChannel = (
 };
 
 export const createMessageOption = (
-  payload: MessagePayload & {
+  payload: AdaptorMessagePayload & {
     files?: MessageCreateOptions["files"];
   }
 ): MessageCreateOptions => {
@@ -80,7 +80,7 @@ export const createMessageOption = (
 };
 
 export const createMessageEditOption = (
-  payload: MessagePayloadPatch & {
+  payload: AdaptorMessagePayloadPatch & {
     files?: MessageCreateOptions["files"];
   }
 ): MessageEditOptions => {
