@@ -1,9 +1,10 @@
 import {
   ButtonStyle,
-  ChannelType,
   ComponentType,
   TextInputStyle,
 } from "discord-api-types/v10";
+
+import { channelTypesMap } from "../structure";
 
 import type {
   AdaptorButtonComponent,
@@ -38,6 +39,7 @@ import type {
   APISelectMenuOption,
   APITextInputComponent,
   APIUserSelectComponent,
+  ChannelType,
 } from "discord-api-types/v10";
 
 export const transformAdaptorActionRowComponent = (
@@ -176,25 +178,9 @@ export const transformAdaptorChannelSelectComponent = (
   ...transformAdaptorSelectComponentBase(component),
 });
 
-//TODO structureのadaptorChannelTypesMapと重複しているので統一する
-const channelTypeMap = {
-  guildText: ChannelType.GuildText,
-  dm: ChannelType.DM,
-  guildVoice: ChannelType.GuildVoice,
-  groupDm: ChannelType.GroupDM,
-  guildCategory: ChannelType.GuildCategory,
-  guildAnnouncement: ChannelType.GuildAnnouncement,
-  announcementThread: ChannelType.AnnouncementThread,
-  publicThread: ChannelType.PublicThread,
-  privateThread: ChannelType.PrivateThread,
-  guildStageVoice: ChannelType.GuildStageVoice,
-  guildDirectory: ChannelType.GuildDirectory,
-  guildForum: ChannelType.GuildForum,
-} as const satisfies Record<AdaptorChannelTypes, ChannelType>;
-
 export const transformAdaptorChannelType = (
   channelType: AdaptorChannelTypes
-): ChannelType => channelTypeMap[channelType];
+): ChannelType => channelTypesMap[channelType];
 
 export const transformAdaptorTextInputComponent = (
   component: AdaptorTextInputComponent

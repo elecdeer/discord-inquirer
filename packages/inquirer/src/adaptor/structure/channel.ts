@@ -1,3 +1,5 @@
+import { reverseRecord } from "../../util/reverseRecord";
+
 import type { Snowflake } from "./index";
 
 export const adaptorChannelTypesMap = {
@@ -14,6 +16,8 @@ export const adaptorChannelTypesMap = {
   14: "guildDirectory",
   15: "guildForum",
 } as const satisfies Record<number, string>;
+
+export const channelTypesMap = reverseRecord(adaptorChannelTypesMap);
 
 /**
  * @see adaptorChannelTypesMap
