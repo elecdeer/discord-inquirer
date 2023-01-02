@@ -15,20 +15,20 @@ import type {
   APIEmbedThumbnail,
 } from "discord-api-types/v10";
 
-export const transformEmbed = (embed: AdaptorEmbed): APIEmbed => ({
+export const transformAdaptorEmbed = (embed: AdaptorEmbed): APIEmbed => ({
   title: embed.title,
   description: embed.description,
   url: embed.url,
-  timestamp: transformTimeStamp?.(embed.timestamp),
-  color: transformColor(embed.color),
-  footer: embed.footer && transformEmbedFooter(embed.footer),
-  image: embed.image && transformEmbedImage(embed.image),
-  thumbnail: embed.thumbnail && transformEmbedThumbnail(embed.thumbnail),
-  author: embed.author && transformEmbedAuthor(embed.author),
-  fields: embed.fields && embed.fields.map(transformEmbedField),
+  timestamp: transformAdaptorTimeStamp?.(embed.timestamp),
+  color: transformAdaptorColor(embed.color),
+  footer: embed.footer && transformAdaptorEmbedFooter(embed.footer),
+  image: embed.image && transformAdaptorEmbedImage(embed.image),
+  thumbnail: embed.thumbnail && transformAdaptorEmbedThumbnail(embed.thumbnail),
+  author: embed.author && transformAdaptorEmbedAuthor(embed.author),
+  fields: embed.fields && embed.fields.map(transformAdaptorEmbedField),
 });
 
-export const transformTimeStamp = (
+export const transformAdaptorTimeStamp = (
   timeStamp: number | Date | undefined
 ): string | undefined => {
   if (timeStamp === undefined) return undefined;
@@ -38,7 +38,7 @@ export const transformTimeStamp = (
   return new Date(timeStamp).toISOString();
 };
 
-export const transformColor = (
+export const transformAdaptorColor = (
   color: number | string | undefined
 ): number | undefined => {
   if (color === undefined) return undefined;
@@ -46,26 +46,26 @@ export const transformColor = (
   return parseInt(color.replace("#", ""), 16);
 };
 
-export const transformEmbedFooter = (
+export const transformAdaptorEmbedFooter = (
   footer: AdaptorEmbedFooter
 ): APIEmbedFooter => ({
   text: footer.text,
   icon_url: footer.iconUrl,
 });
 
-export const transformEmbedImage = (
+export const transformAdaptorEmbedImage = (
   image: AdaptorEmbedImage
 ): APIEmbedImage => ({
   url: image.url,
 });
 
-export const transformEmbedThumbnail = (
+export const transformAdaptorEmbedThumbnail = (
   thumbnail: AdaptorEmbedThumbnail
 ): APIEmbedThumbnail => ({
   url: thumbnail.url,
 });
 
-export const transformEmbedAuthor = (
+export const transformAdaptorEmbedAuthor = (
   author: AdaptorEmbedAuthor
 ): APIEmbedAuthor => ({
   name: author.name,
@@ -73,7 +73,7 @@ export const transformEmbedAuthor = (
   icon_url: author.iconUrl,
 });
 
-export const transformEmbedField = (
+export const transformAdaptorEmbedField = (
   field: AdaptorEmbedField
 ): APIEmbedField => ({
   name: field.name,

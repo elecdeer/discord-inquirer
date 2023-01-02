@@ -1,7 +1,7 @@
 import { AllowedMentionsTypes } from "discord-api-types/v10";
 
-import { transformActionRowComponent } from "./transformComponent";
-import { transformEmbed } from "./transformEmbed";
+import { transformAdaptorActionRowComponent } from "./transformAdaptorComponent";
+import { transformAdaptorEmbed } from "./transformAdaptorEmbed";
 
 import type {
   AdaptorAllowedMentions,
@@ -16,41 +16,41 @@ import type {
   RESTPostAPIChannelMessageJSONBody,
 } from "discord-api-types/v10";
 
-export const transformMessagePayload = (
+export const transformAdaptorMessagePayload = (
   payload: AdaptorMessagePayload
 ): RESTPostAPIChannelMessageJSONBody => {
   return {
     ...payload,
     content: payload.content,
-    embeds: payload.embeds?.map(transformEmbed),
+    embeds: payload.embeds?.map(transformAdaptorEmbed),
     allowed_mentions:
       payload.allowedMentions &&
-      transformAllowedMentions(payload.allowedMentions),
+      transformAdaptorAllowedMentions(payload.allowedMentions),
     message_reference:
       payload.messageReference &&
-      transformMessageReference(payload.messageReference),
-    components: payload.components?.map(transformActionRowComponent),
+      transformAdaptorMessageReference(payload.messageReference),
+    components: payload.components?.map(transformAdaptorActionRowComponent),
     sticker_ids: payload.stickerIds,
-    flags: transformFlags(payload),
+    flags: transformAdaptorFlags(payload),
   };
 };
 
-export const transformMessagePayloadPatch = (
+export const transformAdaptorMessagePayloadPatch = (
   payload: AdaptorMessagePayloadPatch
 ): RESTPatchAPIChannelMessageJSONBody => {
   return {
     ...payload,
     content: payload.content,
-    embeds: payload.embeds?.map(transformEmbed),
+    embeds: payload.embeds?.map(transformAdaptorEmbed),
     allowed_mentions:
       payload.allowedMentions &&
-      transformAllowedMentions(payload.allowedMentions),
-    components: payload.components?.map(transformActionRowComponent),
-    flags: transformFlags(payload),
+      transformAdaptorAllowedMentions(payload.allowedMentions),
+    components: payload.components?.map(transformAdaptorActionRowComponent),
+    flags: transformAdaptorFlags(payload),
   };
 };
 
-export const transformAllowedMentions = (
+export const transformAdaptorAllowedMentions = (
   allowedMentions: AdaptorAllowedMentions
 ): APIAllowedMentions => {
   const parse: AllowedMentionsTypes[] = [];
@@ -77,7 +77,7 @@ export const transformAllowedMentions = (
   };
 };
 
-export const transformMessageReference = (
+export const transformAdaptorMessageReference = (
   ref: AdaptorMessageReference
 ): APIMessageReferenceSend => {
   return {
@@ -87,7 +87,7 @@ export const transformMessageReference = (
   };
 };
 
-export const transformFlags = (params: {
+export const transformAdaptorFlags = (params: {
   suppressEmbeds?: boolean;
   ephemeral?: boolean;
 }) => {

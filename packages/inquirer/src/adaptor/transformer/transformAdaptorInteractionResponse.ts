@@ -1,10 +1,10 @@
 import { InteractionResponseType } from "discord-api-types/v10";
 
-import { transformModalActionRowComponent } from "./transformComponent";
+import { transformAdaptorModalActionRowComponent } from "./transformAdaptorComponent";
 import {
-  transformMessagePayload,
-  transformMessagePayloadPatch,
-} from "./transformMessagePayload";
+  transformAdaptorMessagePayload,
+  transformAdaptorMessagePayloadPatch,
+} from "./transformAdaptorMessagePayload";
 
 import type {
   AdaptorInteractionResponse,
@@ -23,42 +23,42 @@ import type {
   RESTPatchAPIInteractionOriginalResponseJSONBody,
 } from "discord-api-types/v10";
 
-export const transformInteractionResponse = (
+export const transformAdaptorInteractionResponse = (
   res: AdaptorInteractionResponse
 ): APIInteractionResponse => {
   switch (res.type) {
     case "channelMessageWithSource":
-      return transformInteractionResponseReply(res);
+      return transformAdaptorInteractionResponseReply(res);
     case "deferredChannelMessageWithSource":
-      return transformInteractionResponseDeferredReply(res);
+      return transformAdaptorInteractionResponseDeferredReply(res);
     case "deferredUpdateMessage":
-      return transformInteractionResponseDeferredUpdate(res);
+      return transformAdaptorInteractionResponseDeferredUpdate(res);
     case "modal":
-      return transformInteractionResponseModal(res);
+      return transformAdaptorInteractionResponseModal(res);
   }
 };
 
-export const transformInteractionResponseReply = (
+export const transformAdaptorInteractionResponseReply = (
   res: AdaptorInteractionResponseReply
 ): APIInteractionResponseChannelMessageWithSource => ({
   type: InteractionResponseType.ChannelMessageWithSource,
-  data: transformMessagePayload(res.data),
+  data: transformAdaptorMessagePayload(res.data),
 });
 
-export const transformInteractionResponseDeferredReply = (
+export const transformAdaptorInteractionResponseDeferredReply = (
   res: AdaptorInteractionResponseDeferredReply
 ): APIInteractionResponseDeferredChannelMessageWithSource => ({
   type: InteractionResponseType.DeferredChannelMessageWithSource,
-  data: res.data && transformMessagePayload(res.data),
+  data: res.data && transformAdaptorMessagePayload(res.data),
 });
 
-export const transformInteractionResponseDeferredUpdate = (
+export const transformAdaptorInteractionResponseDeferredUpdate = (
   _: AdaptorInteractionResponseDeferredUpdate
 ): APIInteractionResponseDeferredMessageUpdate => ({
   type: InteractionResponseType.DeferredMessageUpdate,
 });
 
-export const transformInteractionResponseModal = (
+export const transformAdaptorInteractionResponseModal = (
   res: AdaptorInteractionResponseModal
 ): APIModalInteractionResponse => {
   return {
@@ -66,13 +66,15 @@ export const transformInteractionResponseModal = (
     data: {
       custom_id: res.data.customId,
       title: res.data.title,
-      components: res.data.components.map(transformModalActionRowComponent),
+      components: res.data.components.map(
+        transformAdaptorModalActionRowComponent
+      ),
     },
   };
 };
 
-export const transformInteractionResponsePatch = (
+export const transformAdaptorInteractionResponsePatch = (
   res: AdaptorInteractionResponsePatch
 ): RESTPatchAPIInteractionOriginalResponseJSONBody => {
-  return transformMessagePayloadPatch(res);
+  return transformAdaptorMessagePayloadPatch(res);
 };
