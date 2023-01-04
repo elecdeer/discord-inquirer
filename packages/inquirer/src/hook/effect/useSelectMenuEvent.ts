@@ -28,11 +28,7 @@ export const useSelectMenuEvent = (
 
       handle(
         {
-          id: interaction.id,
-          token: interaction.token,
-          userId: interaction.userId,
-          guildId: interaction.guildId,
-          channelId: interaction.channelId,
+          ...interaction,
         },
         interaction.data.values,
         deferUpdate
