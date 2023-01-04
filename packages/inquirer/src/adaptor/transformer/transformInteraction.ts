@@ -1,5 +1,4 @@
-import { InteractionType } from "discord-api-types/payloads/v10/_interactions/responses";
-import { ComponentType } from "discord-api-types/v10";
+import { ComponentType, InteractionType } from "discord-api-types/v10";
 import assert from "node:assert";
 
 import { nullishThrough, transformRecordValue } from "./shared";
