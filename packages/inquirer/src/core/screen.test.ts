@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import { createMessagePayloadPatch } from "./screen";
 
-import type { MessageMutualPayload } from "../adaptor/messageFacade";
+import type { MessageMutualPayload } from "../adaptor";
 
 describe("packages/inquirer/src/core/screen", () => {
   describe("createMessagePayloadPatch()", () => {

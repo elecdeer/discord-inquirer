@@ -3,6 +3,8 @@ import { vi } from "vitest";
 import type { DiscordAdaptor } from "../adaptor";
 import type { AdaptorInteraction } from "../adaptor";
 
+//TODO ダミーのInteractionデータを作れるようにする
+
 export const createDiscordAdaptorMock = (): DiscordAdaptor & {
   emitInteraction: ((interaction: AdaptorInteraction) => void) | undefined;
 } => {

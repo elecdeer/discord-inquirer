@@ -4,8 +4,41 @@ import { createHookContext } from "../../core/hookContext";
 import { createDiscordAdaptorMock } from "../../mock";
 import { useSelectMenuEvent } from "./useSelectMenuEvent";
 
+import type { AdaptorStringSelectInteraction } from "../../adaptor";
+
 describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
   describe("useSelectMenuEvent()", () => {
+    const interactionMock = {
+      type: "messageComponent",
+      id: "interactionId",
+      token: "interactionToken",
+      version: 1,
+      user: {
+        id: "userId",
+        username: "username",
+        discriminator: "discriminator",
+        avatar: "avatar",
+        bot: false,
+        system: false,
+        mfaEnabled: false,
+        flags: 0,
+        banner: null,
+        accentColor: null,
+      },
+      member: null,
+      guildId: null,
+      channelId: "channelId",
+      locale: "locale",
+      guildLocale: null,
+      applicationId: "applicationId",
+      appPermissions: null,
+      data: {
+        componentType: "stringSelect",
+        customId: "customId",
+        values: ["value1", "value2"],
+      },
+    } satisfies AdaptorStringSelectInteraction;
+
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
       const controller = createHookContext(adaptorMock, vi.fn());
@@ -19,22 +52,12 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
       controller.endRender();
 
       adaptorMock.emitInteraction!({
-        type: "messageComponent",
-        id: "interactionId",
-        token: "interactionToken",
-        userId: "userId",
-        data: {
-          componentType: "selectMenu",
-          customId: "customId",
-          values: ["value1", "value2"],
-        },
-      });
+        ...interactionMock,
+      } satisfies AdaptorStringSelectInteraction);
 
       expect(handle).toBeCalledWith(
         {
-          id: "interactionId",
-          token: "interactionToken",
-          userId: "userId",
+          ...interactionMock,
         },
         ["value1", "value2"],
         expect.anything()
@@ -57,22 +80,16 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
       controller.endRender();
 
       adaptorMock.emitInteraction!({
-        type: "messageComponent",
-        id: "interactionId",
-        token: "interactionToken",
-        userId: "userId",
+        ...interactionMock,
         data: {
-          componentType: "selectMenu",
+          componentType: "stringSelect",
           customId: "customIdUnMatch",
           values: [],
         },
       });
 
       adaptorMock.emitInteraction!({
-        type: "messageComponent",
-        id: "interactionId",
-        token: "interactionToken",
-        userId: "userId",
+        ...interactionMock,
         data: {
           componentType: "button",
           customId: "customId",

@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 export const transformRecordValue = <K extends PropertyKey, T, U>(
   transform: (value: T) => U
 ) => {
@@ -18,8 +16,6 @@ export const nullishThrough = <T, U>(func: (value: T) => U) => {
     return func(value);
   };
 };
-
-export const SnowflakeSchema = z.string().regex(/\d+/);
 
 export const transformNullishDateString = (
   dateStr: string | null | undefined
