@@ -11,3 +11,4 @@ export * from "./transformUser";
 export * from "./shared";
 
 //TODO 各種transformerを直接importするのではなく、discordenoのようにまとめてオブジェクトから取得するようにする
+//TODO transformerの結果を全てReadonlyにする
