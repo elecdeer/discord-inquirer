@@ -1,12 +1,12 @@
 import { describe, expect, test } from "vitest";
 
-import { transformPermissionFlags } from "./transformPermission";
+import { transformers } from "./index";
 
 describe("packages/inquirer/src/adaptor/transformer/transformPermission", () => {
   describe("transformPermissionFlags()", () => {
     test("全てのフラグが立っている", () => {
       const flag = String((1n << 41n) - 1n);
-      const result = transformPermissionFlags(flag);
+      const result = transformers.transformPermissionFlags(flag);
       expect(result).toEqual({
         createInstantInvite: true,
         kickMembers: true,
@@ -54,7 +54,7 @@ describe("packages/inquirer/src/adaptor/transformer/transformPermission", () => 
 
     test("全てのフラグが立っていない", () => {
       const flag = String(0n);
-      const result = transformPermissionFlags(flag);
+      const result = transformers.transformPermissionFlags(flag);
       expect(result).toEqual({
         createInstantInvite: false,
         kickMembers: false,
@@ -103,7 +103,7 @@ describe("packages/inquirer/src/adaptor/transformer/transformPermission", () => 
     test("特定のフラグ1つだけが立っている", () => {
       for (let i = 0; i < 40; i++) {
         const flag = String(1n << BigInt(i));
-        const result = transformPermissionFlags(flag);
+        const result = transformers.transformPermissionFlags(flag);
         const setFlagKeys = Object.entries(result)
           .filter(([_, bool]) => bool)
           .map(([key]) => key);

@@ -1,7 +1,7 @@
 import type { AdaptorUser } from "../structure";
 import type { APIUser } from "discord-api-types/v10";
 
-export const transformUser = (user: APIUser): AdaptorUser => {
+const transformUser = (user: APIUser): AdaptorUser => {
   return {
     id: user.id,
     username: user.username,
@@ -14,4 +14,8 @@ export const transformUser = (user: APIUser): AdaptorUser => {
     accentColor: user.accent_color ?? null,
     flags: user.flags ?? 0,
   };
+};
+
+export const transformersUser = {
+  transformUser,
 };

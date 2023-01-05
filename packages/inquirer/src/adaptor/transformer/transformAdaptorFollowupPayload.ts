@@ -1,7 +1,4 @@
-import {
-  transformAdaptorMessagePayload,
-  transformAdaptorMessagePayloadPatch,
-} from "./transformAdaptorMessagePayload";
+import { transformers } from "./index";
 
 import type {
   AdaptorFollowupPayload,
@@ -12,14 +9,19 @@ import type {
   RESTPostAPIInteractionFollowupJSONBody,
 } from "discord-api-types/v10";
 
-export const transformAdaptorFollowupPayload = (
+const transformAdaptorFollowupPayload = (
   payload: AdaptorFollowupPayload
 ): RESTPostAPIInteractionFollowupJSONBody => {
-  return transformAdaptorMessagePayload(payload);
+  return transformers.transformAdaptorMessagePayload(payload);
 };
 
-export const transformAdaptorFollowupPayloadPatch = (
+const transformAdaptorFollowupPayloadPatch = (
   payload: AdaptorFollowupPayloadPatch
 ): RESTPatchAPIInteractionFollowupJSONBody => {
-  return transformAdaptorMessagePayloadPatch(payload);
+  return transformers.transformAdaptorMessagePayloadPatch(payload);
+};
+
+export const transformersAdaptorFollowupPayload = {
+  transformAdaptorFollowupPayload,
+  transformAdaptorFollowupPayloadPatch,
 };

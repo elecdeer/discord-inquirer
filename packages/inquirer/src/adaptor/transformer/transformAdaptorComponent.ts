@@ -4,7 +4,8 @@ import {
   TextInputStyle,
 } from "discord-api-types/v10";
 
-import { channelTypesMap } from "../structure";
+import { buttonStyleMap, channelTypesMap } from "../structure";
+import { transformers } from "./index";
 
 import type {
   AdaptorButtonComponent,
@@ -14,7 +15,6 @@ import type {
   AdaptorMessageActionRowComponent,
   AdaptorMessageComponent,
   AdaptorModalActionRowComponent,
-  AdaptorNonLinkButtonComponent,
   AdaptorPartialEmoji,
   AdaptorRoleSelectComponent,
   AdaptorSelectComponentBase,
@@ -27,8 +27,6 @@ import type {
   APIBaseSelectMenuComponent,
   APIModalActionRowComponent,
   APIStringSelectComponent,
-} from "discord-api-types/payloads/v10/channel";
-import type {
   APIActionRowComponent,
   APIButtonComponent,
   APIChannelSelectComponent,
@@ -42,38 +40,40 @@ import type {
   ChannelType,
 } from "discord-api-types/v10";
 
-export const transformAdaptorActionRowComponent = (
+const transformAdaptorActionRowComponent = (
   component: AdaptorMessageActionRowComponent
 ): APIActionRowComponent<APIMessageActionRowComponent> => ({
   type: ComponentType.ActionRow,
-  components: component.components.map(transformAdaptorComponent),
+  components: component.components.map(transformers.transformAdaptorComponent),
 });
 
-export const transformAdaptorComponent = (
+const transformAdaptorComponent = (
   component: AdaptorMessageComponent
 ): APIMessageActionRowComponent => {
   switch (component.type) {
     case "button":
-      return transformAdaptorButtonComponent(component);
+      return transformers.transformAdaptorButtonComponent(component);
     case "stringSelect":
-      return transformAdaptorStringSelectComponent(component);
+      return transformers.transformAdaptorStringSelectComponent(component);
     case "userSelect":
-      return transformAdaptorUserSelectComponent(component);
+      return transformers.transformAdaptorUserSelectComponent(component);
     case "roleSelect":
-      return transformAdaptorRoleSelectComponent(component);
+      return transformers.transformAdaptorRoleSelectComponent(component);
     case "mentionableSelect":
-      return transformAdaptorMentionableSelectComponent(component);
+      return transformers.transformAdaptorMentionableSelectComponent(component);
     case "channelSelect":
-      return transformAdaptorChannelSelectComponent(component);
+      return transformers.transformAdaptorChannelSelectComponent(component);
   }
 };
 
-export const transformAdaptorModalActionRowComponent = (
+const transformAdaptorModalActionRowComponent = (
   component: AdaptorModalActionRowComponent
 ): APIActionRowComponent<APIModalActionRowComponent> => {
   return {
     type: ComponentType.ActionRow,
-    components: component.components.map(transformAdaptorTextInputComponent),
+    components: component.components.map(
+      transformers.transformAdaptorTextInputComponent
+    ),
   };
 };
 
@@ -85,24 +85,15 @@ const transformAdaptorEmoji = (
   animated: emoji.animated,
 });
 
-const buttonStyleMap = {
-  primary: ButtonStyle.Primary,
-  secondary: ButtonStyle.Secondary,
-  success: ButtonStyle.Success,
-  danger: ButtonStyle.Danger,
-} as const satisfies Record<
-  AdaptorNonLinkButtonComponent["style"],
-  ButtonStyle
->;
-
-export const transformAdaptorButtonComponent = (
+const transformAdaptorButtonComponent = (
   component: AdaptorButtonComponent
 ): APIButtonComponent => {
   if (component.style === "link") {
     return {
       type: ComponentType.Button,
       label: component.label,
-      emoji: component.emoji && transformAdaptorEmoji(component.emoji),
+      emoji:
+        component.emoji && transformers.transformAdaptorEmoji(component.emoji),
       style: ButtonStyle.Link,
       url: component.url,
       disabled: component.disabled,
@@ -111,7 +102,8 @@ export const transformAdaptorButtonComponent = (
     return {
       type: ComponentType.Button,
       label: component.label,
-      emoji: component.emoji && transformAdaptorEmoji(component.emoji),
+      emoji:
+        component.emoji && transformers.transformAdaptorEmoji(component.emoji),
       style: buttonStyleMap[component.style],
       custom_id: component.customId,
       disabled: component.disabled,
@@ -119,7 +111,7 @@ export const transformAdaptorButtonComponent = (
   }
 };
 
-export const transformAdaptorSelectComponentBase = (
+const transformAdaptorSelectComponentBase = (
   component: AdaptorSelectComponentBase
 ): Omit<APIBaseSelectMenuComponent<never>, "type"> => ({
   custom_id: component.customId,
@@ -129,60 +121,60 @@ export const transformAdaptorSelectComponentBase = (
   disabled: component.disabled,
 });
 
-export const transformAdaptorStringSelectComponent = (
+const transformAdaptorStringSelectComponent = (
   component: AdaptorStringSelectComponent<unknown>
 ): APIStringSelectComponent => ({
   type: ComponentType.StringSelect,
-  options: component.options.map(transformAdaptorSelectOption),
-  ...transformAdaptorSelectComponentBase(component),
+  options: component.options.map(transformers.transformAdaptorSelectOption),
+  ...transformers.transformAdaptorSelectComponentBase(component),
 });
 
-export const transformAdaptorSelectOption = (
+const transformAdaptorSelectOption = (
   option: AdaptorSelectOption<unknown>
 ): APISelectMenuOption => ({
   label: option.label,
   value: option.value,
   description: option.description,
-  emoji: option.emoji && transformAdaptorEmoji(option.emoji),
+  emoji: option.emoji && transformers.transformAdaptorEmoji(option.emoji),
   default: option.default,
 });
 
-export const transformAdaptorUserSelectComponent = (
+const transformAdaptorUserSelectComponent = (
   component: AdaptorUserSelectComponent
 ): APIUserSelectComponent => ({
   type: ComponentType.UserSelect,
-  ...transformAdaptorSelectComponentBase(component),
+  ...transformers.transformAdaptorSelectComponentBase(component),
 });
 
-export const transformAdaptorRoleSelectComponent = (
+const transformAdaptorRoleSelectComponent = (
   component: AdaptorRoleSelectComponent
 ): APIRoleSelectComponent => ({
   type: ComponentType.RoleSelect,
-  ...transformAdaptorSelectComponentBase(component),
+  ...transformers.transformAdaptorSelectComponentBase(component),
 });
 
-export const transformAdaptorMentionableSelectComponent = (
+const transformAdaptorMentionableSelectComponent = (
   component: AdaptorMentionableSelectComponent
 ): APIMentionableSelectComponent => ({
   type: ComponentType.MentionableSelect,
-  ...transformAdaptorSelectComponentBase(component),
+  ...transformers.transformAdaptorSelectComponentBase(component),
 });
 
-export const transformAdaptorChannelSelectComponent = (
+const transformAdaptorChannelSelectComponent = (
   component: AdaptorChannelSelectComponent
 ): APIChannelSelectComponent => ({
   type: ComponentType.ChannelSelect,
   channel_types: component.channelTypes?.map((item) =>
-    transformAdaptorChannelType(item)
+    transformers.transformAdaptorChannelType(item)
   ),
-  ...transformAdaptorSelectComponentBase(component),
+  ...transformers.transformAdaptorSelectComponentBase(component),
 });
 
-export const transformAdaptorChannelType = (
+const transformAdaptorChannelType = (
   channelType: AdaptorChannelTypes
 ): ChannelType => channelTypesMap[channelType];
 
-export const transformAdaptorTextInputComponent = (
+const transformAdaptorTextInputComponent = (
   component: AdaptorTextInputComponent
 ): APITextInputComponent => ({
   type: ComponentType.TextInput,
@@ -198,3 +190,20 @@ export const transformAdaptorTextInputComponent = (
   value: component.value,
   placeholder: component.placeholder,
 });
+
+export const transformersAdaptorComponent = {
+  transformAdaptorActionRowComponent,
+  transformAdaptorComponent,
+  transformAdaptorModalActionRowComponent,
+  transformAdaptorEmoji,
+  transformAdaptorButtonComponent,
+  transformAdaptorSelectComponentBase,
+  transformAdaptorStringSelectComponent,
+  transformAdaptorSelectOption,
+  transformAdaptorUserSelectComponent,
+  transformAdaptorRoleSelectComponent,
+  transformAdaptorMentionableSelectComponent,
+  transformAdaptorChannelSelectComponent,
+  transformAdaptorChannelType,
+  transformAdaptorTextInputComponent,
+};

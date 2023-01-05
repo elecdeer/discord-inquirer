@@ -3,7 +3,7 @@ import { transformNullishDateString } from "./shared";
 import type { AdaptorPartialMember } from "../structure";
 import type { APIInteractionDataResolvedGuildMember } from "discord-api-types/v10";
 
-export const transformPartialMember = (
+const transformPartialMember = (
   member: APIInteractionDataResolvedGuildMember
 ): AdaptorPartialMember => {
   return {
@@ -18,4 +18,8 @@ export const transformPartialMember = (
       member.communication_disabled_until
     ),
   };
+};
+
+export const transformersMember = {
+  transformPartialMember,
 };

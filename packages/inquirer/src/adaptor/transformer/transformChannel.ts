@@ -2,6 +2,7 @@ import { ChannelType } from "discord-api-types/v10";
 import assert from "node:assert";
 
 import { adaptorChannelTypesMap } from "../structure";
+import { transformers } from "./index";
 import { transformNullishDateString } from "./shared";
 
 import type {
@@ -28,7 +29,7 @@ const transformThreadMetadata = (
   };
 };
 
-export const transformChannel = (
+const transformChannel = (
   channel: APIInteractionDataResolvedChannel
 ): AdaptorPartialChannel => {
   const base: AdaptorPartialChannelBase = {
@@ -48,7 +49,9 @@ export const transformChannel = (
       type: adaptorChannelTypesMap[channel.type],
       ...base,
       parentId: channel.parent_id,
-      threadMetadata: transformThreadMetadata(channel.thread_metadata),
+      threadMetadata: transformers.transformThreadMetadata(
+        channel.thread_metadata
+      ),
     } satisfies AdaptorPartialThreadChannel;
   } else {
     return {
@@ -56,4 +59,9 @@ export const transformChannel = (
       ...base,
     } satisfies AdaptorPartialChannel;
   }
+};
+
+export const transformersChannel = {
+  transformChannel,
+  transformThreadMetadata,
 };

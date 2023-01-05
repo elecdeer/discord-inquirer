@@ -1,11 +1,8 @@
 import { ComponentType, InteractionType } from "discord-api-types/v10";
 import assert from "node:assert";
 
+import { transformers } from "./index";
 import { nullishThrough, transformRecordValue } from "./shared";
-import { transformChannel } from "./transformChannel";
-import { transformPartialMember } from "./transformMember";
-import { transformPermissionFlags, transformRole } from "./transformPermission";
-import { transformUser } from "./transformUser";
 
 import type {
   AdaptorApplicationCommandAutoCompleteInteraction,
@@ -34,24 +31,26 @@ import type {
   APIInteractionDataResolvedGuildMember,
 } from "discord-api-types/v10";
 
-export const transformInteraction = (
+const transformInteraction = (
   interaction: APIInteraction
 ): AdaptorInteraction => {
   switch (interaction.type) {
     case InteractionType.Ping:
-      return transformPingInteraction(interaction);
+      return transformers.transformPingInteraction(interaction);
     case InteractionType.ApplicationCommand:
-      return transformApplicationCommandInteraction(interaction);
+      return transformers.transformApplicationCommandInteraction(interaction);
     case InteractionType.MessageComponent:
-      return transformMessageComponentInteraction(interaction);
+      return transformers.transformMessageComponentInteraction(interaction);
     case InteractionType.ApplicationCommandAutocomplete:
-      return transformApplicationCommandAutocompleteInteraction(interaction);
+      return transformers.transformApplicationCommandAutocompleteInteraction(
+        interaction
+      );
     case InteractionType.ModalSubmit:
-      return transformModalSubmitInteraction(interaction);
+      return transformers.transformModalSubmitInteraction(interaction);
   }
 };
 
-export const transformInteractionBase = (
+const transformInteractionBase = (
   interaction: APIInteraction
 ): AdaptorInteractionBase => {
   return {
@@ -62,7 +61,7 @@ export const transformInteractionBase = (
   };
 };
 
-export const transformUserInvokedInteractionBase = (
+const transformUserInvokedInteractionBase = (
   interaction:
     | APIApplicationCommandInteraction
     | APIMessageComponentInteraction
@@ -75,43 +74,46 @@ export const transformUserInvokedInteractionBase = (
   assert(apiUser !== undefined);
 
   return {
-    ...transformInteractionBase(interaction),
+    ...transformers.transformInteractionBase(interaction),
     guildId: interaction.guild_id ?? null,
     channelId: interaction.channel_id,
-    member: nullishThrough(transformPartialMember)(interaction.member) ?? null,
-    user: transformUser(apiUser),
-    appPermissions:
-      nullishThrough(transformPermissionFlags)(interaction.app_permissions) ??
+    member:
+      nullishThrough(transformers.transformPartialMember)(interaction.member) ??
       null,
+    user: transformers.transformUser(apiUser),
+    appPermissions:
+      nullishThrough(transformers.transformPermissionFlags)(
+        interaction.app_permissions
+      ) ?? null,
     locale: interaction.locale ?? null,
     guildLocale: interaction.guild_locale ?? null,
   };
 };
 
-export const transformPingInteraction = (
+const transformPingInteraction = (
   interaction: APIPingInteraction
 ): AdaptorPingInteraction => {
   return {
     type: "ping",
-    ...transformInteractionBase(interaction),
+    ...transformers.transformInteractionBase(interaction),
   };
 };
 
-export const transformApplicationCommandInteraction = (
+const transformApplicationCommandInteraction = (
   interaction: APIApplicationCommandInteraction
 ): AdaptorApplicationCommandInteraction => {
   return {
     type: "applicationCommand",
-    ...transformUserInvokedInteractionBase(interaction),
+    ...transformers.transformUserInvokedInteractionBase(interaction),
     data: interaction.data,
   };
 };
 
-export const transformMessageComponentInteraction = (
+const transformMessageComponentInteraction = (
   interaction: APIMessageComponentInteraction
 ): AdaptorInteraction => {
   const base = {
-    ...transformUserInvokedInteractionBase(interaction),
+    ...transformers.transformUserInvokedInteractionBase(interaction),
     type: "messageComponent",
   } as const;
 
@@ -139,7 +141,7 @@ export const transformMessageComponentInteraction = (
   if (interaction.data.component_type === ComponentType.UserSelect) {
     return {
       type: "messageComponent",
-      ...transformUserInvokedInteractionBase(interaction),
+      ...transformers.transformUserInvokedInteractionBase(interaction),
       data: {
         componentType: "userSelect",
         customId: interaction.data.custom_id,
@@ -161,7 +163,7 @@ export const transformMessageComponentInteraction = (
   if (interaction.data.component_type === ComponentType.RoleSelect) {
     return {
       type: "messageComponent",
-      ...transformUserInvokedInteractionBase(interaction),
+      ...transformers.transformUserInvokedInteractionBase(interaction),
       data: {
         componentType: "roleSelect",
         customId: interaction.data.custom_id,
@@ -179,7 +181,7 @@ export const transformMessageComponentInteraction = (
   if (interaction.data.component_type === ComponentType.MentionableSelect) {
     return {
       type: "messageComponent",
-      ...transformUserInvokedInteractionBase(interaction),
+      ...transformers.transformUserInvokedInteractionBase(interaction),
       data: {
         componentType: "mentionableSelect",
         customId: interaction.data.custom_id,
@@ -205,7 +207,7 @@ export const transformMessageComponentInteraction = (
   if (interaction.data.component_type === ComponentType.ChannelSelect) {
     return {
       type: "messageComponent",
-      ...transformUserInvokedInteractionBase(interaction),
+      ...transformers.transformUserInvokedInteractionBase(interaction),
       data: {
         componentType: "channelSelect",
         customId: interaction.data.custom_id,
@@ -223,17 +225,17 @@ export const transformMessageComponentInteraction = (
   throw new Error("unreachable");
 };
 
-export const transformApplicationCommandAutocompleteInteraction = (
+const transformApplicationCommandAutocompleteInteraction = (
   interaction: APIApplicationCommandAutocompleteInteraction
 ): AdaptorApplicationCommandAutoCompleteInteraction => {
   return {
     type: "applicationCommandAutoComplete",
-    ...transformUserInvokedInteractionBase(interaction),
+    ...transformers.transformUserInvokedInteractionBase(interaction),
     data: interaction.data,
   };
 };
 
-export const transformModalSubmitInteraction = (
+const transformModalSubmitInteraction = (
   interaction: APIModalSubmitInteraction
 ): AdaptorModalSubmitInteraction => {
   const fields: Record<string, string> = {};
@@ -246,7 +248,7 @@ export const transformModalSubmitInteraction = (
 
   return {
     type: "modalSubmit",
-    ...transformUserInvokedInteractionBase(interaction),
+    ...transformers.transformUserInvokedInteractionBase(interaction),
     data: {
       customId: interaction.data.custom_id,
       fields: fields,
@@ -254,26 +256,49 @@ export const transformModalSubmitInteraction = (
   };
 };
 
-export const transformResolvedUsers = transformRecordValue<
+const transformResolvedUsers: (
+  record: Record<Snowflake, APIUser>
+) => Record<Snowflake, AdaptorUser> = transformRecordValue<
   Snowflake,
   APIUser,
   AdaptorUser
->(transformUser);
+>(transformers.transformUser);
 
-export const transformResolvedMembers = transformRecordValue<
+const transformResolvedMembers: (
+  record: Record<Snowflake, APIInteractionDataResolvedGuildMember>
+) => Record<Snowflake, AdaptorPartialMember> = transformRecordValue<
   Snowflake,
   APIInteractionDataResolvedGuildMember,
   AdaptorPartialMember
->(transformPartialMember);
+>(transformers.transformPartialMember);
 
-export const transformResolvedRoles = transformRecordValue<
+const transformResolvedRoles: (
+  record: Record<Snowflake, APIRole>
+) => Record<Snowflake, AdaptorRole> = transformRecordValue<
   Snowflake,
   APIRole,
   AdaptorRole
->(transformRole);
+>(transformers.transformRole);
 
-export const transformResolvedChannels = transformRecordValue<
+const transformResolvedChannels: (
+  record: Record<Snowflake, APIInteractionDataResolvedChannel>
+) => Record<Snowflake, AdaptorPartialChannel> = transformRecordValue<
   Snowflake,
   APIInteractionDataResolvedChannel,
   AdaptorPartialChannel
->(transformChannel);
+>(transformers.transformChannel);
+
+export const transformersInteraction = {
+  transformInteraction,
+  transformInteractionBase,
+  transformUserInvokedInteractionBase,
+  transformPingInteraction,
+  transformApplicationCommandInteraction,
+  transformMessageComponentInteraction,
+  transformApplicationCommandAutocompleteInteraction,
+  transformModalSubmitInteraction,
+  transformResolvedUsers,
+  transformResolvedMembers,
+  transformResolvedRoles,
+  transformResolvedChannels,
+};

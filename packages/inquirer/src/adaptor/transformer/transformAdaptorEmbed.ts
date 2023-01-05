@@ -1,3 +1,5 @@
+import { transformers } from "./index";
+
 import type {
   AdaptorEmbed,
   AdaptorEmbedAuthor,
@@ -15,20 +17,25 @@ import type {
   APIEmbedThumbnail,
 } from "discord-api-types/v10";
 
-export const transformAdaptorEmbed = (embed: AdaptorEmbed): APIEmbed => ({
+const transformAdaptorEmbed = (embed: AdaptorEmbed): APIEmbed => ({
   title: embed.title,
   description: embed.description,
   url: embed.url,
-  timestamp: transformAdaptorTimeStamp?.(embed.timestamp),
-  color: transformAdaptorColor(embed.color),
-  footer: embed.footer && transformAdaptorEmbedFooter(embed.footer),
-  image: embed.image && transformAdaptorEmbedImage(embed.image),
-  thumbnail: embed.thumbnail && transformAdaptorEmbedThumbnail(embed.thumbnail),
-  author: embed.author && transformAdaptorEmbedAuthor(embed.author),
-  fields: embed.fields && embed.fields.map(transformAdaptorEmbedField),
+  timestamp: transformers.transformAdaptorTimeStamp?.(embed.timestamp),
+  color: transformers.transformAdaptorColor(embed.color),
+  footer:
+    embed.footer && transformers.transformAdaptorEmbedFooter(embed.footer),
+  image: embed.image && transformers.transformAdaptorEmbedImage(embed.image),
+  thumbnail:
+    embed.thumbnail &&
+    transformers.transformAdaptorEmbedThumbnail(embed.thumbnail),
+  author:
+    embed.author && transformers.transformAdaptorEmbedAuthor(embed.author),
+  fields:
+    embed.fields && embed.fields.map(transformers.transformAdaptorEmbedField),
 });
 
-export const transformAdaptorTimeStamp = (
+const transformAdaptorTimeStamp = (
   timeStamp: number | Date | undefined
 ): string | undefined => {
   if (timeStamp === undefined) return undefined;
@@ -38,7 +45,7 @@ export const transformAdaptorTimeStamp = (
   return new Date(timeStamp).toISOString();
 };
 
-export const transformAdaptorColor = (
+const transformAdaptorColor = (
   color: number | string | undefined
 ): number | undefined => {
   if (color === undefined) return undefined;
@@ -46,26 +53,26 @@ export const transformAdaptorColor = (
   return parseInt(color.replace("#", ""), 16);
 };
 
-export const transformAdaptorEmbedFooter = (
+const transformAdaptorEmbedFooter = (
   footer: AdaptorEmbedFooter
 ): APIEmbedFooter => ({
   text: footer.text,
   icon_url: footer.iconUrl,
 });
 
-export const transformAdaptorEmbedImage = (
+const transformAdaptorEmbedImage = (
   image: AdaptorEmbedImage
 ): APIEmbedImage => ({
   url: image.url,
 });
 
-export const transformAdaptorEmbedThumbnail = (
+const transformAdaptorEmbedThumbnail = (
   thumbnail: AdaptorEmbedThumbnail
 ): APIEmbedThumbnail => ({
   url: thumbnail.url,
 });
 
-export const transformAdaptorEmbedAuthor = (
+const transformAdaptorEmbedAuthor = (
   author: AdaptorEmbedAuthor
 ): APIEmbedAuthor => ({
   name: author.name,
@@ -73,10 +80,21 @@ export const transformAdaptorEmbedAuthor = (
   icon_url: author.iconUrl,
 });
 
-export const transformAdaptorEmbedField = (
+const transformAdaptorEmbedField = (
   field: AdaptorEmbedField
 ): APIEmbedField => ({
   name: field.name,
   value: field.value,
   inline: field.inline,
 });
+
+export const transformersAdaptorEmbed = {
+  transformAdaptorEmbed,
+  transformAdaptorTimeStamp,
+  transformAdaptorColor,
+  transformAdaptorEmbedFooter,
+  transformAdaptorEmbedImage,
+  transformAdaptorEmbedThumbnail,
+  transformAdaptorEmbedAuthor,
+  transformAdaptorEmbedField,
+};

@@ -1,3 +1,5 @@
+import { ButtonStyle } from "discord-api-types/v10";
+
 import type { AdaptorChannelTypes } from "./channel";
 import type { AdaptorPartialEmoji } from "./emoji";
 
@@ -66,6 +68,16 @@ export type AdaptorModalComponent = AdaptorTextInputComponent;
 export type AdaptorButtonComponent =
   | AdaptorLinkButtonComponent
   | AdaptorNonLinkButtonComponent;
+
+export const buttonStyleMap = {
+  primary: ButtonStyle.Primary,
+  secondary: ButtonStyle.Secondary,
+  success: ButtonStyle.Success,
+  danger: ButtonStyle.Danger,
+} as const satisfies Record<
+  AdaptorNonLinkButtonComponent["style"],
+  ButtonStyle
+>;
 
 export interface AdaptorButtonComponentBase {
   type: "button";

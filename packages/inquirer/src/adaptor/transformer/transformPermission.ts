@@ -1,4 +1,5 @@
 import { adaptorPermissionFlagsMap } from "../structure";
+import { transformers } from "./index";
 
 import type {
   AdaptorRole,
@@ -10,9 +11,7 @@ import type { APIRole, APIRoleTags } from "discord-api-types/v10";
 /**
  * bigint文字列を展開し、各フラグをキーとしたrecordを作成する
  */
-export const transformPermissionFlags = (
-  permissions: string
-): AdaptorPermissions => {
+const transformPermissionFlags = (permissions: string): AdaptorPermissions => {
   const flags = BigInt(permissions);
 
   const parsed: Record<string, boolean> = {};
@@ -31,7 +30,7 @@ const transformRoleTag = (role: APIRoleTags): AdaptorRoleTags => {
   };
 };
 
-export const transformRole = (role: APIRole): AdaptorRole => {
+const transformRole = (role: APIRole): AdaptorRole => {
   return {
     id: role.id,
     name: role.name,
@@ -40,9 +39,15 @@ export const transformRole = (role: APIRole): AdaptorRole => {
     icon: role.icon ?? null,
     unicodeEmoji: role.unicode_emoji ?? null,
     position: role.position,
-    permissions: transformPermissionFlags(role.permissions),
+    permissions: transformers.transformPermissionFlags(role.permissions),
     managed: role.managed,
     mentionable: role.mentionable,
-    tags: role.tags ? transformRoleTag(role.tags) : null,
+    tags: role.tags ? transformers.transformRoleTag(role.tags) : null,
   };
+};
+
+export const transformersRole = {
+  transformRole,
+  transformRoleTag,
+  transformPermissionFlags,
 };
