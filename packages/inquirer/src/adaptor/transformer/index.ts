@@ -11,7 +11,7 @@ import { transformersUser } from "./transformUser";
 
 export * from "./shared";
 
-export const transformers = {
+export const originalTransformers = {
   ...transformersAdaptorComponent,
   ...transformersAdaptorEmbed,
   ...transformersAdaptorFollowupPayload,
@@ -22,4 +22,8 @@ export const transformers = {
   ...transformersMember,
   ...transformersRole,
   ...transformersUser,
+} as const;
+
+export const transformers = {
+  ...originalTransformers,
 };
