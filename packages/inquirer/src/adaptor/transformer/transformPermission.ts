@@ -7,14 +7,11 @@ import type {
   AdaptorRoleTags,
 } from "../structure";
 import type { APIRole, APIRoleTags } from "discord-api-types/v10";
-import type { ReadonlyDeep } from "type-fest";
 
 /**
  * bigint文字列を展開し、各フラグをキーとしたrecordを作成する
  */
-const transformPermissionFlags = (
-  permissions: string
-): ReadonlyDeep<AdaptorPermissions> => {
+const transformPermissionFlags = (permissions: string): AdaptorPermissions => {
   const flags = BigInt(permissions);
 
   const parsed: Record<string, boolean> = {};
@@ -25,7 +22,7 @@ const transformPermissionFlags = (
   return parsed as AdaptorPermissions;
 };
 
-const transformRoleTag = (role: APIRoleTags): ReadonlyDeep<AdaptorRoleTags> => {
+const transformRoleTag = (role: APIRoleTags): AdaptorRoleTags => {
   return {
     botId: role.bot_id ?? null,
     integrationId: role.integration_id ?? null,
@@ -33,7 +30,7 @@ const transformRoleTag = (role: APIRoleTags): ReadonlyDeep<AdaptorRoleTags> => {
   };
 };
 
-const transformRole = (role: APIRole): ReadonlyDeep<AdaptorRole> => {
+const transformRole = (role: APIRole): AdaptorRole => {
   return {
     id: role.id,
     name: role.name,

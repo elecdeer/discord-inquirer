@@ -8,17 +8,16 @@ import type {
   RESTPatchAPIInteractionFollowupJSONBody,
   RESTPostAPIInteractionFollowupJSONBody,
 } from "discord-api-types/v10";
-import type { ReadonlyDeep } from "type-fest";
 
 const transformAdaptorFollowupPayload = (
   payload: AdaptorFollowupPayload
-): ReadonlyDeep<RESTPostAPIInteractionFollowupJSONBody> => {
+): RESTPostAPIInteractionFollowupJSONBody => {
   return transformers.adaptorMessagePayload(payload);
 };
 
 const transformAdaptorFollowupPayloadPatch = (
   payload: AdaptorFollowupPayloadPatch
-): ReadonlyDeep<RESTPatchAPIInteractionFollowupJSONBody> => {
+): RESTPatchAPIInteractionFollowupJSONBody => {
   return transformers.adaptorMessagePayloadPatch(payload);
 };
 

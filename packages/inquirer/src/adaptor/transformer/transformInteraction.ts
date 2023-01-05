@@ -30,11 +30,10 @@ import type {
   APIUser,
   APIInteractionDataResolvedGuildMember,
 } from "discord-api-types/v10";
-import type { ReadonlyDeep } from "type-fest";
 
 const transformInteraction = (
   interaction: APIInteraction
-): ReadonlyDeep<AdaptorInteraction> => {
+): AdaptorInteraction => {
   switch (interaction.type) {
     case InteractionType.Ping:
       return transformers.pingInteraction(interaction);
@@ -53,7 +52,7 @@ const transformInteraction = (
 
 const transformInteractionBase = (
   interaction: APIInteraction
-): ReadonlyDeep<AdaptorInteractionBase> => {
+): AdaptorInteractionBase => {
   return {
     id: interaction.id,
     applicationId: interaction.application_id,
@@ -68,7 +67,7 @@ const transformUserInvokedInteractionBase = (
     | APIMessageComponentInteraction
     | APIApplicationCommandAutocompleteInteraction
     | APIModalSubmitInteraction
-): ReadonlyDeep<AdaptorUserInvokedInteractionBase> => {
+): AdaptorUserInvokedInteractionBase => {
   assert(interaction.channel_id !== undefined);
 
   const apiUser = interaction.user ?? interaction.member?.user;
@@ -92,7 +91,7 @@ const transformUserInvokedInteractionBase = (
 
 const transformPingInteraction = (
   interaction: APIPingInteraction
-): ReadonlyDeep<AdaptorPingInteraction> => {
+): AdaptorPingInteraction => {
   return {
     type: "ping",
     ...transformers.interactionBase(interaction),
@@ -101,7 +100,7 @@ const transformPingInteraction = (
 
 const transformApplicationCommandInteraction = (
   interaction: APIApplicationCommandInteraction
-): ReadonlyDeep<AdaptorApplicationCommandInteraction> => {
+): AdaptorApplicationCommandInteraction => {
   return {
     type: "applicationCommand",
     ...transformers.userInvokedInteractionBase(interaction),
@@ -111,7 +110,7 @@ const transformApplicationCommandInteraction = (
 
 const transformMessageComponentInteraction = (
   interaction: APIMessageComponentInteraction
-): ReadonlyDeep<AdaptorInteraction> => {
+): AdaptorInteraction => {
   const base = {
     ...transformers.userInvokedInteractionBase(interaction),
     type: "messageComponent",
@@ -227,7 +226,7 @@ const transformMessageComponentInteraction = (
 
 const transformApplicationCommandAutocompleteInteraction = (
   interaction: APIApplicationCommandAutocompleteInteraction
-): ReadonlyDeep<AdaptorApplicationCommandAutoCompleteInteraction> => {
+): AdaptorApplicationCommandAutoCompleteInteraction => {
   return {
     type: "applicationCommandAutoComplete",
     ...transformers.userInvokedInteractionBase(interaction),
@@ -237,7 +236,7 @@ const transformApplicationCommandAutocompleteInteraction = (
 
 const transformModalSubmitInteraction = (
   interaction: APIModalSubmitInteraction
-): ReadonlyDeep<AdaptorModalSubmitInteraction> => {
+): AdaptorModalSubmitInteraction => {
   const fields: Record<string, string> = {};
 
   interaction.data.components.forEach((row) => {

@@ -15,11 +15,10 @@ import type {
   APIThreadMetadata,
   APIInteractionDataResolvedChannel,
 } from "discord-api-types/v10";
-import type { ReadonlyDeep } from "type-fest";
 
 const transformThreadMetadata = (
   metadata: APIThreadMetadata
-): ReadonlyDeep<AdaptorThreadMetadata> => {
+): AdaptorThreadMetadata => {
   return {
     archived: metadata.archived,
     autoArchiveDuration: metadata.auto_archive_duration,
@@ -32,7 +31,7 @@ const transformThreadMetadata = (
 
 const transformChannel = (
   channel: APIInteractionDataResolvedChannel
-): ReadonlyDeep<AdaptorPartialChannel> => {
+): AdaptorPartialChannel => {
   const base: AdaptorPartialChannelBase = {
     id: channel.id,
     name: channel.name ?? null,

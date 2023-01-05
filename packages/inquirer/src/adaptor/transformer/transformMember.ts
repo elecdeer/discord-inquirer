@@ -2,11 +2,10 @@ import { transformNullishDateString } from "./shared";
 
 import type { AdaptorPartialMember } from "../structure";
 import type { APIInteractionDataResolvedGuildMember } from "discord-api-types/v10";
-import type { ReadonlyDeep } from "type-fest";
 
 const transformPartialMember = (
   member: APIInteractionDataResolvedGuildMember
-): ReadonlyDeep<AdaptorPartialMember> => {
+): AdaptorPartialMember => {
   return {
     nick: member.nick ?? null,
     avatar: member.avatar ?? null,
