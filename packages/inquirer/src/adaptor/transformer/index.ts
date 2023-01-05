@@ -11,8 +11,6 @@ import { transformersUser } from "./transformUser";
 
 export * from "./shared";
 
-//TODO transformerの結果を全てReadonlyにする
-
 export const transformers = {
   ...transformersAdaptorComponent,
   ...transformersAdaptorEmbed,

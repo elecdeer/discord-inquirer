@@ -1,9 +1,4 @@
-import {
-  transformActionRowComponent,
-  transformAllowedMentions,
-  transformEmbed,
-  transformFlags,
-} from "discord-inquirer";
+import { transformers } from "discord-inquirer";
 
 import type {
   AdaptorMessagePayload,
@@ -65,17 +60,17 @@ export const createMessageOption = (
 ): MessageCreateOptions => {
   return {
     content: payload.content,
-    embeds: payload.embeds?.map(transformEmbed),
+    embeds: payload.embeds?.map(transformers.adaptorEmbed),
     allowedMentions:
       payload.allowedMentions &&
-      transformAllowedMentions(payload.allowedMentions),
+      transformers.adaptorAllowedMentions(payload.allowedMentions),
     files: payload.files,
-    components: payload.components?.map(transformActionRowComponent),
+    components: payload.components?.map(transformers.adaptorActionRowComponent),
     stickers: payload.stickerIds,
     reply: payload.messageReference && {
       messageReference: payload.messageReference.messageId,
     },
-    flags: transformFlags(payload),
+    flags: transformers.adaptorMessageFlags(payload),
   };
 };
 
@@ -86,14 +81,14 @@ export const createMessageEditOption = (
 ): MessageEditOptions => {
   return {
     content: payload.content,
-    embeds: payload.embeds?.map(transformEmbed),
+    embeds: payload.embeds?.map(transformers.adaptorEmbed),
     allowedMentions:
       payload.allowedMentions === null
         ? {}
         : payload.allowedMentions &&
-          transformAllowedMentions(payload.allowedMentions),
+          transformers.adaptorAllowedMentions(payload.allowedMentions),
     files: payload.files,
-    components: payload.components?.map(transformActionRowComponent),
-    flags: transformFlags(payload),
+    components: payload.components?.map(transformers.adaptorActionRowComponent),
+    flags: transformers.adaptorMessageFlags(payload),
   };
 };
