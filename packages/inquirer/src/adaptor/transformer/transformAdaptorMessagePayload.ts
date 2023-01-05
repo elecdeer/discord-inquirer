@@ -14,10 +14,11 @@ import type {
   RESTPatchAPIChannelMessageJSONBody,
   RESTPostAPIChannelMessageJSONBody,
 } from "discord-api-types/v10";
+import type { ReadonlyDeep } from "type-fest";
 
 const transformAdaptorMessagePayload = (
   payload: AdaptorMessagePayload
-): RESTPostAPIChannelMessageJSONBody => {
+): ReadonlyDeep<RESTPostAPIChannelMessageJSONBody> => {
   return {
     ...payload,
     content: payload.content,
@@ -36,7 +37,7 @@ const transformAdaptorMessagePayload = (
 
 const transformAdaptorMessagePayloadPatch = (
   payload: AdaptorMessagePayloadPatch
-): RESTPatchAPIChannelMessageJSONBody => {
+): ReadonlyDeep<RESTPatchAPIChannelMessageJSONBody> => {
   return {
     ...payload,
     content: payload.content,
@@ -51,7 +52,7 @@ const transformAdaptorMessagePayloadPatch = (
 
 const transformAdaptorAllowedMentions = (
   allowedMentions: AdaptorAllowedMentions
-): APIAllowedMentions => {
+): ReadonlyDeep<APIAllowedMentions> => {
   const parse: AllowedMentionsTypes[] = [];
 
   if (allowedMentions.everyone === true) {
@@ -78,7 +79,7 @@ const transformAdaptorAllowedMentions = (
 
 const transformAdaptorMessageReference = (
   ref: AdaptorMessageReference
-): APIMessageReferenceSend => {
+): ReadonlyDeep<APIMessageReferenceSend> => {
   return {
     ...ref,
     message_id: ref.messageId,

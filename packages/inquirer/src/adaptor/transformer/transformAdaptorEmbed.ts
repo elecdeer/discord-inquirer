@@ -20,8 +20,11 @@ import type {
   APIEmbedImage,
   APIEmbedThumbnail,
 } from "discord-api-types/v10";
+import type { ReadonlyDeep } from "type-fest";
 
-const transformAdaptorEmbed = (embed: AdaptorEmbed): APIEmbed => ({
+const transformAdaptorEmbed = (
+  embed: AdaptorEmbed
+): ReadonlyDeep<APIEmbed> => ({
   title: embed.title,
   description: embed.description,
   url: embed.url,
@@ -37,26 +40,26 @@ const transformAdaptorEmbed = (embed: AdaptorEmbed): APIEmbed => ({
 
 const transformAdaptorEmbedFooter = (
   footer: AdaptorEmbedFooter
-): APIEmbedFooter => ({
+): ReadonlyDeep<APIEmbedFooter> => ({
   text: footer.text,
   icon_url: footer.iconUrl,
 });
 
 const transformAdaptorEmbedImage = (
   image: AdaptorEmbedImage
-): APIEmbedImage => ({
+): ReadonlyDeep<APIEmbedImage> => ({
   url: image.url,
 });
 
 const transformAdaptorEmbedThumbnail = (
   thumbnail: AdaptorEmbedThumbnail
-): APIEmbedThumbnail => ({
+): ReadonlyDeep<APIEmbedThumbnail> => ({
   url: thumbnail.url,
 });
 
 const transformAdaptorEmbedAuthor = (
   author: AdaptorEmbedAuthor
-): APIEmbedAuthor => ({
+): ReadonlyDeep<APIEmbedAuthor> => ({
   name: author.name,
   url: author.url,
   icon_url: author.iconUrl,
@@ -64,7 +67,7 @@ const transformAdaptorEmbedAuthor = (
 
 const transformAdaptorEmbedField = (
   field: AdaptorEmbedField
-): APIEmbedField => ({
+): ReadonlyDeep<APIEmbedField> => ({
   name: field.name,
   value: field.value,
   inline: field.inline,

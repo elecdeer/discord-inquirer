@@ -39,17 +39,18 @@ import type {
   APIUserSelectComponent,
   ChannelType,
 } from "discord-api-types/v10";
+import type { ReadonlyDeep } from "type-fest";
 
 const transformAdaptorActionRowComponent = (
   component: AdaptorMessageActionRowComponent
-): APIActionRowComponent<APIMessageActionRowComponent> => ({
+): ReadonlyDeep<APIActionRowComponent<APIMessageActionRowComponent>> => ({
   type: ComponentType.ActionRow,
   components: component.components.map(transformers.adaptorComponent),
 });
 
 const transformAdaptorComponent = (
   component: AdaptorMessageComponent
-): APIMessageActionRowComponent => {
+): ReadonlyDeep<APIMessageActionRowComponent> => {
   switch (component.type) {
     case "button":
       return transformers.adaptorButtonComponent(component);
@@ -68,7 +69,7 @@ const transformAdaptorComponent = (
 
 const transformAdaptorModalActionRowComponent = (
   component: AdaptorModalActionRowComponent
-): APIActionRowComponent<APIModalActionRowComponent> => {
+): ReadonlyDeep<APIActionRowComponent<APIModalActionRowComponent>> => {
   return {
     type: ComponentType.ActionRow,
     components: component.components.map(
@@ -79,7 +80,7 @@ const transformAdaptorModalActionRowComponent = (
 
 const transformAdaptorEmoji = (
   emoji: AdaptorPartialEmoji
-): APIMessageComponentEmoji => ({
+): ReadonlyDeep<APIMessageComponentEmoji> => ({
   id: emoji.id ?? undefined,
   name: emoji.name ?? undefined,
   animated: emoji.animated,
@@ -87,7 +88,7 @@ const transformAdaptorEmoji = (
 
 const transformAdaptorButtonComponent = (
   component: AdaptorButtonComponent
-): APIButtonComponent => {
+): ReadonlyDeep<APIButtonComponent> => {
   if (component.style === "link") {
     return {
       type: ComponentType.Button,
@@ -111,7 +112,7 @@ const transformAdaptorButtonComponent = (
 
 const transformAdaptorSelectComponentBase = (
   component: AdaptorSelectComponentBase
-): Omit<APIBaseSelectMenuComponent<never>, "type"> => ({
+): ReadonlyDeep<Omit<APIBaseSelectMenuComponent<never>, "type">> => ({
   custom_id: component.customId,
   placeholder: component.placeholder,
   min_values: component.minValues,
@@ -121,7 +122,7 @@ const transformAdaptorSelectComponentBase = (
 
 const transformAdaptorStringSelectComponent = (
   component: AdaptorStringSelectComponent<unknown>
-): APIStringSelectComponent => ({
+): ReadonlyDeep<APIStringSelectComponent> => ({
   type: ComponentType.StringSelect,
   options: component.options.map(transformers.adaptorSelectOption),
   ...transformers.adaptorSelectComponentBase(component),
@@ -129,7 +130,7 @@ const transformAdaptorStringSelectComponent = (
 
 const transformAdaptorSelectOption = (
   option: AdaptorSelectOption<unknown>
-): APISelectMenuOption => ({
+): ReadonlyDeep<APISelectMenuOption> => ({
   label: option.label,
   value: option.value,
   description: option.description,
@@ -139,28 +140,28 @@ const transformAdaptorSelectOption = (
 
 const transformAdaptorUserSelectComponent = (
   component: AdaptorUserSelectComponent
-): APIUserSelectComponent => ({
+): ReadonlyDeep<APIUserSelectComponent> => ({
   type: ComponentType.UserSelect,
   ...transformers.adaptorSelectComponentBase(component),
 });
 
 const transformAdaptorRoleSelectComponent = (
   component: AdaptorRoleSelectComponent
-): APIRoleSelectComponent => ({
+): ReadonlyDeep<APIRoleSelectComponent> => ({
   type: ComponentType.RoleSelect,
   ...transformers.adaptorSelectComponentBase(component),
 });
 
 const transformAdaptorMentionableSelectComponent = (
   component: AdaptorMentionableSelectComponent
-): APIMentionableSelectComponent => ({
+): ReadonlyDeep<APIMentionableSelectComponent> => ({
   type: ComponentType.MentionableSelect,
   ...transformers.adaptorSelectComponentBase(component),
 });
 
 const transformAdaptorChannelSelectComponent = (
   component: AdaptorChannelSelectComponent
-): APIChannelSelectComponent => ({
+): ReadonlyDeep<APIChannelSelectComponent> => ({
   type: ComponentType.ChannelSelect,
   channel_types: component.channelTypes?.map((item) =>
     transformers.adaptorChannelType(item)
@@ -170,11 +171,11 @@ const transformAdaptorChannelSelectComponent = (
 
 const transformAdaptorChannelType = (
   channelType: AdaptorChannelTypes
-): ChannelType => channelTypesMap[channelType];
+): ReadonlyDeep<ChannelType> => channelTypesMap[channelType];
 
 const transformAdaptorTextInputComponent = (
   component: AdaptorTextInputComponent
-): APITextInputComponent => ({
+): ReadonlyDeep<APITextInputComponent> => ({
   type: ComponentType.TextInput,
   custom_id: component.customId,
   style: {

@@ -18,10 +18,11 @@ import type {
   APIModalInteractionResponse,
   RESTPatchAPIInteractionOriginalResponseJSONBody,
 } from "discord-api-types/v10";
+import type { ReadonlyDeep } from "type-fest";
 
 export const transformAdaptorInteractionResponse = (
   res: AdaptorInteractionResponse
-): APIInteractionResponse => {
+): ReadonlyDeep<APIInteractionResponse> => {
   switch (res.type) {
     case "channelMessageWithSource":
       return transformers.adaptorInteractionResponseReply(res);
@@ -36,27 +37,27 @@ export const transformAdaptorInteractionResponse = (
 
 export const transformAdaptorInteractionResponseReply = (
   res: AdaptorInteractionResponseReply
-): APIInteractionResponseChannelMessageWithSource => ({
+): ReadonlyDeep<APIInteractionResponseChannelMessageWithSource> => ({
   type: InteractionResponseType.ChannelMessageWithSource,
   data: transformers.adaptorMessagePayload(res.data),
 });
 
 export const transformAdaptorInteractionResponseDeferredReply = (
   res: AdaptorInteractionResponseDeferredReply
-): APIInteractionResponseDeferredChannelMessageWithSource => ({
+): ReadonlyDeep<APIInteractionResponseDeferredChannelMessageWithSource> => ({
   type: InteractionResponseType.DeferredChannelMessageWithSource,
   data: res.data && transformers.adaptorMessagePayload(res.data),
 });
 
 export const transformAdaptorInteractionResponseDeferredUpdate = (
   _: AdaptorInteractionResponseDeferredUpdate
-): APIInteractionResponseDeferredMessageUpdate => ({
+): ReadonlyDeep<APIInteractionResponseDeferredMessageUpdate> => ({
   type: InteractionResponseType.DeferredMessageUpdate,
 });
 
 const transformAdaptorInteractionResponseModal = (
   res: AdaptorInteractionResponseModal
-): APIModalInteractionResponse => {
+): ReadonlyDeep<APIModalInteractionResponse> => {
   return {
     type: InteractionResponseType.Modal,
     data: {
@@ -71,7 +72,7 @@ const transformAdaptorInteractionResponseModal = (
 
 const transformAdaptorInteractionResponsePatch = (
   res: AdaptorInteractionResponsePatch
-): RESTPatchAPIInteractionOriginalResponseJSONBody => {
+): ReadonlyDeep<RESTPatchAPIInteractionOriginalResponseJSONBody> => {
   return transformers.adaptorMessagePayloadPatch(res);
 };
 

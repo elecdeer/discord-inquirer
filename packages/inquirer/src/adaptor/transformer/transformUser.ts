@@ -1,7 +1,8 @@
 import type { AdaptorUser } from "../structure";
 import type { APIUser } from "discord-api-types/v10";
+import type { ReadonlyDeep } from "type-fest";
 
-const transformUser = (user: APIUser): AdaptorUser => {
+const transformUser = (user: APIUser): ReadonlyDeep<AdaptorUser> => {
   return {
     id: user.id,
     username: user.username,
