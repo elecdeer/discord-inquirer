@@ -39,15 +39,15 @@ const transformRole = (role: APIRole): AdaptorRole => {
     icon: role.icon ?? null,
     unicodeEmoji: role.unicode_emoji ?? null,
     position: role.position,
-    permissions: transformers.transformPermissionFlags(role.permissions),
+    permissions: transformers.permissionFlags(role.permissions),
     managed: role.managed,
     mentionable: role.mentionable,
-    tags: role.tags ? transformers.transformRoleTag(role.tags) : null,
+    tags: role.tags ? transformers.roleTag(role.tags) : null,
   };
 };
 
 export const transformersRole = {
-  transformRole,
-  transformRoleTag,
-  transformPermissionFlags,
+  role: transformRole,
+  roleTag: transformRoleTag,
+  permissionFlags: transformPermissionFlags,
 };

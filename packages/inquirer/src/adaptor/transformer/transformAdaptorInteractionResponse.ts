@@ -24,15 +24,13 @@ export const transformAdaptorInteractionResponse = (
 ): APIInteractionResponse => {
   switch (res.type) {
     case "channelMessageWithSource":
-      return transformers.transformAdaptorInteractionResponseReply(res);
+      return transformers.adaptorInteractionResponseReply(res);
     case "deferredChannelMessageWithSource":
-      return transformers.transformAdaptorInteractionResponseDeferredReply(res);
+      return transformers.adaptorInteractionResponseDeferredReply(res);
     case "deferredUpdateMessage":
-      return transformers.transformAdaptorInteractionResponseDeferredUpdate(
-        res
-      );
+      return transformers.adaptorInteractionResponseDeferredUpdate(res);
     case "modal":
-      return transformers.transformAdaptorInteractionResponseModal(res);
+      return transformers.adaptorInteractionResponseModal(res);
   }
 };
 
@@ -40,14 +38,14 @@ export const transformAdaptorInteractionResponseReply = (
   res: AdaptorInteractionResponseReply
 ): APIInteractionResponseChannelMessageWithSource => ({
   type: InteractionResponseType.ChannelMessageWithSource,
-  data: transformers.transformAdaptorMessagePayload(res.data),
+  data: transformers.adaptorMessagePayload(res.data),
 });
 
 export const transformAdaptorInteractionResponseDeferredReply = (
   res: AdaptorInteractionResponseDeferredReply
 ): APIInteractionResponseDeferredChannelMessageWithSource => ({
   type: InteractionResponseType.DeferredChannelMessageWithSource,
-  data: res.data && transformers.transformAdaptorMessagePayload(res.data),
+  data: res.data && transformers.adaptorMessagePayload(res.data),
 });
 
 export const transformAdaptorInteractionResponseDeferredUpdate = (
@@ -65,7 +63,7 @@ const transformAdaptorInteractionResponseModal = (
       custom_id: res.data.customId,
       title: res.data.title,
       components: res.data.components.map(
-        transformers.transformAdaptorModalActionRowComponent
+        transformers.adaptorModalActionRowComponent
       ),
     },
   };
@@ -74,14 +72,16 @@ const transformAdaptorInteractionResponseModal = (
 const transformAdaptorInteractionResponsePatch = (
   res: AdaptorInteractionResponsePatch
 ): RESTPatchAPIInteractionOriginalResponseJSONBody => {
-  return transformers.transformAdaptorMessagePayloadPatch(res);
+  return transformers.adaptorMessagePayloadPatch(res);
 };
 
 export const transformersAdaptorInteractionResponse = {
-  transformAdaptorInteractionResponse,
-  transformAdaptorInteractionResponseReply,
-  transformAdaptorInteractionResponseDeferredReply,
-  transformAdaptorInteractionResponseDeferredUpdate,
-  transformAdaptorInteractionResponseModal,
-  transformAdaptorInteractionResponsePatch,
+  adaptorInteractionResponse: transformAdaptorInteractionResponse,
+  adaptorInteractionResponseReply: transformAdaptorInteractionResponseReply,
+  adaptorInteractionResponseDeferredReply:
+    transformAdaptorInteractionResponseDeferredReply,
+  adaptorInteractionResponseDeferredUpdate:
+    transformAdaptorInteractionResponseDeferredUpdate,
+  adaptorInteractionResponseModal: transformAdaptorInteractionResponseModal,
+  adaptorInteractionResponsePatch: transformAdaptorInteractionResponsePatch,
 };

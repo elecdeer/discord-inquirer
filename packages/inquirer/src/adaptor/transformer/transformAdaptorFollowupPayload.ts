@@ -12,16 +12,16 @@ import type {
 const transformAdaptorFollowupPayload = (
   payload: AdaptorFollowupPayload
 ): RESTPostAPIInteractionFollowupJSONBody => {
-  return transformers.transformAdaptorMessagePayload(payload);
+  return transformers.adaptorMessagePayload(payload);
 };
 
 const transformAdaptorFollowupPayloadPatch = (
   payload: AdaptorFollowupPayloadPatch
 ): RESTPatchAPIInteractionFollowupJSONBody => {
-  return transformers.transformAdaptorMessagePayloadPatch(payload);
+  return transformers.adaptorMessagePayloadPatch(payload);
 };
 
 export const transformersAdaptorFollowupPayload = {
-  transformAdaptorFollowupPayload,
-  transformAdaptorFollowupPayloadPatch,
+  adaptorFollowupPayload: transformAdaptorFollowupPayload,
+  adaptorFollowupPayloadPatch: transformAdaptorFollowupPayloadPatch,
 };

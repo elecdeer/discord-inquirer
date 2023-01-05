@@ -1,4 +1,8 @@
-import { transformers } from "./index";
+import {
+  transformAdaptorColor,
+  transformAdaptorTimestamp,
+  transformers,
+} from "./index";
 
 import type {
   AdaptorEmbed,
@@ -21,37 +25,15 @@ const transformAdaptorEmbed = (embed: AdaptorEmbed): APIEmbed => ({
   title: embed.title,
   description: embed.description,
   url: embed.url,
-  timestamp: transformers.transformAdaptorTimeStamp?.(embed.timestamp),
-  color: transformers.transformAdaptorColor(embed.color),
-  footer:
-    embed.footer && transformers.transformAdaptorEmbedFooter(embed.footer),
-  image: embed.image && transformers.transformAdaptorEmbedImage(embed.image),
+  timestamp: transformAdaptorTimestamp?.(embed.timestamp),
+  color: transformAdaptorColor(embed.color),
+  footer: embed.footer && transformers.adaptorEmbedFooter(embed.footer),
+  image: embed.image && transformers.adaptorEmbedImage(embed.image),
   thumbnail:
-    embed.thumbnail &&
-    transformers.transformAdaptorEmbedThumbnail(embed.thumbnail),
-  author:
-    embed.author && transformers.transformAdaptorEmbedAuthor(embed.author),
-  fields:
-    embed.fields && embed.fields.map(transformers.transformAdaptorEmbedField),
+    embed.thumbnail && transformers.adaptorEmbedThumbnail(embed.thumbnail),
+  author: embed.author && transformers.adaptorEmbedAuthor(embed.author),
+  fields: embed.fields && embed.fields.map(transformers.adaptorEmbedField),
 });
-
-const transformAdaptorTimeStamp = (
-  timeStamp: number | Date | undefined
-): string | undefined => {
-  if (timeStamp === undefined) return undefined;
-  if (timeStamp instanceof Date) {
-    return timeStamp.toISOString();
-  }
-  return new Date(timeStamp).toISOString();
-};
-
-const transformAdaptorColor = (
-  color: number | string | undefined
-): number | undefined => {
-  if (color === undefined) return undefined;
-  if (typeof color === "number") return color;
-  return parseInt(color.replace("#", ""), 16);
-};
 
 const transformAdaptorEmbedFooter = (
   footer: AdaptorEmbedFooter
@@ -89,12 +71,10 @@ const transformAdaptorEmbedField = (
 });
 
 export const transformersAdaptorEmbed = {
-  transformAdaptorEmbed,
-  transformAdaptorTimeStamp,
-  transformAdaptorColor,
-  transformAdaptorEmbedFooter,
-  transformAdaptorEmbedImage,
-  transformAdaptorEmbedThumbnail,
-  transformAdaptorEmbedAuthor,
-  transformAdaptorEmbedField,
+  adaptorEmbed: transformAdaptorEmbed,
+  adaptorEmbedFooter: transformAdaptorEmbedFooter,
+  adaptorEmbedImage: transformAdaptorEmbedImage,
+  adaptorEmbedThumbnail: transformAdaptorEmbedThumbnail,
+  adaptorEmbedAuthor: transformAdaptorEmbedAuthor,
+  adaptorEmbedField: transformAdaptorEmbedField,
 };

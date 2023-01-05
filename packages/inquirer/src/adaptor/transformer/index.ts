@@ -9,16 +9,6 @@ import { transformersMember } from "./transformMember";
 import { transformersRole } from "./transformPermission";
 import { transformersUser } from "./transformUser";
 
-export * from "./transformAdaptorComponent";
-export * from "./transformAdaptorEmbed";
-export * from "./transformAdaptorFollowupPayload";
-export * from "./transformAdaptorInteractionResponse";
-export * from "./transformAdaptorMessagePayload";
-export * from "./transformChannel";
-export * from "./transformInteraction";
-export * from "./transformMember";
-export * from "./transformPermission";
-export * from "./transformUser";
 export * from "./shared";
 
 //TODO transformerの結果を全てReadonlyにする

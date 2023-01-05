@@ -21,18 +21,16 @@ const transformAdaptorMessagePayload = (
   return {
     ...payload,
     content: payload.content,
-    embeds: payload.embeds?.map(transformers.transformAdaptorEmbed),
+    embeds: payload.embeds?.map(transformers.adaptorEmbed),
     allowed_mentions:
       payload.allowedMentions &&
-      transformers.transformAdaptorAllowedMentions(payload.allowedMentions),
+      transformers.adaptorAllowedMentions(payload.allowedMentions),
     message_reference:
       payload.messageReference &&
-      transformers.transformAdaptorMessageReference(payload.messageReference),
-    components: payload.components?.map(
-      transformers.transformAdaptorActionRowComponent
-    ),
+      transformers.adaptorMessageReference(payload.messageReference),
+    components: payload.components?.map(transformers.adaptorActionRowComponent),
     sticker_ids: payload.stickerIds,
-    flags: transformers.transformAdaptorMessageFlags(payload),
+    flags: transformers.adaptorMessageFlags(payload),
   };
 };
 
@@ -42,14 +40,12 @@ const transformAdaptorMessagePayloadPatch = (
   return {
     ...payload,
     content: payload.content,
-    embeds: payload.embeds?.map(transformers.transformAdaptorEmbed),
+    embeds: payload.embeds?.map(transformers.adaptorEmbed),
     allowed_mentions:
       payload.allowedMentions &&
-      transformers.transformAdaptorAllowedMentions(payload.allowedMentions),
-    components: payload.components?.map(
-      transformers.transformAdaptorActionRowComponent
-    ),
-    flags: transformers.transformAdaptorMessageFlags(payload),
+      transformers.adaptorAllowedMentions(payload.allowedMentions),
+    components: payload.components?.map(transformers.adaptorActionRowComponent),
+    flags: transformers.adaptorMessageFlags(payload),
   };
 };
 
@@ -105,9 +101,9 @@ const transformAdaptorMessageFlags = (params: {
 };
 
 export const transformersAdaptorMessagePayload = {
-  transformAdaptorMessagePayload,
-  transformAdaptorMessagePayloadPatch,
-  transformAdaptorAllowedMentions,
-  transformAdaptorMessageReference,
-  transformAdaptorMessageFlags,
+  adaptorMessagePayload: transformAdaptorMessagePayload,
+  adaptorMessagePayloadPatch: transformAdaptorMessagePayloadPatch,
+  adaptorAllowedMentions: transformAdaptorAllowedMentions,
+  adaptorMessageReference: transformAdaptorMessageReference,
+  adaptorMessageFlags: transformAdaptorMessageFlags,
 };

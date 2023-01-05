@@ -17,5 +17,5 @@ const transformUser = (user: APIUser): AdaptorUser => {
 };
 
 export const transformersUser = {
-  transformUser,
+  user: transformUser,
 };

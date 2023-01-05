@@ -49,9 +49,7 @@ const transformChannel = (
       type: adaptorChannelTypesMap[channel.type],
       ...base,
       parentId: channel.parent_id,
-      threadMetadata: transformers.transformThreadMetadata(
-        channel.thread_metadata
-      ),
+      threadMetadata: transformers.threadMetadata(channel.thread_metadata),
     } satisfies AdaptorPartialThreadChannel;
   } else {
     return {
@@ -62,6 +60,6 @@ const transformChannel = (
 };
 
 export const transformersChannel = {
-  transformChannel,
-  transformThreadMetadata,
+  channel: transformChannel,
+  threadMetadata: transformThreadMetadata,
 };
