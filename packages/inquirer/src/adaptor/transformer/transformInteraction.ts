@@ -10,11 +10,7 @@ import type {
   AdaptorInteraction,
   AdaptorInteractionBase,
   AdaptorModalSubmitInteraction,
-  AdaptorPartialChannel,
-  AdaptorPartialMember,
   AdaptorPingInteraction,
-  AdaptorRole,
-  AdaptorUser,
   AdaptorUserInvokedInteractionBase,
   Snowflake,
 } from "../structure";
@@ -255,37 +251,25 @@ const transformModalSubmitInteraction = (
   };
 };
 
-const transformResolvedUsers: (
-  record: Record<Snowflake, APIUser>
-) => Record<Snowflake, AdaptorUser> = transformRecordValue<
-  Snowflake,
-  APIUser,
-  AdaptorUser
->(transformers.user);
+const transformResolvedUsers = (record: Record<Snowflake, APIUser>) => {
+  return transformRecordValue(transformers.user)(record);
+};
 
-const transformResolvedMembers: (
+const transformResolvedMembers = (
   record: Record<Snowflake, APIInteractionDataResolvedGuildMember>
-) => Record<Snowflake, AdaptorPartialMember> = transformRecordValue<
-  Snowflake,
-  APIInteractionDataResolvedGuildMember,
-  AdaptorPartialMember
->(transformers.partialMember);
+) => {
+  return transformRecordValue(transformers.partialMember)(record);
+};
 
-const transformResolvedRoles: (
-  record: Record<Snowflake, APIRole>
-) => Record<Snowflake, AdaptorRole> = transformRecordValue<
-  Snowflake,
-  APIRole,
-  AdaptorRole
->(transformers.role);
+const transformResolvedRoles = (record: Record<Snowflake, APIRole>) => {
+  return transformRecordValue(transformers.role)(record);
+};
 
-const transformResolvedChannels: (
+const transformResolvedChannels = (
   record: Record<Snowflake, APIInteractionDataResolvedChannel>
-) => Record<Snowflake, AdaptorPartialChannel> = transformRecordValue<
-  Snowflake,
-  APIInteractionDataResolvedChannel,
-  AdaptorPartialChannel
->(transformers.channel);
+) => {
+  return transformRecordValue(transformers.channel)(record);
+};
 
 export const transformersInteraction = {
   interaction: transformInteraction,
