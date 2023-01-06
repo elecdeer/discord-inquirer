@@ -24,9 +24,9 @@
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
   "dependencies": {
     "@elecdeer/event-flow": "*",
-    "discord-api-types": "^0.37.25",
+    "discord-api-types": "^0.37.26",
     "node-object-hash": "^2.3.10",
-    "type-fest": "^3.4.0"
+    "type-fest": "^3.5.1"
   },
   "devDependencies": {
     "@monorepo/eslint-config": "*",
