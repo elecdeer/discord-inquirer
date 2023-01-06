@@ -1,7 +1,7 @@
 /**
- * {@link https://discord.com/developers/docs/resources/emoji#emoji-object-emoji-structure}
+ * @see https://discord.com/developers/docs/resources/emoji#emoji-object-emoji-structure
  */
-export interface PartialEmoji {
+export interface AdaptorPartialEmoji {
   id?: string | null;
   name?: string | null;
   animated?: boolean;

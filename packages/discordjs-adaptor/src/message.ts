@@ -1,23 +1,18 @@
-import {
-  transformActionRowComponent,
-  transformAllowedMentions,
-  transformEmbed,
-  transformFlags,
-} from "discord-inquirer";
+import { transformers } from "discord-inquirer";
 
 import type {
-  MessagePayload,
-  Snowflake,
-  MessagePayloadPatch,
+  AdaptorMessagePayload,
+  AdaptorMessagePayloadPatch,
   DiscordAdaptor,
+  Snowflake,
 } from "discord-inquirer";
 import type {
+  ChannelManager,
+  Client,
   MessageCreateOptions,
   MessageEditOptions,
   TextBasedChannel,
 } from "discord.js";
-import type { Client } from "discord.js";
-import type { ChannelManager } from "discord.js";
 
 export const sendMessage =
   (client: Client): DiscordAdaptor["sendMessage"] =>
@@ -59,41 +54,41 @@ const fetchTextChannel = (
 };
 
 export const createMessageOption = (
-  payload: MessagePayload & {
+  payload: AdaptorMessagePayload & {
     files?: MessageCreateOptions["files"];
   }
 ): MessageCreateOptions => {
   return {
     content: payload.content,
-    embeds: payload.embeds?.map(transformEmbed),
+    embeds: payload.embeds?.map(transformers.adaptorEmbed),
     allowedMentions:
       payload.allowedMentions &&
-      transformAllowedMentions(payload.allowedMentions),
+      transformers.adaptorAllowedMentions(payload.allowedMentions),
     files: payload.files,
-    components: payload.components?.map(transformActionRowComponent),
+    components: payload.components?.map(transformers.adaptorActionRowComponent),
     stickers: payload.stickerIds,
     reply: payload.messageReference && {
       messageReference: payload.messageReference.messageId,
     },
-    flags: transformFlags(payload),
+    flags: transformers.adaptorMessageFlags(payload),
   };
 };
 
 export const createMessageEditOption = (
-  payload: MessagePayloadPatch & {
+  payload: AdaptorMessagePayloadPatch & {
     files?: MessageCreateOptions["files"];
   }
 ): MessageEditOptions => {
   return {
     content: payload.content,
-    embeds: payload.embeds?.map(transformEmbed),
+    embeds: payload.embeds?.map(transformers.adaptorEmbed),
     allowedMentions:
       payload.allowedMentions === null
         ? {}
         : payload.allowedMentions &&
-          transformAllowedMentions(payload.allowedMentions),
+          transformers.adaptorAllowedMentions(payload.allowedMentions),
     files: payload.files,
-    components: payload.components?.map(transformActionRowComponent),
-    flags: transformFlags(payload),
+    components: payload.components?.map(transformers.adaptorActionRowComponent),
+    flags: transformers.adaptorMessageFlags(payload),
   };
 };

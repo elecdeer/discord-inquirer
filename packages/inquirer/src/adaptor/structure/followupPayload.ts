@@ -1,14 +1,15 @@
 import type { SetNullable } from "../../util/types";
-import type { MessagePayload } from "./messagePayload";
+import type { AdaptorMessagePayload } from "./messagePayload";
 
-export interface FollowupPayload extends Omit<MessagePayload, "stickerIds"> {
+export interface AdaptorFollowupPayload
+  extends Omit<AdaptorMessagePayload, "stickerIds"> {
   ephemeral?: boolean;
 }
 
-export type FollowupPayloadPatch = Omit<
+export type AdaptorFollowupPayloadPatch = Omit<
   SetNullable<
-    FollowupPayload,
-    Exclude<keyof FollowupPayload, "suppressEmbeds" | "ephemeral">
+    AdaptorFollowupPayload,
+    Exclude<keyof AdaptorFollowupPayload, "suppressEmbeds" | "ephemeral">
   >,
   "messageReference"
 >;

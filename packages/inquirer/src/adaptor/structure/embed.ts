@@ -1,7 +1,7 @@
 /**
- * {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-structure}
+ * @see https://discord.com/developers/docs/resources/channel#embed-object-embed-structure
  */
-export interface Embed {
+export interface AdaptorEmbed {
   /**
    * title of embed
    */
@@ -30,33 +30,33 @@ export interface Embed {
   /**
    * footer information
    */
-  footer?: EmbedFooter;
+  footer?: AdaptorEmbedFooter;
 
   /**
    * image information
    */
-  image?: EmbedImage;
+  image?: AdaptorEmbedImage;
 
   /**
    * thumbnail information
    */
-  thumbnail?: EmbedThumbnail;
+  thumbnail?: AdaptorEmbedThumbnail;
 
   /**
    * author information
    */
-  author?: EmbedAuthor;
+  author?: AdaptorEmbedAuthor;
 
   /**
    * fields information
    */
-  fields?: EmbedField[];
+  fields?: AdaptorEmbedField[];
 }
 
 /**
- * {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure}
+ * @see https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure
  */
-export interface EmbedFooter {
+export interface AdaptorEmbedFooter {
   /**
    * footer text
    */
@@ -69,9 +69,9 @@ export interface EmbedFooter {
 }
 
 /**
- * {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-image-structure}
+ * @see https://discord.com/developers/docs/resources/channel#embed-object-embed-image-structure
  */
-export interface EmbedImage {
+export interface AdaptorEmbedImage {
   /**
    * source url of image (only supports http(s) and attachments)
    */
@@ -79,9 +79,9 @@ export interface EmbedImage {
 }
 
 /**
- * {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-thumbnail-structure}
+ * @see https://discord.com/developers/docs/resources/channel#embed-object-embed-thumbnail-structure
  */
-export interface EmbedThumbnail {
+export interface AdaptorEmbedThumbnail {
   /**
    * source url of thumbnail (only supports http(s) and attachments)
    */
@@ -89,9 +89,9 @@ export interface EmbedThumbnail {
 }
 
 /**
- * {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-author-structure}
+ * @see https://discord.com/developers/docs/resources/channel#embed-object-embed-author-structure
  */
-export interface EmbedAuthor {
+export interface AdaptorEmbedAuthor {
   /**
    * name of author
    */
@@ -109,9 +109,9 @@ export interface EmbedAuthor {
 }
 
 /**
- * {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-field-structure}
+ * @see https://discord.com/developers/docs/resources/channel#embed-object-embed-field-structure
  */
-export interface EmbedField {
+export interface AdaptorEmbedField {
   /**
    * name of the field
    */

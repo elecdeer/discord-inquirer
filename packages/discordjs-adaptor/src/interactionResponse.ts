@@ -1,4 +1,4 @@
-import { transformInteractionResponse } from "discord-inquirer";
+import { transformers } from "discord-inquirer";
 import { Routes } from "discord.js";
 
 import { createMessageEditOption } from "./message";
@@ -10,7 +10,7 @@ export const sendInteractionResponse =
   (client: Client<true>): DiscordAdaptor["sendInteractionResponse"] =>
   async (interactionId, token, payload) => {
     await client.rest.post(Routes.interactionCallback(interactionId, token), {
-      body: transformInteractionResponse(payload),
+      body: transformers.adaptorInteractionResponse(payload),
       auth: false,
     });
   };

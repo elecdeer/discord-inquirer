@@ -1,53 +1,85 @@
-import type { ChannelTypes } from "./channel";
-import type { PartialEmoji } from "./emoji";
+import { ButtonStyle } from "discord-api-types/v10";
+
+import type { AdaptorChannelTypes } from "./channel";
+import type { AdaptorPartialEmoji } from "./emoji";
+
+export const adaptorComponentTypesMap = {
+  row: 1,
+  button: 2,
+  stringSelect: 3,
+  textInput: 4,
+  userSelect: 5,
+  roleSelect: 6,
+  mentionableSelect: 7,
+  channelSelect: 8,
+} as const;
+
+export type AdaptorComponentTypes = keyof typeof adaptorComponentTypesMap;
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#component-object}
+ * @see https://discord.com/developers/docs/interactions/message-components#component-object
  */
-export interface MessageActionRowComponent {
+export interface AdaptorMessageActionRowComponent {
   type: "row";
   components:
     | [
-        | ButtonComponent
-        | StringSelectComponent<unknown>
-        | UserSelectComponent
-        | RoleSelectComponent
-        | MentionableSelectComponent
-        | ChannelSelectComponent
+        | AdaptorButtonComponent
+        | AdaptorStringSelectComponent<unknown>
+        | AdaptorUserSelectComponent
+        | AdaptorRoleSelectComponent
+        | AdaptorMentionableSelectComponent
+        | AdaptorChannelSelectComponent
       ]
-    | [ButtonComponent, ButtonComponent]
-    | [ButtonComponent, ButtonComponent, ButtonComponent]
-    | [ButtonComponent, ButtonComponent, ButtonComponent, ButtonComponent]
+    | [AdaptorButtonComponent, AdaptorButtonComponent]
+    | [AdaptorButtonComponent, AdaptorButtonComponent, AdaptorButtonComponent]
     | [
-        ButtonComponent,
-        ButtonComponent,
-        ButtonComponent,
-        ButtonComponent,
-        ButtonComponent
+        AdaptorButtonComponent,
+        AdaptorButtonComponent,
+        AdaptorButtonComponent,
+        AdaptorButtonComponent
+      ]
+    | [
+        AdaptorButtonComponent,
+        AdaptorButtonComponent,
+        AdaptorButtonComponent,
+        AdaptorButtonComponent,
+        AdaptorButtonComponent
       ];
 }
 
-export interface ModalActionRowComponent {
+export interface AdaptorModalActionRowComponent {
   type: "row";
-  components: [TextInputComponent];
+  components: [AdaptorTextInputComponent];
 }
 
-export type MessageComponent =
-  | ButtonComponent
-  | StringSelectComponent<unknown>
-  | UserSelectComponent
-  | RoleSelectComponent
-  | MentionableSelectComponent
-  | ChannelSelectComponent;
+export type AdaptorMessageComponent =
+  | AdaptorButtonComponent
+  | AdaptorStringSelectComponent<unknown>
+  | AdaptorUserSelectComponent
+  | AdaptorRoleSelectComponent
+  | AdaptorMentionableSelectComponent
+  | AdaptorChannelSelectComponent;
 
-export type ModalComponent = TextInputComponent;
+export type AdaptorModalComponent = AdaptorTextInputComponent;
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#component-object}
+ * @see https://discord.com/developers/docs/interactions/message-components#component-object
  */
-export type ButtonComponent = LinkButtonComponent | NonLinkButtonComponent;
+export type AdaptorButtonComponent =
+  | AdaptorLinkButtonComponent
+  | AdaptorNonLinkButtonComponent;
 
-export interface ButtonComponentBase {
+export const buttonStyleMap = {
+  primary: ButtonStyle.Primary,
+  secondary: ButtonStyle.Secondary,
+  success: ButtonStyle.Success,
+  danger: ButtonStyle.Danger,
+} as const satisfies Record<
+  AdaptorNonLinkButtonComponent["style"],
+  ButtonStyle
+>;
+
+export interface AdaptorButtonComponentBase {
   type: "button";
 
   /**
@@ -58,7 +90,7 @@ export interface ButtonComponentBase {
   /**
    * emoji to display to the left of the text
    */
-  emoji?: PartialEmoji;
+  emoji?: AdaptorPartialEmoji;
 
   /**
    * whether the button is disabled
@@ -67,7 +99,7 @@ export interface ButtonComponentBase {
   disabled?: boolean;
 }
 
-export interface LinkButtonComponent extends ButtonComponentBase {
+export interface AdaptorLinkButtonComponent extends AdaptorButtonComponentBase {
   style: "link";
 
   /**
@@ -78,7 +110,8 @@ export interface LinkButtonComponent extends ButtonComponentBase {
   customId?: never;
 }
 
-export interface NonLinkButtonComponent extends ButtonComponentBase {
+export interface AdaptorNonLinkButtonComponent
+  extends AdaptorButtonComponentBase {
   style: "primary" | "secondary" | "success" | "danger";
 
   /**
@@ -90,9 +123,9 @@ export interface NonLinkButtonComponent extends ButtonComponentBase {
 }
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
  */
-export interface SelectComponentBase {
+export interface AdaptorSelectComponentBase {
   /**
    * custom placeholder text if nothing is selected, max 100 characters
    */
@@ -125,21 +158,22 @@ export interface SelectComponentBase {
 }
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
  */
-export interface StringSelectComponent<T> extends SelectComponentBase {
+export interface AdaptorStringSelectComponent<T>
+  extends AdaptorSelectComponentBase {
   type: "stringSelect";
 
   /**
    * the choices in the select, max 25
    */
-  options: SelectOption<T>[];
+  options: AdaptorSelectOption<T>[];
 }
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure}
+ * @see https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure
  */
-export interface SelectOption<T> {
+export interface AdaptorSelectOption<T> {
   /**
    * the user-facing name of the option, max 100 characters
    */
@@ -158,7 +192,7 @@ export interface SelectOption<T> {
   /**
    * the emoji to display to the left of the option
    */
-  emoji?: PartialEmoji;
+  emoji?: AdaptorPartialEmoji;
 
   /**
    * whether this option should be enabled by default
@@ -167,42 +201,44 @@ export interface SelectOption<T> {
 }
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
  */
-export interface UserSelectComponent extends SelectComponentBase {
+export interface AdaptorUserSelectComponent extends AdaptorSelectComponentBase {
   type: "userSelect";
 }
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
  */
-export interface RoleSelectComponent extends SelectComponentBase {
+export interface AdaptorRoleSelectComponent extends AdaptorSelectComponentBase {
   type: "roleSelect";
 }
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
  */
-export interface MentionableSelectComponent extends SelectComponentBase {
+export interface AdaptorMentionableSelectComponent
+  extends AdaptorSelectComponentBase {
   type: "mentionableSelect";
 }
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure}
+ * @see https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
  */
-export interface ChannelSelectComponent extends SelectComponentBase {
+export interface AdaptorChannelSelectComponent
+  extends AdaptorSelectComponentBase {
   type: "channelSelect";
 
   /**
    * List of channel types to include in the channel select component (type 8)
    */
-  channelTypes?: ChannelTypes[];
+  channelTypes?: AdaptorChannelTypes[];
 }
 
 /**
- * {@link https://discord.com/developers/docs/interactions/message-components#text-inputs-text-input-structure}
+ * @see https://discord.com/developers/docs/interactions/message-components#text-inputs-text-input-structure
  */
-export interface TextInputComponent {
+export interface AdaptorTextInputComponent {
   type: "textInput";
 
   /**

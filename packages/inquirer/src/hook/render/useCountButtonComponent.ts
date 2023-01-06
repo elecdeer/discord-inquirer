@@ -5,15 +5,15 @@ import { useCustomId } from "../state/useCustomId";
 import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 
-import type { ButtonComponent } from "../../adaptor";
+import type { AdaptorButtonComponent } from "../../adaptor";
 import type { UnfulfilledCurriedBuilder } from "../../util/curriedBuilder";
 
 export type UseCountButtonComponentResult = [
   count: number,
   CountButton: UnfulfilledCurriedBuilder<
-    ButtonComponent,
+    AdaptorButtonComponent,
     { type: "button"; customId: string },
-    ButtonComponent
+    AdaptorButtonComponent
   >
 ];
 
