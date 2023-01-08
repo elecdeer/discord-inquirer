@@ -1,15 +1,21 @@
-import { isAdaptorStringSelectInteraction, messageFacade } from "../../adaptor";
+import {
+  isAdaptorChannelSelectInteraction,
+  messageFacade,
+} from "../../adaptor";
 import { getHookContext } from "../../core/hookContext";
 import { useEffect } from "./useEffect";
 
-import type { AdaptorInteractionBase } from "../../adaptor";
+import type {
+  AdaptorChannelSelectInteraction,
+  AdaptorPartialChannel,
+} from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
-export const useStringSelectEvent = (
+export const useChannelSelectEvent = (
   customId: string,
   handle: (
-    interaction: AdaptorInteractionBase,
-    values: string[],
+    interaction: AdaptorChannelSelectInteraction,
+    channels: AdaptorPartialChannel[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
@@ -18,18 +24,21 @@ export const useStringSelectEvent = (
     const facade = messageFacade(adapter);
 
     const clear = adapter.subscribeInteraction((interaction) => {
-      if (!isAdaptorStringSelectInteraction(interaction)) return;
+      if (!isAdaptorChannelSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
       const deferUpdate = async () => {
         await facade.deferUpdate(interaction.id, interaction.token);
       };
 
+      const channels = interaction.data.values.map(
+        (id) => interaction.data.resolved.channels[id]
+      );
       handle(
         {
           ...interaction,
         },
-        interaction.data.values,
+        channels,
         deferUpdate
       );
     });

@@ -1,4 +1,4 @@
-import { messageFacade } from "../../adaptor";
+import { isAdaptorButtonInteraction, messageFacade } from "../../adaptor";
 import { getHookContext } from "../../core/hookContext";
 import { useEffect } from "./useEffect";
 
@@ -17,8 +17,7 @@ export const useButtonEvent = (
     const facade = messageFacade(adapter);
 
     const clear = adapter.subscribeInteraction((interaction) => {
-      if (interaction.type !== "messageComponent") return;
-      if (interaction.data.componentType !== "button") return;
+      if (!isAdaptorButtonInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
       const deferUpdate = async () => {
