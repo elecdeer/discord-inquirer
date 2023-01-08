@@ -8,12 +8,12 @@ import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 
 import type { AdaptorUserSelectComponent } from "../../adaptor";
-import type { UnfulfilledCurriedBuilder } from "../../util/curriedBuilder";
+import type { FulfilledCurriedBuilder } from "../../util/curriedBuilder";
 import type { UserSelectResultValue } from "../effect/useUserSelectEvent";
 
 export type UseUserSelectComponentResult = [
   selectResult: UserSelectResultValue[],
-  UserSelect: UnfulfilledCurriedBuilder<
+  UserSelect: FulfilledCurriedBuilder<
     AdaptorUserSelectComponent,
     {
       type: "userSelect";
@@ -25,13 +25,12 @@ export type UseUserSelectComponentResult = [
 
 export type UseUserSingleSelectComponentResult = [
   selectResult: UserSelectResultValue | null,
-  UserSelect: UnfulfilledCurriedBuilder<
+  UserSelect: FulfilledCurriedBuilder<
     AdaptorUserSelectComponent,
     {
       type: "userSelect";
       customId: string;
       maxValues: 1;
-      minValues: 0;
     },
     AdaptorUserSelectComponent
   >
@@ -61,11 +60,12 @@ export const useUserSelectComponent = (
     }
   }, [selected, param.onSelected]);
 
-  const Select = UserSelect({
-    customId,
-  });
-
-  return [selected, Select];
+  return [
+    selected,
+    UserSelect({
+      customId,
+    }),
+  ];
 };
 
 export const useUserSingleSelectComponent = (
@@ -73,32 +73,17 @@ export const useUserSingleSelectComponent = (
     onSelected?: (selected: UserSelectResultValue | null) => void;
   } = {}
 ): UseUserSingleSelectComponentResult => {
-  const customId = useCustomId("userSelect");
-
-  const [selected, setSelected] = useState<UserSelectResultValue | null>(null);
-
-  useUserSelectEvent(customId, async (_, users, deferUpdate) => {
-    assert(users.length <= 1);
-
-    await deferUpdate();
-
-    setSelected(users[0] ?? null);
-    valueChanged.current = true;
+  const [selected, Select] = useUserSelectComponent({
+    onSelected: (selected) => {
+      assert(selected.length <= 1);
+      param.onSelected?.(selected[0] ?? null);
+    },
   });
 
-  const valueChanged = useRef(false);
-  useEffect(() => {
-    if (valueChanged.current) {
-      param.onSelected?.(selected);
-      valueChanged.current = false;
-    }
-  }, [selected, param.onSelected]);
-
-  const Select = UserSelect({
-    customId,
-    maxValues: 1,
-    minValues: 0,
-  });
-
-  return [selected, Select];
+  return [
+    selected[0] ?? null,
+    Select({
+      maxValues: 1,
+    }),
+  ];
 };

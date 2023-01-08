@@ -1,3 +1,5 @@
+import assert from "node:assert";
+
 import { StringSelect } from "../../adaptor";
 import { useEffect } from "../effect/useEffect";
 import { useStringSelectEvent } from "../effect/useStringSelectEvent";
@@ -9,7 +11,7 @@ import type {
   AdaptorStringSelectComponent,
   AdaptorSelectOption,
 } from "../../adaptor";
-import type { UnfulfilledCurriedBuilder } from "../../util/curriedBuilder";
+import type { FulfilledCurriedBuilder } from "../../util/curriedBuilder";
 import type { SetOptional } from "type-fest";
 
 export type StringSelectItem<T> = Omit<AdaptorSelectOption<T>, "value"> & {
@@ -29,7 +31,20 @@ export type StringSelectItemResult<T> = StringSelectItem<T> & {
 
 export type UseStringSelectComponentResult<T> = [
   selectResult: StringSelectItemResult<T>[],
-  StringSelect: UnfulfilledCurriedBuilder<
+  StringSelect: FulfilledCurriedBuilder<
+    AdaptorStringSelectComponent<T>,
+    {
+      type: "stringSelect";
+      customId: string;
+      options: StringSelectItemResult<T>[];
+    },
+    AdaptorStringSelectComponent<T>
+  >
+];
+
+export type UseStringSingleSelectComponentResult<T> = [
+  selectResult: StringSelectItemResult<T> | null,
+  StringSelect: FulfilledCurriedBuilder<
     AdaptorStringSelectComponent<T>,
     {
       type: "stringSelect";
@@ -114,4 +129,29 @@ const initialSelectItems = <T>(
       key: item.key ?? `select-item-${index}`,
     };
   });
+};
+
+export const useStringSingleSelectComponent = <T>(param: {
+  options: readonly PartialStringSelectItem<T>[];
+  onSelected?: (selected: StringSelectItemResult<T> | null) => void;
+}): UseStringSingleSelectComponentResult<T> => {
+  const [result, Select] = useStringSelectComponent({
+    options: param.options,
+    onSelected: (selected) => {
+      param.onSelected?.(singleResult(selected));
+    },
+  });
+
+  const singleResult = (resultList: StringSelectItemResult<T>[]) => {
+    const selected = resultList.filter((item) => item.selected);
+    assert(selected.length <= 1);
+    return selected[0] ?? null;
+  };
+
+  return [
+    singleResult(result),
+    Select({
+      maxValues: 1,
+    }),
+  ];
 };

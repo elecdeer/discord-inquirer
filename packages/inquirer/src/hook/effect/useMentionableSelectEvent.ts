@@ -25,7 +25,7 @@ export const useMentionableSelectEvent = (
   customId: Snowflake,
   handle: (
     interaction: AdaptorMentionableSelectInteraction,
-    values: MentionableSelectValue[],
+    userOrRoles: MentionableSelectValue[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
