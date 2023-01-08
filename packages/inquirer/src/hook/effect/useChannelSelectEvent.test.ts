@@ -2,18 +2,21 @@ import { describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../../core/hookContext";
 import {
+  createAdaptorPartialNonThreadChannelMock,
+  createAdaptorPartialThreadChannelBaseMock,
   createAdaptorUserInvokedInteractionBaseMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useButtonEvent } from "./useButtonEvent";
+import { useChannelSelectEvent } from "./useChannelSelectEvent";
 
 import type {
-  AdaptorButtonInteraction,
-  AdaptorUserSelectInteraction,
+  AdaptorChannelSelectInteraction,
+  AdaptorPartialChannel,
+  Snowflake,
 } from "../../adaptor";
 
-describe("packages/inquirer/src/hook/useButtonEvent", () => {
-  describe("useButtonEvent()", () => {
+describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
+  describe("useChannelSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
       const controller = createHookContext(adaptorMock, vi.fn());
@@ -21,25 +24,41 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
 
       controller.startRender();
 
-      useButtonEvent("customId", handle);
+      useChannelSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
+
+      const channels = {
+        channelIdA: {
+          ...createAdaptorPartialNonThreadChannelMock(),
+          type: "guildText",
+        },
+        channelIdB: {
+          ...createAdaptorPartialThreadChannelBaseMock(),
+          type: "publicThread",
+        },
+      } satisfies Record<Snowflake, AdaptorPartialChannel>;
 
       const interactionMock = {
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
-          componentType: "button",
+          componentType: "channelSelect",
           customId: "customId",
+          values: ["channelIdA", "channelIdB"],
+          resolved: {
+            channels,
+          },
         },
-      } as const satisfies AdaptorButtonInteraction;
+      } satisfies AdaptorChannelSelectInteraction;
       adaptorMock.emitInteraction!(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
           ...interactionMock,
         },
+        expect.arrayContaining([channels.channelIdA, channels.channelIdB]),
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
@@ -54,7 +73,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
 
       controller.startRender();
 
-      useButtonEvent("customId", handle);
+      useChannelSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
@@ -64,7 +83,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
         type: "messageComponent",
         data: {
           componentType: "button",
-          customId: "customId2",
+          customId: "customId",
         },
       });
 
@@ -72,15 +91,19 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
-          componentType: "userSelect",
-          customId: "customId",
-          values: ["value1", "value2"],
+          componentType: "channelSelect",
+          customId: "unmatchedCustomId",
+          values: ["channelIdA"],
           resolved: {
-            users: {},
-            members: {},
+            channels: {
+              channelIdA: {
+                ...createAdaptorPartialNonThreadChannelMock(),
+                type: "guildText",
+              },
+            },
           },
         },
-      } satisfies AdaptorUserSelectInteraction);
+      } satisfies AdaptorChannelSelectInteraction);
 
       expect(handle).not.toHaveBeenCalled();
 

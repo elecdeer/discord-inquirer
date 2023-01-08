@@ -2,18 +2,16 @@ import { describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../../core/hookContext";
 import {
+  createAdaptorRoleMock,
   createAdaptorUserInvokedInteractionBaseMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useButtonEvent } from "./useButtonEvent";
+import { useRoleSelectEvent } from "./useRoleSelectEvent";
 
-import type {
-  AdaptorButtonInteraction,
-  AdaptorUserSelectInteraction,
-} from "../../adaptor";
+import type { AdaptorRoleSelectInteraction } from "../../adaptor";
 
-describe("packages/inquirer/src/hook/useButtonEvent", () => {
-  describe("useButtonEvent()", () => {
+describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
+  describe("useRoleSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
       const controller = createHookContext(adaptorMock, vi.fn());
@@ -21,25 +19,35 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
 
       controller.startRender();
 
-      useButtonEvent("customId", handle);
+      useRoleSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
 
+      const roles = {
+        roleIdA: createAdaptorRoleMock({ id: "roleIdA" }),
+        roleIdB: createAdaptorRoleMock({ id: "roleIdB" }),
+      };
       const interactionMock = {
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
-          componentType: "button",
+          componentType: "roleSelect",
           customId: "customId",
+          values: ["roleIdA", "roleIdB"],
+          resolved: {
+            roles,
+          },
         },
-      } as const satisfies AdaptorButtonInteraction;
+      } satisfies AdaptorRoleSelectInteraction;
+
       adaptorMock.emitInteraction!(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
           ...interactionMock,
         },
+        expect.arrayContaining([roles.roleIdA, roles.roleIdB]),
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
@@ -54,7 +62,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
 
       controller.startRender();
 
-      useButtonEvent("customId", handle);
+      useRoleSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
@@ -63,8 +71,14 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
-          componentType: "button",
-          customId: "customId2",
+          componentType: "roleSelect",
+          customId: "unmatchedCustomId",
+          values: ["roleIdA"],
+          resolved: {
+            roles: {
+              roleIdA: createAdaptorRoleMock({ id: "roleIdA" }),
+            },
+          },
         },
       });
 
@@ -72,15 +86,10 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
-          componentType: "userSelect",
+          componentType: "button",
           customId: "customId",
-          values: ["value1", "value2"],
-          resolved: {
-            users: {},
-            members: {},
-          },
         },
-      } satisfies AdaptorUserSelectInteraction);
+      });
 
       expect(handle).not.toHaveBeenCalled();
 

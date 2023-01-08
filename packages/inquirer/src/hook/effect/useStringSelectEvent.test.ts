@@ -1,44 +1,16 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../../core/hookContext";
-import { createDiscordAdaptorMock } from "../../mock";
-import { useSelectMenuEvent } from "./useSelectMenuEvent";
+import {
+  createAdaptorUserInvokedInteractionBaseMock,
+  createDiscordAdaptorMock,
+} from "../../mock";
+import { useStringSelectEvent } from "./useStringSelectEvent";
 
 import type { AdaptorStringSelectInteraction } from "../../adaptor";
 
-describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
-  describe("useSelectMenuEvent()", () => {
-    const interactionMock = {
-      type: "messageComponent",
-      id: "interactionId",
-      token: "interactionToken",
-      version: 1,
-      user: {
-        id: "userId",
-        username: "username",
-        discriminator: "discriminator",
-        avatar: "avatar",
-        bot: false,
-        system: false,
-        mfaEnabled: false,
-        flags: 0,
-        banner: null,
-        accentColor: null,
-      },
-      member: null,
-      guildId: null,
-      channelId: "channelId",
-      locale: "locale",
-      guildLocale: null,
-      applicationId: "applicationId",
-      appPermissions: null,
-      data: {
-        componentType: "stringSelect",
-        customId: "customId",
-        values: ["value1", "value2"],
-      },
-    } satisfies AdaptorStringSelectInteraction;
-
+describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
+  describe("useStringSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
       const controller = createHookContext(adaptorMock, vi.fn());
@@ -46,14 +18,21 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
 
       controller.startRender();
 
-      useSelectMenuEvent("customId", handle);
+      useStringSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
 
-      adaptorMock.emitInteraction!({
-        ...interactionMock,
-      } satisfies AdaptorStringSelectInteraction);
+      const interactionMock = {
+        ...createAdaptorUserInvokedInteractionBaseMock(),
+        type: "messageComponent",
+        data: {
+          componentType: "stringSelect",
+          customId: "customId",
+          values: ["value1", "value2"],
+        },
+      } satisfies AdaptorStringSelectInteraction;
+      adaptorMock.emitInteraction!(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
@@ -74,13 +53,14 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
 
       controller.startRender();
 
-      useSelectMenuEvent("customId", handle);
+      useStringSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
 
       adaptorMock.emitInteraction!({
-        ...interactionMock,
+        ...createAdaptorUserInvokedInteractionBaseMock(),
+        type: "messageComponent",
         data: {
           componentType: "stringSelect",
           customId: "customIdUnMatch",
@@ -89,7 +69,8 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
       });
 
       adaptorMock.emitInteraction!({
-        ...interactionMock,
+        ...createAdaptorUserInvokedInteractionBaseMock(),
+        type: "messageComponent",
         data: {
           componentType: "button",
           customId: "customId",

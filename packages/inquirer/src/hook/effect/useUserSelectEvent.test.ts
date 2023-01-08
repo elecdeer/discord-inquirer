@@ -2,18 +2,17 @@ import { describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../../core/hookContext";
 import {
+  createAdaptorPartialMemberMock,
   createAdaptorUserInvokedInteractionBaseMock,
+  createAdaptorUserMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useButtonEvent } from "./useButtonEvent";
+import { useUserSelectEvent } from "./useUserSelectEvent";
 
-import type {
-  AdaptorButtonInteraction,
-  AdaptorUserSelectInteraction,
-} from "../../adaptor";
+import type { AdaptorUserSelectInteraction } from "../../adaptor";
 
-describe("packages/inquirer/src/hook/useButtonEvent", () => {
-  describe("useButtonEvent()", () => {
+describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
+  describe("useUserSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
       const controller = createHookContext(adaptorMock, vi.fn());
@@ -21,25 +20,49 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
 
       controller.startRender();
 
-      useButtonEvent("customId", handle);
+      useUserSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
+
+      const users = {
+        userIdA: createAdaptorUserMock({ id: "userIdA" }),
+        userIdB: createAdaptorUserMock({ id: "userIdB" }),
+      };
+      const members = {
+        userIdA: createAdaptorPartialMemberMock({ nick: "nickA" }),
+        userIdB: createAdaptorPartialMemberMock({ nick: "nickB" }),
+      };
 
       const interactionMock = {
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
-          componentType: "button",
+          componentType: "userSelect",
           customId: "customId",
+          values: ["userIdA", "userIdB"],
+          resolved: {
+            users: users,
+            members: members,
+          },
         },
-      } as const satisfies AdaptorButtonInteraction;
+      } satisfies AdaptorUserSelectInteraction;
       adaptorMock.emitInteraction!(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
           ...interactionMock,
         },
+        expect.arrayContaining([
+          {
+            ...users.userIdA,
+            member: members.userIdA,
+          },
+          {
+            ...users.userIdB,
+            member: members.userIdB,
+          },
+        ]),
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
@@ -54,7 +77,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
 
       controller.startRender();
 
-      useButtonEvent("customId", handle);
+      useUserSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
@@ -64,7 +87,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
         type: "messageComponent",
         data: {
           componentType: "button",
-          customId: "customId2",
+          customId: "customId",
         },
       });
 
@@ -73,11 +96,15 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
         type: "messageComponent",
         data: {
           componentType: "userSelect",
-          customId: "customId",
-          values: ["value1", "value2"],
+          customId: "unmatchedCustomId",
+          values: ["userIdA"],
           resolved: {
-            users: {},
-            members: {},
+            users: {
+              userIdA: createAdaptorUserMock({ id: "userIdA" }),
+            },
+            members: {
+              userIdA: createAdaptorPartialMemberMock({ nick: "nickA" }),
+            },
           },
         },
       } satisfies AdaptorUserSelectInteraction);

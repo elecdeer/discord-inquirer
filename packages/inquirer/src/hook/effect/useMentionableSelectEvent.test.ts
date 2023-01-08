@@ -2,18 +2,24 @@ import { describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../../core/hookContext";
 import {
+  createAdaptorPartialMemberMock,
+  createAdaptorRoleMock,
   createAdaptorUserInvokedInteractionBaseMock,
+  createAdaptorUserMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useButtonEvent } from "./useButtonEvent";
+import { useMentionableSelectEvent } from "./useMentionableSelectEvent";
 
 import type {
-  AdaptorButtonInteraction,
-  AdaptorUserSelectInteraction,
+  AdaptorMentionableSelectInteraction,
+  AdaptorPartialMember,
+  AdaptorRole,
+  AdaptorUser,
+  Snowflake,
 } from "../../adaptor";
 
-describe("packages/inquirer/src/hook/useButtonEvent", () => {
-  describe("useButtonEvent()", () => {
+describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
+  describe("useMentionableSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
       const controller = createHookContext(adaptorMock, vi.fn());
@@ -21,25 +27,51 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
 
       controller.startRender();
 
-      useButtonEvent("customId", handle);
+      useMentionableSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
+
+      const users = {
+        userIdA: createAdaptorUserMock({ id: "userIdA" }),
+      } satisfies Record<Snowflake, AdaptorUser>;
+      const members = {
+        userIdA: createAdaptorPartialMemberMock({ nick: "nickA" }),
+      } satisfies Record<Snowflake, AdaptorPartialMember>;
+      const roles = {
+        roleIdA: createAdaptorRoleMock({ id: "roleIdA" }),
+      } satisfies Record<Snowflake, AdaptorRole>;
 
       const interactionMock = {
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
-          componentType: "button",
+          componentType: "mentionableSelect",
           customId: "customId",
+          values: ["userIdA", "roleIdA"],
+          resolved: {
+            users,
+            members,
+            roles,
+          },
         },
-      } as const satisfies AdaptorButtonInteraction;
+      } satisfies AdaptorMentionableSelectInteraction;
       adaptorMock.emitInteraction!(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
           ...interactionMock,
         },
+        expect.arrayContaining([
+          {
+            type: "user",
+            ...users.userIdA,
+          },
+          {
+            type: "role",
+            ...roles.roleIdA,
+          },
+        ]),
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
@@ -54,7 +86,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
 
       controller.startRender();
 
-      useButtonEvent("customId", handle);
+      useMentionableSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
@@ -64,7 +96,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
         type: "messageComponent",
         data: {
           componentType: "button",
-          customId: "customId2",
+          customId: "customId",
         },
       });
 
@@ -72,15 +104,18 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
-          componentType: "userSelect",
-          customId: "customId",
-          values: ["value1", "value2"],
+          componentType: "mentionableSelect",
+          customId: "unmatchedCustomId",
+          values: ["roleIdA"],
           resolved: {
             users: {},
             members: {},
+            roles: {
+              roleIdA: createAdaptorRoleMock({ id: "roleIdA" }),
+            },
           },
         },
-      } satisfies AdaptorUserSelectInteraction);
+      } satisfies AdaptorMentionableSelectInteraction);
 
       expect(handle).not.toHaveBeenCalled();
 

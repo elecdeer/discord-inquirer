@@ -1,15 +1,19 @@
-import { messageFacade } from "../../adaptor";
+import { isAdaptorRoleSelectInteraction, messageFacade } from "../../adaptor";
 import { getHookContext } from "../../core/hookContext";
 import { useEffect } from "./useEffect";
 
-import type { AdaptorInteractionBase } from "../../adaptor";
+import type {
+  AdaptorRole,
+  Snowflake,
+  AdaptorRoleSelectInteraction,
+} from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
-export const useSelectMenuEvent = (
-  customId: string,
+export const useRoleSelectEvent = (
+  customId: Snowflake,
   handle: (
-    interaction: AdaptorInteractionBase,
-    values: string[],
+    interaction: AdaptorRoleSelectInteraction,
+    values: AdaptorRole[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
@@ -18,19 +22,21 @@ export const useSelectMenuEvent = (
     const facade = messageFacade(adapter);
 
     const clear = adapter.subscribeInteraction((interaction) => {
-      if (interaction.type !== "messageComponent") return;
-      if (interaction.data.componentType !== "stringSelect") return;
+      if (!isAdaptorRoleSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
       const deferUpdate = async () => {
         await facade.deferUpdate(interaction.id, interaction.token);
       };
 
+      const roles = interaction.data.values.map(
+        (id) => interaction.data.resolved.roles[id]
+      );
       handle(
         {
           ...interaction,
         },
-        interaction.data.values,
+        roles,
         deferUpdate
       );
     });

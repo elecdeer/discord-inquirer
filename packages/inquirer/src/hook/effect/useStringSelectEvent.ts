@@ -1,14 +1,15 @@
-import { isAdaptorButtonInteraction, messageFacade } from "../../adaptor";
+import { isAdaptorStringSelectInteraction, messageFacade } from "../../adaptor";
 import { getHookContext } from "../../core/hookContext";
 import { useEffect } from "./useEffect";
 
 import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
-export const useButtonEvent = (
+export const useStringSelectEvent = (
   customId: string,
   handle: (
     interaction: AdaptorInteractionBase,
+    values: string[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
@@ -17,7 +18,7 @@ export const useButtonEvent = (
     const facade = messageFacade(adapter);
 
     const clear = adapter.subscribeInteraction((interaction) => {
-      if (!isAdaptorButtonInteraction(interaction)) return;
+      if (!isAdaptorStringSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
       const deferUpdate = async () => {
@@ -28,6 +29,7 @@ export const useButtonEvent = (
         {
           ...interaction,
         },
+        interaction.data.values,
         deferUpdate
       );
     });

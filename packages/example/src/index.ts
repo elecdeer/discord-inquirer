@@ -2,11 +2,11 @@ import {
   createScreen,
   inquire,
   Row,
-  useSelectComponent,
+  useChannelSelectComponent,
   useConfirmButtonComponent,
-  ChannelSelect,
-  UserSelect,
-  RoleSelect,
+  useRoleSelectComponent,
+  useStringSelectComponent,
+  useUserSelectComponent,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -49,7 +49,7 @@ client.on("ready", async (readyClient) => {
     const prompt: Prompt<{
       selected: number[];
     }> = (answer, close) => {
-      const [result, Select] = useSelectComponent({
+      const [result, Select] = useStringSelectComponent({
         options: [
           {
             label: "1",
@@ -87,16 +87,24 @@ client.on("ready", async (readyClient) => {
         }
       );
 
-      // useEffect(() => {
-      //   const clear = adaptor.subscribeInteraction((interaction) => {
-      //     if (interaction.type !== "messageComponent") return;
-      //     console.log("interaction", interaction);
-      //   });
-      //
-      //   return () => {
-      //     clear();
-      //   };
-      // });
+      const [_, ChannelSelectComponent] = useChannelSelectComponent({
+        channelTypes: ["guildText"],
+        onSelected: (selected) => {
+          console.log("channel selected", selected);
+        },
+      });
+
+      const [__, UserSelectComponent] = useUserSelectComponent({
+        onSelected: (selected) => {
+          console.log("user selected", selected);
+        },
+      });
+
+      const [___, RoleSelectComponent] = useRoleSelectComponent({
+        onSelected: (selected) => {
+          console.log("role selected", selected);
+        },
+      });
 
       return {
         content: confirmed
@@ -112,21 +120,9 @@ client.on("ready", async (readyClient) => {
               minValues: 1,
             })()
           ),
-          Row(
-            ChannelSelect({
-              customId: "channel-select",
-            })()
-          ),
-          Row(
-            UserSelect({
-              customId: "user-select",
-            })()
-          ),
-          Row(
-            RoleSelect({
-              customId: "role-select",
-            })()
-          ),
+          Row(ChannelSelectComponent()),
+          Row(UserSelectComponent()),
+          Row(RoleSelectComponent()),
           Row(ConfirmButton({ style: "success", label: "confirm" })()),
         ],
       };
