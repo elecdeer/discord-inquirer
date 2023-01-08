@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../../core/hookContext";
 import {
-  createAdaptorUserInvokedInteractionMock,
+  createAdaptorUserInvokedInteractionBaseMock,
   createDiscordAdaptorMock,
 } from "../../mock";
 import { useButtonEvent } from "./useButtonEvent";
@@ -27,7 +27,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
       controller.endRender();
 
       const interactionMock = {
-        ...createAdaptorUserInvokedInteractionMock(),
+        ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
           componentType: "button",
@@ -60,7 +60,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
       controller.endRender();
 
       adaptorMock.emitInteraction!({
-        ...createAdaptorUserInvokedInteractionMock(),
+        ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
           componentType: "button",
@@ -69,7 +69,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
       });
 
       adaptorMock.emitInteraction!({
-        ...createAdaptorUserInvokedInteractionMock(),
+        ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
           componentType: "userSelect",

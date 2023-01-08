@@ -1,8 +1,10 @@
-import { transformers } from "../adaptor";
+import { createAdaptorPartialMemberMock } from "./adaptorMemberMock";
+import { createAdaptorPermissionsMockDefaultAllow } from "./adaptorPermissionMock";
+import { createAdaptorUserMock } from "./adaptorUserMock";
 
 import type { AdaptorUserInvokedInteractionBase } from "../adaptor";
 
-export const createAdaptorUserInvokedInteractionMock = () => {
+export const createAdaptorUserInvokedInteractionBaseMock = () => {
   return {
     id: "interactionIdValue",
     applicationId: "applicationIdValue",
@@ -10,30 +12,10 @@ export const createAdaptorUserInvokedInteractionMock = () => {
     version: 1,
     guildId: "guildIdValue",
     channelId: "channelIdValue",
-    member: {
-      nick: "nickValue",
-      avatar: null,
-      roles: [] as string[],
-      joinedAt: new Date("2021-01-01T00:00:00.000Z"),
-      premiumSince: null,
-      pending: false,
-      permissions: null,
-      communicationDisabledUntil: null,
-    },
-    user: {
-      id: "userIdValue",
-      username: "usernameValue",
-      discriminator: "0000",
-      avatar: null,
-      bot: false,
-      system: false,
-      mfaEnabled: false,
-      banner: null,
-      accentColor: null,
-      flags: 0,
-    },
+    member: createAdaptorPartialMemberMock(),
+    user: createAdaptorUserMock(),
     locale: "en-US",
     guildLocale: "en-US",
-    appPermissions: transformers.permissionFlags(String((1n << 41n) - 1n)),
-  } as const satisfies AdaptorUserInvokedInteractionBase<"guild">;
+    appPermissions: createAdaptorPermissionsMockDefaultAllow(),
+  } satisfies AdaptorUserInvokedInteractionBase<"guild">;
 };
