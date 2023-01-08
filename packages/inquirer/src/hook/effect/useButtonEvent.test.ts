@@ -1,7 +1,10 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { createHookContext } from "../../core/hookContext";
-import { createDiscordAdaptorMock } from "../../mock";
+import {
+  createAdaptorUserInvokedInteractionMock,
+  createDiscordAdaptorMock,
+} from "../../mock";
 import { useButtonEvent } from "./useButtonEvent";
 
 import type {
@@ -11,36 +14,6 @@ import type {
 
 describe("packages/inquirer/src/hook/useButtonEvent", () => {
   describe("useButtonEvent()", () => {
-    const interactionMock = {
-      type: "messageComponent",
-      id: "interactionId",
-      token: "interactionToken",
-      version: 1,
-      user: {
-        id: "userId",
-        username: "username",
-        discriminator: "discriminator",
-        avatar: "avatar",
-        bot: false,
-        system: false,
-        mfaEnabled: false,
-        flags: 0,
-        banner: null,
-        accentColor: null,
-      },
-      member: null,
-      guildId: null,
-      channelId: "channelId",
-      locale: "locale",
-      guildLocale: null,
-      applicationId: "applicationId",
-      appPermissions: null,
-      data: {
-        componentType: "button",
-        customId: "customId",
-      },
-    } as const satisfies AdaptorButtonInteraction;
-
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
       const controller = createHookContext(adaptorMock, vi.fn());
@@ -53,9 +26,15 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
       controller.mount("messageId");
       controller.endRender();
 
-      adaptorMock.emitInteraction!({
-        ...interactionMock,
-      } satisfies AdaptorButtonInteraction);
+      const interactionMock = {
+        ...createAdaptorUserInvokedInteractionMock(),
+        type: "messageComponent",
+        data: {
+          componentType: "button",
+          customId: "customId",
+        },
+      } as const satisfies AdaptorButtonInteraction;
+      adaptorMock.emitInteraction!(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
@@ -81,18 +60,20 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
       controller.endRender();
 
       adaptorMock.emitInteraction!({
-        ...interactionMock,
+        ...createAdaptorUserInvokedInteractionMock(),
+        type: "messageComponent",
         data: {
-          ...interactionMock.data,
+          componentType: "button",
           customId: "customId2",
         },
       });
 
       adaptorMock.emitInteraction!({
-        ...interactionMock,
+        ...createAdaptorUserInvokedInteractionMock(),
+        type: "messageComponent",
         data: {
-          ...interactionMock.data,
           componentType: "userSelect",
+          customId: "customId",
           values: ["value1", "value2"],
           resolved: {
             users: {},
