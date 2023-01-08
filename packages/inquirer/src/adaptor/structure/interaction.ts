@@ -107,6 +107,12 @@ export interface AdaptorButtonInteraction
   };
 }
 
+export const isAdaptorButtonInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorButtonInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "button";
+
 export interface AdaptorStringSelectInteraction
   extends AdaptorUserInvokedInteractionBase {
   type: "messageComponent";
@@ -116,6 +122,12 @@ export interface AdaptorStringSelectInteraction
     values: string[];
   };
 }
+
+export const isAdaptorStringSelectInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorStringSelectInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "stringSelect";
 
 export interface AdaptorUserSelectInteraction
   extends AdaptorUserInvokedInteractionBase {
@@ -131,6 +143,12 @@ export interface AdaptorUserSelectInteraction
   };
 }
 
+export const isAdaptorUserSelectInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorUserSelectInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "userSelect";
+
 export interface AdaptorRoleSelectInteraction
   extends AdaptorUserInvokedInteractionBase {
   type: "messageComponent";
@@ -143,6 +161,12 @@ export interface AdaptorRoleSelectInteraction
     };
   };
 }
+
+export const isAdaptorRoleSelectInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorRoleSelectInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "roleSelect";
 
 export interface AdaptorMentionableSelectInteraction
   extends AdaptorUserInvokedInteractionBase {
@@ -159,6 +183,12 @@ export interface AdaptorMentionableSelectInteraction
   };
 }
 
+export const isAdaptorMentionableSelectInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorMentionableSelectInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "mentionableSelect";
+
 export interface AdaptorChannelSelectInteraction
   extends AdaptorUserInvokedInteractionBase {
   type: "messageComponent";
@@ -171,6 +201,12 @@ export interface AdaptorChannelSelectInteraction
     };
   };
 }
+
+export const isAdaptorChannelSelectInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorChannelSelectInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "channelSelect";
 
 export interface AdaptorApplicationCommandAutoCompleteInteraction
   extends AdaptorUserInvokedInteractionBase {
