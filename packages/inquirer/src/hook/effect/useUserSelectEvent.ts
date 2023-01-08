@@ -9,13 +9,15 @@ import type {
 } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
+export type UserSelectResultValue = AdaptorUser & {
+  member: AdaptorPartialMember;
+};
+
 export const useUserSelectEvent = (
   customId: string,
   handle: (
     interaction: AdaptorUserSelectInteraction,
-    users: (AdaptorUser & {
-      member: AdaptorPartialMember;
-    })[],
+    users: UserSelectResultValue[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {

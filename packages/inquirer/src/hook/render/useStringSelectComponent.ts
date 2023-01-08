@@ -29,7 +29,7 @@ export type StringSelectItemResult<T> = StringSelectItem<T> & {
 
 export type UseStringSelectComponentResult<T> = [
   selectResult: StringSelectItemResult<T>[],
-  Select: UnfulfilledCurriedBuilder<
+  StringSelect: UnfulfilledCurriedBuilder<
     AdaptorStringSelectComponent<T>,
     {
       type: "stringSelect";
@@ -44,7 +44,7 @@ export const useStringSelectComponent = <T>(param: {
   options: readonly PartialStringSelectItem<T>[];
   onSelected?: (selected: StringSelectItemResult<T>[]) => void;
 }): UseStringSelectComponentResult<T> => {
-  const customId = useCustomId("select");
+  const customId = useCustomId("stringSelect");
 
   const items = initialSelectItems(param.options);
 
@@ -59,7 +59,7 @@ export const useStringSelectComponent = <T>(param: {
   );
   const valueChanged = useRef(false);
 
-  useStringSelectEvent(customId, async (interaction, values, deferUpdate) => {
+  useStringSelectEvent(customId, async (_, values, deferUpdate) => {
     await deferUpdate();
 
     setEach((prev, key) => {
