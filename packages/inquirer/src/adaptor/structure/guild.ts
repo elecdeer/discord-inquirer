@@ -11,19 +11,20 @@ export interface AdaptorPartialMember {
   nick: string | null;
 
   /**
-   * array of role object ids
-   * @see https://discord.com/developers/docs/topics/permissions#role-object
+   * the member's guild avatar hash
+   * @see https://discord.com/developers/docs/reference#image-formatting
    */
   avatar: string | null;
 
   /**
-   * when the user joined the guild
-   * @see https://discord.com/developers/docs/reference#snowflakes
+   * array of role object ids
+   * @see https://discord.com/developers/docs/topics/permissions#role-object
    */
   roles: Snowflake[];
 
   /**
-   * when the user started boosting the guild
+   * when the user joined the guild
+   * @see https://discord.com/developers/docs/reference#snowflakes
    */
   joinedAt: Date;
 
