@@ -1,6 +1,9 @@
-import type { AdaptorPartialThreadChannel } from "../adaptor";
+import type {
+  AdaptorPartialNonThreadChannel,
+  AdaptorPartialThreadChannel,
+} from "../adaptor";
 
-export const createAdaptorPartialChannelBaseMock = () => {
+export const createAdaptorPartialThreadChannelBaseMock = () => {
   return {
     id: "channelIdValue",
     name: "channelNameValue",
@@ -14,4 +17,11 @@ export const createAdaptorPartialChannelBaseMock = () => {
     },
     parentId: "parentIdValue",
   } satisfies Omit<AdaptorPartialThreadChannel, "type">;
+};
+
+export const createAdaptorPartialNonThreadChannelMock = () => {
+  return {
+    id: "channelIdValue",
+    name: "channelNameValue",
+  } satisfies Omit<AdaptorPartialNonThreadChannel, "type">;
 };

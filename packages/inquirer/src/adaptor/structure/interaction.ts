@@ -176,9 +176,9 @@ export interface AdaptorMentionableSelectInteraction
     componentType: "mentionableSelect";
     values: Snowflake[];
     resolved: {
-      users: Record<Snowflake, AdaptorUser>;
-      members: Record<Snowflake, AdaptorPartialMember>;
-      roles: Record<Snowflake, AdaptorRole>;
+      users: Record<Snowflake, AdaptorUser | undefined>;
+      members: Record<Snowflake, AdaptorPartialMember | undefined>;
+      roles: Record<Snowflake, AdaptorRole | undefined>;
     };
   };
 }
