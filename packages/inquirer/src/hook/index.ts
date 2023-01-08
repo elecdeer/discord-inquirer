@@ -7,7 +7,7 @@ export { useState } from "./state/useState";
 
 export { useButtonEvent } from "./effect/useButtonEvent";
 export { useEffect } from "./effect/useEffect";
-export { useSelectMenuEvent } from "./effect/useSelectMenuEvent";
+export { useStringSelectEvent } from "./effect/useStringSelectEvent";
 
 export { useConfirmButtonComponent } from "./render/useConfirmButtonComponent";
 export { useCountButtonComponent } from "./render/useCountButtonComponent";

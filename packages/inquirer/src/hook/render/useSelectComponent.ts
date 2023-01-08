@@ -1,6 +1,6 @@
 import { StringSelect } from "../../adaptor";
 import { useEffect } from "../effect/useEffect";
-import { useSelectMenuEvent } from "../effect/useSelectMenuEvent";
+import { useStringSelectEvent } from "../effect/useStringSelectEvent";
 import { useCollection } from "../state/useCollection";
 import { useCustomId } from "../state/useCustomId";
 import { useRef } from "../state/useRef";
@@ -52,7 +52,7 @@ export const useSelectComponent = <T>(param: {
   );
   const valueChanged = useRef(false);
 
-  useSelectMenuEvent(customId, async (interaction, values, deferUpdate) => {
+  useStringSelectEvent(customId, async (interaction, values, deferUpdate) => {
     await deferUpdate();
 
     setEach((prev, key) => {

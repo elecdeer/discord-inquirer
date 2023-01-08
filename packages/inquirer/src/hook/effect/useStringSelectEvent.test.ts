@@ -5,12 +5,12 @@ import {
   createAdaptorUserInvokedInteractionMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useSelectMenuEvent } from "./useSelectMenuEvent";
+import { useStringSelectEvent } from "./useStringSelectEvent";
 
 import type { AdaptorStringSelectInteraction } from "../../adaptor";
 
-describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
-  describe("useSelectMenuEvent()", () => {
+describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
+  describe("useStringSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
       const controller = createHookContext(adaptorMock, vi.fn());
@@ -18,7 +18,7 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
 
       controller.startRender();
 
-      useSelectMenuEvent("customId", handle);
+      useStringSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();
@@ -53,7 +53,7 @@ describe("packages/inquirer/src/hook/useSelectMenuEvent", () => {
 
       controller.startRender();
 
-      useSelectMenuEvent("customId", handle);
+      useStringSelectEvent("customId", handle);
 
       controller.mount("messageId");
       controller.endRender();

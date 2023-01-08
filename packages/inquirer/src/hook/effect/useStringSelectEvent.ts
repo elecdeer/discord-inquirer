@@ -5,7 +5,7 @@ import { useEffect } from "./useEffect";
 import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
-export const useSelectMenuEvent = (
+export const useStringSelectEvent = (
   customId: string,
   handle: (
     interaction: AdaptorInteractionBase,
