@@ -1,4 +1,4 @@
-import type { Snowflake } from "./index";
+import type { AdaptorPermissions, Snowflake } from "./index";
 
 /**
  * Partial Member objects are missing user, deaf and mute fields
@@ -11,19 +11,20 @@ export interface AdaptorPartialMember {
   nick: string | null;
 
   /**
-   * array of role object ids
-   * @see https://discord.com/developers/docs/topics/permissions#role-object
+   * the member's guild avatar hash
+   * @see https://discord.com/developers/docs/reference#image-formatting
    */
   avatar: string | null;
 
   /**
-   * when the user joined the guild
-   * @see https://discord.com/developers/docs/reference#snowflakes
+   * array of role object ids
+   * @see https://discord.com/developers/docs/topics/permissions#role-object
    */
   roles: Snowflake[];
 
   /**
-   * when the user started boosting the guild
+   * when the user joined the guild
+   * @see https://discord.com/developers/docs/reference#snowflakes
    */
   joinedAt: Date;
 
@@ -44,7 +45,7 @@ export interface AdaptorPartialMember {
   /**
    * total permissions of the member in the channel, including overwrites, returned when in the interaction object
    */
-  permissions: string | null;
+  permissions: AdaptorPermissions | null;
 
   /**
    * when the user's timeout will expire and the user will be able to communicate in the guild again, null or a time in the past if the user is not timed out
