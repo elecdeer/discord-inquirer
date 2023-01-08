@@ -1,4 +1,5 @@
-import { transformNullishDateString } from "./shared";
+import { transformers } from "./index";
+import { nullishThrough, transformNullishDateString } from "./shared";
 
 import type { AdaptorPartialMember } from "../structure";
 import type { APIInteractionDataResolvedGuildMember } from "discord-api-types/v10";
@@ -13,7 +14,8 @@ const transformPartialMember = (
     joinedAt: new Date(member.joined_at),
     premiumSince: transformNullishDateString(member.premium_since),
     pending: member.pending ?? false,
-    permissions: member.permissions ?? null,
+    permissions:
+      nullishThrough(transformers.permissionFlags)(member.permissions) ?? null,
     communicationDisabledUntil: transformNullishDateString(
       member.communication_disabled_until
     ),

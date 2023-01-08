@@ -1,4 +1,4 @@
-import type { Snowflake } from "./index";
+import type { AdaptorPermissions, Snowflake } from "./index";
 
 /**
  * Partial Member objects are missing user, deaf and mute fields
@@ -45,7 +45,7 @@ export interface AdaptorPartialMember {
   /**
    * total permissions of the member in the channel, including overwrites, returned when in the interaction object
    */
-  permissions: string | null;
+  permissions: AdaptorPermissions | null;
 
   /**
    * when the user's timeout will expire and the user will be able to communicate in the guild again, null or a time in the past if the user is not timed out
