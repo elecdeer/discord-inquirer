@@ -12,31 +12,38 @@ import type {
 import type { UnfulfilledCurriedBuilder } from "../../util/curriedBuilder";
 import type { SetOptional } from "type-fest";
 
-export type SelectItem<T> = Omit<AdaptorSelectOption<T>, "value"> & {
+export type StringSelectItem<T> = Omit<AdaptorSelectOption<T>, "value"> & {
   key: string;
   payload: T;
   inactive?: boolean;
 };
 
-export type PartialSelectItem<T> = SetOptional<SelectItem<T>, "key">;
+export type PartialStringSelectItem<T> = SetOptional<
+  StringSelectItem<T>,
+  "key"
+>;
 
-export type SelectItemResult<T> = SelectItem<T> & {
+export type StringSelectItemResult<T> = StringSelectItem<T> & {
   selected: boolean;
 };
 
-export type UseSelectComponentResult<T> = [
-  selectResult: SelectItemResult<T>[],
+export type UseStringSelectComponentResult<T> = [
+  selectResult: StringSelectItemResult<T>[],
   Select: UnfulfilledCurriedBuilder<
     AdaptorStringSelectComponent<T>,
-    { type: "stringSelect"; customId: string; options: SelectItemResult<T>[] },
+    {
+      type: "stringSelect";
+      customId: string;
+      options: StringSelectItemResult<T>[];
+    },
     AdaptorStringSelectComponent<T>
   >
 ];
 
-export const useSelectComponent = <T>(param: {
-  options: readonly PartialSelectItem<T>[];
-  onSelected?: (selected: SelectItemResult<T>[]) => void;
-}): UseSelectComponentResult<T> => {
+export const useStringSelectComponent = <T>(param: {
+  options: readonly PartialStringSelectItem<T>[];
+  onSelected?: (selected: StringSelectItemResult<T>[]) => void;
+}): UseStringSelectComponentResult<T> => {
   const customId = useCustomId("select");
 
   const items = initialSelectItems(param.options);
@@ -98,8 +105,8 @@ export const useSelectComponent = <T>(param: {
 };
 
 const initialSelectItems = <T>(
-  items: readonly PartialSelectItem<T>[]
-): SelectItemResult<T>[] => {
+  items: readonly PartialStringSelectItem<T>[]
+): StringSelectItemResult<T>[] => {
   return items.map((item, index) => {
     return {
       ...item,

@@ -11,7 +11,7 @@ export { useStringSelectEvent } from "./effect/useStringSelectEvent";
 
 export { useConfirmButtonComponent } from "./render/useConfirmButtonComponent";
 export { useCountButtonComponent } from "./render/useCountButtonComponent";
-export { useSelectComponent } from "./render/useSelectComponent";
+export { useStringSelectComponent } from "./render/useStringSelectComponent";
 
 /*
 実装予定
