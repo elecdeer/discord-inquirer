@@ -38,6 +38,7 @@ interface InquireConfig<T extends Record<string, unknown>> {
   /**
    * 最初にinquirerを送信してからタイムアウトするまでの時間
    * tokenの有効期限が15分なので最大でもそれより短くする
+   * @default 14.5 * 60 * 1000
    */
   time?: number;
 
@@ -126,7 +127,13 @@ export const inquire = <T extends Record<string, unknown>>(
   });
 
   const hookContext = createHookContext(adaptor, update);
-  const { resetIdleTimer, dispose } = createInquireTimer({ time, idle }, close);
+  const { resetIdleTimer, dispose } = createInquireTimer(
+    {
+      time: Math.min(time ?? 14.5 * 60 * 1000, 15 * 60 * 1000),
+      idle,
+    },
+    close
+  );
 
   //初回送信
   setImmediate(open);
