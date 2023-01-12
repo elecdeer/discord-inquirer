@@ -2,11 +2,12 @@ import { createEventFlow } from "@elecdeer/event-flow";
 
 import { isMatchHash } from "../util/hash";
 import { immediateThrottle } from "../util/immediateThrottle";
+import { defaultLogger } from "../util/logger";
 import { createTimer } from "../util/timer";
 import { createHookContext } from "./hookContext";
 
 import type { DiscordAdaptor, MessageMutualPayload } from "../adaptor";
-import type { Timer } from "../util/timer";
+import type { Logger } from "../util/logger";
 import type { Screen } from "./screen";
 import type { IEventFlowHandler } from "@elecdeer/event-flow";
 
@@ -38,14 +39,17 @@ interface InquireConfig<T extends Record<string, unknown>> {
   /**
    * 最初にinquirerを送信してからタイムアウトするまでの時間
    * tokenの有効期限が15分なので最大でもそれより短くする
-   * @default 14.5 * 60 * 1000
+   * @default 14.5 * 60 * 1000 ms
    */
   time?: number;
 
   /**
    * 最後に回答状態かコンポーネントの状態が変化してからタイムアウトするまでの時間
+   * @default 2 ** 31 - 1 ms
    */
   idle?: number;
+
+  log?: Logger;
 }
 
 export type Prompt<T extends Record<string, unknown>> = (
@@ -57,14 +61,27 @@ export type AnswerPrompt<T extends Record<string, unknown>> = {
   [K in keyof T]: (key: K, value: T[K]) => void;
 }[keyof T];
 
+const completeConfig = <T extends Record<string, unknown>>(
+  config: InquireConfig<T>
+): Required<InquireConfig<T>> => {
+  return {
+    screen: config.screen,
+    adaptor: config.adaptor,
+    defaultResult: config.defaultResult ?? {},
+    time: Math.min(config.time ?? 14.5 * 60 * 1000, 15 * 60 * 1000),
+    idle: config.idle ?? 2 ** 31 - 1, // 32bitの最大値
+    log: config.log ?? defaultLogger,
+  };
+};
+
 export const inquire = <T extends Record<string, unknown>>(
   prompt: Prompt<T>,
-  config: InquireConfig<T>
+  partialConfig: InquireConfig<T>
 ): InquireResult<T> => {
-  const { screen, adaptor, defaultResult, time, idle } = config;
-
-  const result: Partial<T> = defaultResult ?? {};
-  const event = createEventFlow<
+  const { screen, adaptor, defaultResult, time, idle, log } =
+    completeConfig(partialConfig);
+  const result: Partial<T> = defaultResult;
+  const answerEvent = createEventFlow<
     {
       [K in keyof T]: {
         key: K;
@@ -79,8 +96,10 @@ export const inquire = <T extends Record<string, unknown>>(
     // 値が変わっていない場合は何もしない
     if (isMatchHash(prev, value)) return;
 
+    log("debug", "answer");
+    log("debug", { key, value, prev });
     result[key] = value;
-    event.emit({
+    answerEvent.emit({
       key,
       value,
       all: result,
@@ -88,49 +107,73 @@ export const inquire = <T extends Record<string, unknown>>(
   };
 
   const open = async () => {
+    log("debug", "inquirer open");
+
     hookContext.startRender();
     const promptResult = prompt(answer, close);
     hookContext.endRender();
 
-    const { messageId } = await screen.commit(promptResult);
+    log("debug", {
+      renderResult: promptResult,
+    });
 
-    hookContext.mount(messageId);
-
-    resetIdleTimer();
+    const commitResult = await screen.commit(promptResult);
+    if (commitResult.updated) {
+      hookContext.mount(commitResult.messageId);
+      log("debug", `payload mounted messageId: ${commitResult.messageId}`);
+      resetIdleTimer();
+    } else {
+      log("error", "failed to initial commit");
+      close();
+    }
   };
 
   const update = immediateThrottle(async () => {
+    log("debug", "inquirer update");
+
     hookContext.startRender();
     const promptResult = prompt(answer, close);
     hookContext.endRender();
 
-    const { messageId } = await screen.commit(promptResult);
+    log("debug", {
+      renderResult: promptResult,
+    });
 
-    hookContext.update(messageId);
-
-    resetIdleTimer();
+    const commitResult = await screen.commit(promptResult);
+    if (commitResult.updated) {
+      hookContext.update(commitResult.messageId);
+      log("debug", `payload updated messageId: ${commitResult.messageId}`);
+      resetIdleTimer();
+    }
   });
 
   const close = immediateThrottle(async () => {
-    event.offAll();
+    log("debug", "inquirer close");
+    answerEvent.offAll();
 
     hookContext.startRender();
     const promptResult = prompt(answer, close);
     hookContext.endRender();
+
+    log("debug", {
+      renderResult: promptResult,
+    });
 
     await screen.commit(promptResult);
     await screen.close();
 
     hookContext.unmount();
+    log("debug", "payload unmounted");
 
-    dispose();
+    disposeTimers();
   });
 
   const hookContext = createHookContext(adaptor, update);
-  const { resetIdleTimer, dispose } = createInquireTimer(
+  const { resetIdleTimer, disposeTimers } = createInquireTimer(
     {
-      time: Math.min(time ?? 14.5 * 60 * 1000, 15 * 60 * 1000),
+      time,
       idle,
+      log,
     },
     close
   );
@@ -139,48 +182,42 @@ export const inquire = <T extends Record<string, unknown>>(
   setImmediate(open);
 
   return {
-    resultEvent: event,
+    resultEvent: answerEvent,
     result: () => result,
   };
 };
 
 const createInquireTimer = (
-  config: Pick<InquireConfig<never>, "idle" | "time">,
+  {
+    time,
+    idle,
+    log,
+  }: Pick<Required<InquireConfig<never>>, "idle" | "time" | "log">,
   close: () => void
 ) => {
-  let timeoutTimer: Timer | null = null;
-  if (config.time !== undefined) {
-    timeoutTimer = createTimer(config.time);
-    timeoutTimer.start(() => {
-      close();
-    });
-  }
+  const timeoutTimer = createTimer(time);
+  timeoutTimer.start(() => {
+    log("debug", "inquirer timeout");
+    close();
+  });
 
-  let idleTimer: Timer | null = null;
-  if (config.idle !== undefined) {
-    idleTimer = createTimer(config.idle);
-    idleTimer.start(() => {
-      close();
-    });
-  }
+  const idleTimer = createTimer(idle);
+  idleTimer.start(() => {
+    log("debug", "inquirer idle timeout");
+    close();
+  });
 
   const resetIdleTimer = () => {
-    if (idleTimer !== null) {
-      idleTimer.reset();
-    }
+    idleTimer.reset();
   };
 
-  const dispose = () => {
-    if (timeoutTimer !== null) {
-      timeoutTimer.dispose();
-    }
-    if (idleTimer !== null) {
-      idleTimer.dispose();
-    }
+  const disposeTimers = () => {
+    timeoutTimer.dispose();
+    idleTimer.dispose();
   };
 
   return {
-    dispose,
+    disposeTimers,
     resetIdleTimer,
   };
 };

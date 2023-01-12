@@ -1,5 +1,6 @@
 import { messageFacade } from "../adaptor";
 import { isMatchHash } from "../util/hash";
+import { defaultLogger } from "../util/logger";
 
 import type {
   DiscordAdaptor,
@@ -10,26 +11,54 @@ import type {
 import type { SetNullable } from "../util/types";
 
 export interface Screen {
+  /**
+   * Post or edit message.
+   *
+   * If a message has not been sent from this screen, post a new message.
+   * If a message has been sent and there is a difference in payload, edit the message.
+   * @param payload
+   */
   commit: (payload: MessageMutualPayload) => Promise<CommitResult>;
+
+  /**
+   * Close this screen.
+   *
+   * Corresponding to the setting mode and edits the messages.
+   */
   close: () => Promise<void>;
 }
 
 export interface ScreenConfig {
-  onClose?: "deleteMessage" | "deleteComponent" | "keep";
+  onClose: "deleteMessage" | "deleteComponent" | "keep";
+  log: (type: "debug" | "warn" | "error", message: unknown) => void;
 }
 
-type CommitResult = {
-  initial: boolean;
-  updated: boolean;
-  messageId: Snowflake;
+const completeScreenConfig = (config: Partial<ScreenConfig>): ScreenConfig => {
+  return {
+    onClose: config.onClose ?? "deleteMessage",
+    log: config.log ?? defaultLogger,
+  };
 };
+
+export type CommitResult =
+  | {
+      updated: false;
+    }
+  | {
+      initial: boolean;
+      updated: true;
+      messageId: Snowflake;
+    };
 
 export const createScreen = (
   adaptor: DiscordAdaptor,
   target: MessageTarget,
-  config: ScreenConfig
+  config: Partial<ScreenConfig>
 ): Screen => {
+  const { onClose, log } = completeScreenConfig(config);
   const facade = messageFacade(adaptor);
+
+  let closed = false;
 
   let editor: {
     latestPayload: MessageMutualPayload;
@@ -41,15 +70,36 @@ export const createScreen = (
   const commit = async (
     payload: MessageMutualPayload
   ): Promise<CommitResult> => {
-    if (editor === null) {
-      const controller = await facade.send(target, payload);
-      editor = {
-        ...controller,
-        latestPayload: payload,
-      };
+    log("debug", "screen.commit");
+    log("debug", payload);
+    if (closed) {
+      log("warn", "this screen is already closed");
       return {
-        initial: true,
+        updated: false,
+      };
+    }
+
+    if (editor === null) {
+      log("debug", "initial message");
+      try {
+        const controller = await facade.send(target, payload);
+        editor = {
+          ...controller,
+          latestPayload: payload,
+        };
+      } catch (e) {
+        log("error", {
+          message: "failed to send message",
+          error: e,
+        });
+        return {
+          updated: false,
+        };
+      }
+
+      return {
         updated: true,
+        initial: true,
         messageId: editor.messageId,
       };
     } else {
@@ -58,41 +108,78 @@ export const createScreen = (
         payload
       );
       if (difference !== null) {
-        await editor.edit(payload);
-        editor = {
-          ...editor,
-          latestPayload: payload,
-        };
+        log("debug", "there is a difference in payload, edit message");
+
+        try {
+          await editor.edit(payload);
+          editor = {
+            ...editor,
+            latestPayload: payload,
+          };
+        } catch (e) {
+          log("error", {
+            message: "failed to edit message",
+            error: e,
+          });
+          return {
+            updated: false,
+          };
+        }
+
         return {
-          initial: false,
           updated: true,
+          initial: false,
           messageId: editor.messageId,
         };
       } else {
+        log("debug", "no difference in payload, skip edit message");
         editor = {
           ...editor,
           latestPayload: payload,
         };
         return {
-          initial: false,
           updated: false,
-          messageId: editor.messageId,
         };
       }
     }
   };
 
   const close = async () => {
-    if (config.onClose === "deleteMessage") {
-      await editor?.del();
+    log("debug", `screen.close mode: ${onClose}`);
+    if (onClose === "deleteMessage") {
+      await editor
+        ?.del()
+        .catch((e) => {
+          log("error", {
+            message: "failed to delete message",
+            error: e,
+          });
+        })
+        .finally(() => {
+          closed = true;
+        });
       return;
     }
-    if (config.onClose === "deleteComponent") {
+    if (onClose === "deleteComponent") {
       await commit({
         components: [],
-      });
+      })
+        .catch((e) => {
+          log("error", {
+            message: "failed to delete component",
+            error: e,
+          });
+        })
+        .finally(() => {
+          closed = true;
+        });
       return;
     }
+    if (onClose === "keep") {
+      closed = true;
+      return;
+    }
+    throw new Error("cannot be reached");
   };
 
   return {
