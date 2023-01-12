@@ -9,6 +9,7 @@
     "build": "tsup",
     "test": "# vitest run -r ./",
     "test:watch": "# vitest watch -r ./",
+    "type-check": "tsc --noEmit",
     "lint": "eslint --cache 'src/**/*.ts' 'src/*.ts' --max-warnings 0",
     "format": "prettier --cache --write 'src/**/*.ts' 'src/*.ts'"
   },

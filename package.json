@@ -9,6 +9,7 @@
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test --parallel",
+    "type-check": "turbo run type-check --parallel",
     "lint": "turbo run lint --parallel",
     "format": "turbo run format --parallel",
     "release": "turbo run build lint test && changeset version && changeset publish"
