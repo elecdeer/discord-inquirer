@@ -11,6 +11,7 @@ import {
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
 import { config } from "dotenv";
+import * as util from "util";
 
 import type { Prompt } from "discord-inquirer";
 
@@ -33,6 +34,19 @@ client.on("ready", async (readyClient) => {
       return;
     }
 
+    const log = (type: "debug" | "warn" | "error", message: unknown) => {
+      const inspectMsg = util.inspect(message, {
+        depth: 10,
+        colors: true,
+        breakLength: 200,
+        compact: 5,
+      });
+
+      if (type === "debug") console.log(inspectMsg);
+      if (type === "warn") console.warn(inspectMsg);
+      if (type === "error") console.error(inspectMsg);
+    };
+
     const adaptor = createDiscordJsAdaptor(readyClient);
     const screen = createScreen(
       adaptor,
@@ -43,90 +57,9 @@ client.on("ready", async (readyClient) => {
       },
       {
         onClose: "deleteComponent",
+        log,
       }
     );
-
-    const prompt: Prompt<{
-      selected: number[];
-    }> = (answer, close) => {
-      const [result, Select] = useStringSelectComponent({
-        options: [
-          {
-            label: "1",
-            payload: 1,
-          },
-          {
-            label: "2",
-            payload: 2,
-          },
-          {
-            label: "3",
-            payload: 3,
-          },
-        ],
-        onSelected: (selected) => {
-          console.log("handleSelected", selected);
-        },
-      });
-
-      const [{ ok: confirmed }, ConfirmButton] = useConfirmButtonComponent(
-        () => {
-          console.log(result);
-          return {
-            ok: result.filter(({ selected }) => selected).length > 1,
-          };
-        },
-        () => {
-          const selected = result
-            .filter((item) => item.selected)
-            .map((item) => item.payload);
-
-          answer("selected", selected);
-
-          close();
-        }
-      );
-
-      const [_, ChannelSelectComponent] = useChannelSelectComponent({
-        channelTypes: ["guildText"],
-        onSelected: (selected) => {
-          console.log("channel selected", selected);
-        },
-      });
-
-      const [__, UserSelectComponent] = useUserSelectComponent({
-        onSelected: (selected) => {
-          console.log("user selected", selected);
-        },
-      });
-
-      const [___, RoleSelectComponent] = useRoleSelectComponent({
-        onSelected: (selected) => {
-          console.log("role selected", selected);
-        },
-      });
-
-      return {
-        content: confirmed
-          ? `selected: ${result
-              .filter((item) => item.selected)
-              .map((item) => item.payload)
-              .join(",")}`
-          : "Select 1 or 2 numbers",
-        components: [
-          Row(
-            Select({
-              maxValues: 2,
-              minValues: 1,
-            })()
-          ),
-          Row(ChannelSelectComponent()),
-          Row(UserSelectComponent()),
-          Row(RoleSelectComponent()),
-          Row(ConfirmButton({ style: "success", label: "confirm" })()),
-        ],
-      };
-    };
 
     const result = inquire(prompt, {
       screen,
@@ -134,6 +67,7 @@ client.on("ready", async (readyClient) => {
       defaultResult: {
         selected: [] as number[],
       },
+      log,
     });
 
     console.log(result.result());
@@ -145,5 +79,99 @@ client.on("ready", async (readyClient) => {
     });
   });
 });
+
+const prompt: Prompt<{
+  selected: number[];
+}> = (answer, close) => {
+  const [result, Select] = useStringSelectComponent({
+    options: [
+      {
+        label: "1",
+        payload: 1,
+      },
+      {
+        label: "2",
+        payload: 2,
+      },
+      {
+        label: "3",
+        payload: 3,
+      },
+    ],
+    onSelected: (selected) => {
+      console.log("handleSelected", selected);
+    },
+  });
+
+  const [{ ok: confirmed }, ConfirmButton] = useConfirmButtonComponent(
+    () => {
+      console.log(result);
+      return {
+        ok: result.filter(({ selected }) => selected).length > 1,
+      };
+    },
+    () => {
+      const selected = result
+        .filter((item) => item.selected)
+        .map((item) => item.payload);
+
+      answer("selected", selected);
+
+      close();
+    }
+  );
+
+  const [_, ChannelSelectComponent] = useChannelSelectComponent({
+    channelTypes: ["guildText"],
+    onSelected: (selected) => {
+      console.log("channel selected", selected);
+    },
+  });
+
+  const [__, UserSelectComponent] = useUserSelectComponent({
+    onSelected: (selected) => {
+      console.log("user selected", selected);
+    },
+  });
+
+  const [___, RoleSelectComponent] = useRoleSelectComponent({
+    onSelected: (selected) => {
+      console.log("role selected", selected);
+    },
+  });
+
+  return {
+    content: confirmed
+      ? `selected: ${result
+          .filter((item) => item.selected)
+          .map((item) => item.payload)
+          .join(",")}`
+      : "Select 1 or 2 numbers",
+    components: [
+      Row(
+        Select({
+          maxValues: 2,
+          minValues: 1,
+        })()
+      ),
+      Row(
+        ChannelSelectComponent({
+          maxValues: 2,
+        })()
+      ),
+      Row(
+        UserSelectComponent({
+          maxValues: 2,
+        })()
+      ),
+      Row(
+        RoleSelectComponent({
+          maxValues: 2,
+        })()
+      ),
+      Row(ConfirmButton({ style: "success", label: "confirm" })()),
+    ],
+  };
+};
 
 await client.login(process.env.DISCORD_TOKEN);

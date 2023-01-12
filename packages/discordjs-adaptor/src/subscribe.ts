@@ -8,12 +8,7 @@ export const subscribeInteraction =
   (client: Client<true>): DiscordAdaptor["subscribeInteraction"] =>
   (handler) => {
     const listener = (data: APIInteraction, shardId: number) => {
-      console.log("raw");
-      console.log(JSON.stringify(data, null, 2));
       const adaptorInteraction = transformers.interaction(data);
-
-      console.log("transformed");
-      console.log(JSON.stringify(adaptorInteraction, null, 2));
       handler(adaptorInteraction);
     };
 
