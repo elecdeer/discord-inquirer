@@ -1,4 +1,5 @@
 {
+  "$schema": "https://turbo.build/schema.json",
   "baseBranch": "origin/main",
   "pipeline": {
     "build": {
@@ -9,18 +10,17 @@
     },
     "test": {
       "dependsOn": [
-        "^build"
+        "build"
       ]
+    },
+    "type-check": {
+
     },
     "lint": {
-      "dependsOn": [
-        "^lint"
-      ]
+
     },
     "format": {
-      "dependsOn": [
-        "^format"
-      ]
+
     }
   }
 }
