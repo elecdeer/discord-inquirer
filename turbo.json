@@ -10,7 +10,7 @@
     },
     "test": {
       "dependsOn": [
-        "build"
+        "^build"
       ]
     },
     "type-check": {
