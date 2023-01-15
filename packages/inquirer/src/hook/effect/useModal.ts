@@ -86,10 +86,15 @@ export const useModal = <TKey extends string>(
           type: "row",
           components: [
             {
-              ...component,
               type: "textInput",
               customId: componentCustomId,
               value: oldValue,
+              label: component.label,
+              style: component.style,
+              placeholder: component.placeholder,
+              maxLength: component.maxLength,
+              minLength: component.minLength,
+              required: component.required,
             },
           ],
         };
