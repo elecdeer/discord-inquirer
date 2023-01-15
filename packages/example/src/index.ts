@@ -1,12 +1,16 @@
 import {
+  Button,
   createScreen,
   inquire,
   Row,
+  useButtonEvent,
   useChannelSelectComponent,
   useConfirmButtonComponent,
+  useCustomId,
   useRoleSelectComponent,
   useStringSelectComponent,
   useUserSelectComponent,
+  useModal,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -61,16 +65,20 @@ client.on("ready", async (readyClient) => {
       }
     );
 
-    const result = inquire(prompt, {
+    // const result = inquire(prompt, {
+    //   screen,
+    //   adaptor,
+    //   defaultResult: {
+    //     selected: [] as number[],
+    //   },
+    //   log,
+    // });
+
+    const result = inquire(prompt2, {
       screen,
       adaptor,
-      defaultResult: {
-        selected: [] as number[],
-      },
       log,
     });
-
-    console.log(result.result());
 
     result.resultEvent.on(({ key, value, all }) => {
       console.log("key", key);
@@ -170,6 +178,45 @@ const prompt: Prompt<{
         })()
       ),
       Row(ConfirmButton({ style: "success", label: "confirm" })()),
+    ],
+  };
+};
+
+const prompt2: Prompt<{
+  value: string;
+}> = (answer, close) => {
+  const [result, openModal] = useModal({
+    title: "The modal",
+    components: [
+      {
+        key: "bar",
+        label: "bar",
+        style: "short",
+      },
+    ],
+    onSubmit: (result) => {
+      answer("value", result.bar);
+    },
+  });
+
+  const buttonId = useCustomId("button");
+  useButtonEvent(buttonId, async (interaction) => {
+    openModal(interaction.id, interaction.token);
+  });
+
+  return {
+    content:
+      result === null
+        ? `please click open modal button!`
+        : `value: ${result.bar}`,
+    components: [
+      Row(
+        Button({
+          style: "primary",
+          customId: buttonId,
+          label: "open modal",
+        })()
+      ),
     ],
   };
 };

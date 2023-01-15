@@ -1,15 +1,13 @@
+import { createEventFlow } from "@elecdeer/event-flow";
 import { vi } from "vitest";
 
 import type { DiscordAdaptor } from "../adaptor";
 import type { AdaptorInteraction } from "../adaptor";
 
-//TODO ダミーのInteractionデータを作れるようにする
-
 export const createDiscordAdaptorMock = (): DiscordAdaptor & {
-  emitInteraction: ((interaction: AdaptorInteraction) => void) | undefined;
+  emitInteraction: (interaction: AdaptorInteraction) => void;
 } => {
-  let emitInteraction: ((interaction: AdaptorInteraction) => void) | undefined =
-    undefined;
+  const handlerFlow = createEventFlow<AdaptorInteraction>();
 
   return {
     sendMessage: vi.fn(),
@@ -24,15 +22,15 @@ export const createDiscordAdaptorMock = (): DiscordAdaptor & {
     deleteFollowup: vi.fn(),
     subscribeInteraction: vi.fn(
       (handleInteraction: (interaction: AdaptorInteraction) => void) => {
-        emitInteraction = handleInteraction;
+        const { off } = handlerFlow.on(handleInteraction);
         return () => {
-          //	noop
+          off();
         };
       }
     ),
 
     emitInteraction: (interaction) => {
-      emitInteraction?.(interaction);
+      handlerFlow.emit(interaction);
     },
   };
 };

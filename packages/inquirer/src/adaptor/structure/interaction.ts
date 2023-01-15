@@ -227,3 +227,8 @@ export interface AdaptorModalSubmitInteraction
     fields: Record<string, string>; //customId, value
   };
 }
+
+export const isAdaptorModalSubmitInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorModalSubmitInteraction =>
+  interaction.type === "modalSubmit";
