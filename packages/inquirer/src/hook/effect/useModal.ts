@@ -68,54 +68,53 @@ export const useModal = <TKey extends string>(
     customIdKeyEntries.map(([key, customId]) => [customId, key])
   ) as Record<string, TKey>;
 
-  const handlerRef = useRef<(() => void) | null>(null);
   const valueChanged = useRef(false);
 
-  const open = async (
+  const sentModalCustomIdsRef = useRef<Set<Snowflake>>(new Set());
+
+  const openModal = async (
     interactionId: Snowflake,
     token: string
   ): Promise<void> => {
     const customId = generateCustomId("modalRoot");
 
-    const components = param.components.map((component) => {
-      const componentCustomId = keyToCustomIdMap[component.key];
+    const components: AdaptorModalActionRowComponent[] = param.components.map(
+      (component) => {
+        const componentCustomId = keyToCustomIdMap[component.key];
+        const oldValue = result !== null ? result[component.key] : undefined;
+        return {
+          type: "row",
+          components: [
+            {
+              ...component,
+              type: "textInput",
+              customId: componentCustomId,
+              value: oldValue,
+            },
+          ],
+        };
+      }
+    );
 
-      const oldValue = result !== null ? result[component.key] : undefined;
-
-      return {
-        type: "row",
-        components: [
-          {
-            ...component,
-            type: "textInput",
-            customId: componentCustomId,
-            value: oldValue,
-          },
-        ],
-      } satisfies AdaptorModalActionRowComponent;
-    });
-
+    //mapを使うとtupleではなくarrayになってしまうのでキャストしている
     const modalData = {
       title: param.title,
       customId,
       components:
-        components as unknown as AdaptorInteractionResponseModalData["components"],
+        components as AdaptorInteractionResponseModalData["components"],
     } satisfies AdaptorInteractionResponseModalData;
 
-    await adaptor.sendInteractionResponse(interactionId, token, {
-      type: "modal",
-      data: modalData,
-    });
+    const facade = messageFacade(adaptor);
+    await facade.openModal(interactionId, token, modalData);
 
-    //前回開いたモーダルがキャンセルされた場合はclearされずに残っているので、handler登録を解除する
-    handlerRef.current?.();
+    sentModalCustomIdsRef.current.add(customId);
+  };
 
+  useEffect(() => {
     const clear = adaptor.subscribeInteraction(async (interaction) => {
       if (!isAdaptorModalSubmitInteraction(interaction)) return;
-      if (interaction.data.customId !== customId) return;
-
-      const facade = messageFacade(adaptor);
-      await facade.deferUpdate(interaction.id, interaction.token);
+      if (!sentModalCustomIdsRef.current.has(interaction.data.customId)) return;
+      sentModalCustomIdsRef.current.delete(interaction.data.customId);
 
       const result = {} as Record<TKey, string>;
       for (const customId in interaction.data.fields) {
@@ -124,11 +123,15 @@ export const useModal = <TKey extends string>(
       }
       setResult(result);
       valueChanged.current = true;
-      clear();
-      handlerRef.current = null;
+
+      const facade = messageFacade(adaptor);
+      await facade.deferUpdate(interaction.id, interaction.token);
     });
-    handlerRef.current = clear;
-  };
+
+    return () => {
+      clear();
+    };
+  });
 
   useEffect(() => {
     if (valueChanged.current && result !== null) {
@@ -137,5 +140,5 @@ export const useModal = <TKey extends string>(
     }
   }, [result, param.onSubmit]);
 
-  return [result, open];
+  return [result, openModal];
 };
