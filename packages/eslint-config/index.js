@@ -1,4 +1,3 @@
-
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
@@ -7,14 +6,12 @@ module.exports = {
     sourceType: "module",
     project: "./tsconfig.base.json",
   },
-  plugins: [
-    "@typescript-eslint", "import"
-  ],
+  plugins: ["@typescript-eslint", "import"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier"
+    "prettier",
   ],
   rules: {
     "@typescript-eslint/no-unused-vars": "off",
@@ -24,26 +21,31 @@ module.exports = {
     "@typescript-eslint/strict-boolean-expressions": [
       "error",
       {
-        "allowString": false,
-        "allowNumber": false
-      }
+        allowString: false,
+        allowNumber: false,
+      },
     ],
     "import/order": [
       "error",
       {
-        "groups": [["builtin", "external"], ["parent", "sibling", "index"], "object", "type"],
-        "pathGroups": [
-          {
-            "pattern": "@alias/**",
-            "group": "parent",
-            "position": "before"
-          }
+        groups: [
+          ["builtin", "external"],
+          ["parent", "sibling", "index"],
+          "object",
+          "type",
         ],
-        "alphabetize": {
-          "order": "asc"
+        pathGroups: [
+          {
+            pattern: "@alias/**",
+            group: "parent",
+            position: "before",
+          },
+        ],
+        alphabetize: {
+          order: "asc",
         },
-        "newlines-between": "always"
-      }
-    ]
-  }
-}
+        "newlines-between": "always",
+      },
+    ],
+  },
+};

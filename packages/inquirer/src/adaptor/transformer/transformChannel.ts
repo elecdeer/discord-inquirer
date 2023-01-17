@@ -1,9 +1,9 @@
 import { ChannelType } from "discord-api-types/v10";
 import assert from "node:assert";
 
-import { adaptorChannelTypesMap } from "../structure";
 import { transformers } from "./index";
 import { transformNullishDateString } from "./shared";
+import { adaptorChannelTypesMap } from "../structure";
 
 import type {
   AdaptorPartialChannel,

@@ -1,11 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { useModal } from "./useModal";
 import { createHookContext } from "../../core/hookContext";
 import {
   createAdaptorUserInvokedInteractionBaseMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useModal } from "./useModal";
 
 import type {
   AdaptorInteractionResponse,

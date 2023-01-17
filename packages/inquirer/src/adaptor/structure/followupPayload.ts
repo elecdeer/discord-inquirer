@@ -1,5 +1,5 @@
-import type { SetNullable } from "../../util/types";
 import type { AdaptorMessagePayload } from "./messagePayload";
+import type { SetNullable } from "../../util/types";
 
 export interface AdaptorFollowupPayload
   extends Omit<AdaptorMessagePayload, "stickerIds"> {

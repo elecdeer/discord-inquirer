@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { useMentionableSelectEvent } from "./useMentionableSelectEvent";
 import { createHookContext } from "../../core/hookContext";
 import {
   createAdaptorPartialMemberMock,
@@ -8,7 +9,6 @@ import {
   createAdaptorUserMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useMentionableSelectEvent } from "./useMentionableSelectEvent";
 
 import type {
   AdaptorMentionableSelectInteraction,

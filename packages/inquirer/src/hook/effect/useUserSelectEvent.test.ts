@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { useUserSelectEvent } from "./useUserSelectEvent";
 import { createHookContext } from "../../core/hookContext";
 import {
   createAdaptorPartialMemberMock,
@@ -7,7 +8,6 @@ import {
   createAdaptorUserMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useUserSelectEvent } from "./useUserSelectEvent";
 
 import type { AdaptorUserSelectInteraction } from "../../adaptor";
 

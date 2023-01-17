@@ -1,6 +1,6 @@
+import { useEffect } from "./useEffect";
 import { isAdaptorButtonInteraction, messageFacade } from "../../adaptor";
 import { getHookContext } from "../../core/hookContext";
-import { useEffect } from "./useEffect";
 
 import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";

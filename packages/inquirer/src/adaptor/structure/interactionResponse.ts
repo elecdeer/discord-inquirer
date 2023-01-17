@@ -1,6 +1,6 @@
-import type { SetNullable } from "../../util/types";
 import type { AdaptorModalActionRowComponent } from "./component";
 import type { AdaptorMessagePayload } from "./messagePayload";
+import type { SetNullable } from "../../util/types";
 
 /**
  * @see https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object

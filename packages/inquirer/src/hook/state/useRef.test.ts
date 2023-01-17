@@ -1,8 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { useRef } from "./useRef";
 import { createHookContext } from "../../core/hookContext";
 import { createDiscordAdaptorMock } from "../../mock";
-import { useRef } from "./useRef";
 
 describe("packages/inquirer/src/hook/useRef", () => {
   describe("useRef()", () => {

@@ -1,5 +1,5 @@
-import { adaptorPermissionFlagsMap } from "../structure";
 import { transformers } from "./index";
+import { adaptorPermissionFlagsMap } from "../structure";
 
 import type {
   AdaptorRole,

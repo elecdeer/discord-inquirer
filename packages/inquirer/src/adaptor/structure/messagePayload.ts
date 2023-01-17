@@ -1,6 +1,6 @@
-import type { SetNullable } from "../../util/types";
 import type { AdaptorMessageActionRowComponent } from "./component";
 import type { AdaptorEmbed } from "./embed";
+import type { SetNullable } from "../../util/types";
 
 type Snowflake = string;
 
