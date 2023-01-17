@@ -6,32 +6,21 @@ import { useRoleSelectEvent } from "../effect/useRoleSelectEvent";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
-import type { AdaptorRole, AdaptorRoleSelectComponent } from "../../adaptor";
-import type { FulfilledCurriedBuilder } from "../../util/curriedBuilder";
+import type { AdaptorRole, RoleSelectComponentBuilder } from "../../adaptor";
 
 export type UseRoleSelectComponentResult = [
   selectedResult: AdaptorRole[],
-  RoleSelect: FulfilledCurriedBuilder<
-    AdaptorRoleSelectComponent,
-    {
-      type: "roleSelect";
-      customId: string;
-    },
-    AdaptorRoleSelectComponent
-  >
+  RoleSelect: RoleSelectComponentBuilder<{
+    customId: string;
+  }>
 ];
 
 export type UseRoleSingleSelectComponentResult = [
   selectedResult: AdaptorRole | null,
-  RoleSelect: FulfilledCurriedBuilder<
-    AdaptorRoleSelectComponent,
-    {
-      type: "roleSelect";
-      customId: string;
-      maxValues: 1;
-    },
-    AdaptorRoleSelectComponent
-  >
+  RoleSelect: RoleSelectComponentBuilder<{
+    customId: string;
+    maxValues: 1;
+  }>
 ];
 
 export const useRoleSelectComponent = (

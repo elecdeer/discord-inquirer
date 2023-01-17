@@ -4,16 +4,13 @@ import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
-import type { AdaptorButtonComponent } from "../../adaptor";
-import type { UnfulfilledCurriedBuilder } from "../../util/curriedBuilder";
+import type { ButtonComponentBuilder } from "../../adaptor";
 
 export type UseCountButtonComponentResult = [
   count: number,
-  CountButton: UnfulfilledCurriedBuilder<
-    AdaptorButtonComponent,
-    { type: "button"; customId: string },
-    AdaptorButtonComponent
-  >
+  CountButton: ButtonComponentBuilder<{
+    customId: string;
+  }>
 ];
 
 export const useCountButtonComponent = ({

@@ -6,33 +6,22 @@ import { useUserSelectEvent } from "../effect/useUserSelectEvent";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
-import type { AdaptorUserSelectComponent } from "../../adaptor";
-import type { FulfilledCurriedBuilder } from "../../util/curriedBuilder";
+import type { UserSelectComponentBuilder } from "../../adaptor";
 import type { UserSelectResultValue } from "../effect/useUserSelectEvent";
 
 export type UseUserSelectComponentResult = [
   selectResult: UserSelectResultValue[],
-  UserSelect: FulfilledCurriedBuilder<
-    AdaptorUserSelectComponent,
-    {
-      type: "userSelect";
-      customId: string;
-    },
-    AdaptorUserSelectComponent
-  >
+  UserSelect: UserSelectComponentBuilder<{
+    customId: string;
+  }>
 ];
 
 export type UseUserSingleSelectComponentResult = [
   selectResult: UserSelectResultValue | null,
-  UserSelect: FulfilledCurriedBuilder<
-    AdaptorUserSelectComponent,
-    {
-      type: "userSelect";
-      customId: string;
-      maxValues: 1;
-    },
-    AdaptorUserSelectComponent
-  >
+  UserSelect: UserSelectComponentBuilder<{
+    customId: string;
+    maxValues: 1;
+  }>
 ];
 
 export const useUserSelectComponent = (

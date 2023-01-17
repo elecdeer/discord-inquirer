@@ -7,9 +7,8 @@ import { useState } from "../state/useState";
 import type {
   AdaptorPartialChannel,
   AdaptorChannelTypes,
-  AdaptorChannelSelectComponent,
+  ChannelSelectComponentBuilder,
 } from "../../adaptor";
-import type { FulfilledCurriedBuilder } from "../../util/curriedBuilder";
 
 export type ChannelSelectResultValue<
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
@@ -24,31 +23,19 @@ export type UseChannelSelectComponentResult<
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
 > = [
   selectResult: ChannelSelectResultValue<ChannelTypes>[],
-  ChannelSelect: FulfilledCurriedBuilder<
-    AdaptorChannelSelectComponent,
-    {
-      type: "stringSelect";
-      customId: string;
-      channelTypes: ChannelTypes[];
-    },
-    AdaptorChannelSelectComponent
-  >
+  ChannelSelect: ChannelSelectComponentBuilder<{
+    customId: string;
+  }>
 ];
 
 export type UseChannelSingleSelectComponentResult<
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
 > = [
   selectResult: ChannelSelectResultValue<ChannelTypes> | null,
-  ChannelSelect: FulfilledCurriedBuilder<
-    AdaptorChannelSelectComponent,
-    {
-      type: "stringSelect";
-      customId: string;
-      channelTypes: ChannelTypes[];
-      maxValues: 1;
-    },
-    AdaptorChannelSelectComponent
-  >
+  ChannelSelect: ChannelSelectComponentBuilder<{
+    customId: string;
+    maxValues: 1;
+  }>
 ];
 
 export const useChannelSelectComponent = <
