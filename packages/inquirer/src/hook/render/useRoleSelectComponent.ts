@@ -1,10 +1,9 @@
 import assert from "node:assert";
 
 import { RoleSelect } from "../../adaptor";
-import { useEffect } from "../effect/useEffect";
+import { useObserveValue } from "../effect/useObserveValue";
 import { useRoleSelectEvent } from "../effect/useRoleSelectEvent";
 import { useCustomId } from "../state/useCustomId";
-import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 
 import type { AdaptorRole, AdaptorRoleSelectComponent } from "../../adaptor";
@@ -44,20 +43,14 @@ export const useRoleSelectComponent = (
 
   const [selected, setSelected] = useState<AdaptorRole[]>([]);
 
+  const markChanged = useObserveValue(selected, params.onSelected);
+
   useRoleSelectEvent(customId, async (_, roles, deferUpdate) => {
     await deferUpdate();
 
     setSelected(roles);
-    valueChanged.current = true;
+    markChanged();
   });
-
-  const valueChanged = useRef(false);
-  useEffect(() => {
-    if (valueChanged.current) {
-      params.onSelected?.(selected);
-      valueChanged.current = false;
-    }
-  }, [selected]);
 
   return [
     selected,

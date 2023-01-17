@@ -4,6 +4,7 @@ import { generateCustomId } from "../state/useCustomId";
 import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 import { useEffect } from "./useEffect";
+import { useObserveValue } from "./useObserveValue";
 
 import type {
   AdaptorInteractionResponseModalData,
@@ -68,7 +69,10 @@ export const useModal = <TKey extends string>(
     customIdKeyEntries.map(([key, customId]) => [customId, key])
   ) as Record<string, TKey>;
 
-  const valueChanged = useRef(false);
+  const markUpdate = useObserveValue(result, (value) => {
+    if (value === null) return;
+    param.onSubmit?.(value);
+  });
 
   const sentModalCustomIdsRef = useRef<Set<Snowflake>>(new Set());
 
@@ -127,7 +131,7 @@ export const useModal = <TKey extends string>(
         result[key] = interaction.data.fields[customId];
       }
       setResult(result);
-      valueChanged.current = true;
+      markUpdate();
 
       const facade = messageFacade(adaptor);
       await facade.deferUpdate(interaction.id, interaction.token);
@@ -137,13 +141,6 @@ export const useModal = <TKey extends string>(
       clear();
     };
   });
-
-  useEffect(() => {
-    if (valueChanged.current && result !== null) {
-      param.onSubmit?.(result);
-      valueChanged.current = false;
-    }
-  }, [result, param.onSubmit]);
 
   return [result, openModal];
 };

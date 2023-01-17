@@ -1,10 +1,9 @@
 import assert from "node:assert";
 
 import { MentionableSelect } from "../../adaptor";
-import { useEffect } from "../effect/useEffect";
 import { useMentionableSelectEvent } from "../effect/useMentionableSelectEvent";
+import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
-import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 
 import type { AdaptorMentionableSelectComponent } from "../../adaptor";
@@ -44,21 +43,14 @@ export const useMentionableSelectComponent = (
   const customId = useCustomId("mentionableSelect");
 
   const [selected, setSelected] = useState<MentionableSelectValue[]>([]);
+  const markChanged = useObserveValue(selected, params.onSelected);
 
   useMentionableSelectEvent(customId, async (_, userOrRoles, deferUpdate) => {
     await deferUpdate();
 
     setSelected(userOrRoles);
-    valueChanged.current = true;
+    markChanged();
   });
-
-  const valueChanged = useRef(false);
-  useEffect(() => {
-    if (valueChanged.current) {
-      params.onSelected?.(selected);
-      valueChanged.current = false;
-    }
-  }, [selected, params.onSelected]);
 
   return [
     selected,

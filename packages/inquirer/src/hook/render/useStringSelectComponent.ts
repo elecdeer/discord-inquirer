@@ -1,15 +1,14 @@
 import assert from "node:assert";
 
 import { StringSelect } from "../../adaptor";
-import { useEffect } from "../effect/useEffect";
+import { useObserveValue } from "../effect/useObserveValue";
 import { useStringSelectEvent } from "../effect/useStringSelectEvent";
 import { useCollection } from "../state/useCollection";
 import { useCustomId } from "../state/useCustomId";
-import { useRef } from "../state/useRef";
 
 import type {
-  AdaptorStringSelectComponent,
   AdaptorSelectOption,
+  AdaptorStringSelectComponent,
 } from "../../adaptor";
 import type { FulfilledCurriedBuilder } from "../../util/curriedBuilder";
 import type { SetOptional } from "type-fest";
@@ -72,7 +71,12 @@ export const useStringSelectComponent = <T>(param: {
       },
     ])
   );
-  const valueChanged = useRef(false);
+  const result = items.map((item) => ({
+    ...item,
+    selected: get(item.key)?.selected ?? false,
+  }));
+
+  const markChanged = useObserveValue(result, param.onSelected);
 
   useStringSelectEvent(customId, async (_, values, deferUpdate) => {
     await deferUpdate();
@@ -82,21 +86,13 @@ export const useStringSelectComponent = <T>(param: {
       if (prev.selected == selected) {
         return prev;
       } else {
-        valueChanged.current = true;
+        markChanged();
         return {
           ...prev,
           selected,
         };
       }
     });
-  });
-
-  //あまり良い実装では無い
-  useEffect(() => {
-    if (valueChanged.current) {
-      param.onSelected?.(result());
-      valueChanged.current = false;
-    }
   });
 
   const renderComponent = StringSelect({
@@ -110,13 +106,7 @@ export const useStringSelectComponent = <T>(param: {
       .filter((item) => !(item.inactive ?? false)),
   });
 
-  const result = () =>
-    items.map((item) => ({
-      ...item,
-      selected: get(item.key)?.selected ?? false,
-    }));
-
-  return [result(), renderComponent];
+  return [result, renderComponent];
 };
 
 const initialSelectItems = <T>(

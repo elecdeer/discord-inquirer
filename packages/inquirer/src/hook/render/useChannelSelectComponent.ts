@@ -1,8 +1,7 @@
 import { ChannelSelect } from "../../adaptor";
 import { useChannelSelectEvent } from "../effect/useChannelSelectEvent";
-import { useEffect } from "../effect/useEffect";
+import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
-import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 
 import type {
@@ -66,6 +65,8 @@ export const useChannelSelectComponent = <
     ChannelSelectResultValue<ChannelTypes>[]
   >([]);
 
+  const markChanged = useObserveValue(selected, params.onSelected);
+
   useChannelSelectEvent(customId, async (_, channels, deferUpdate) => {
     await deferUpdate();
 
@@ -79,16 +80,8 @@ export const useChannelSelectComponent = <
     );
 
     setSelected(filteredChannels);
-    valueChanged.current = true;
+    markChanged();
   });
-
-  const valueChanged = useRef(false);
-  useEffect(() => {
-    if (valueChanged.current) {
-      params.onSelected?.(selected);
-      valueChanged.current = false;
-    }
-  }, [selected, params.onSelected]);
 
   return [
     selected,
