@@ -6,33 +6,22 @@ import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
-import type { AdaptorMentionableSelectComponent } from "../../adaptor";
-import type { FulfilledCurriedBuilder } from "../../util/curriedBuilder";
+import type { MentionableSelectComponentBuilder } from "../../adaptor";
 import type { MentionableSelectValue } from "../effect/useMentionableSelectEvent";
 
 export type UseMentionableSelectComponentResult = [
   selected: MentionableSelectValue[],
-  MentionableSelect: FulfilledCurriedBuilder<
-    AdaptorMentionableSelectComponent,
-    {
-      type: "mentionableSelect";
-      customId: string;
-    },
-    AdaptorMentionableSelectComponent
-  >
+  MentionableSelect: MentionableSelectComponentBuilder<{
+    customId: string;
+  }>
 ];
 
 export type UseMentionableSingleSelectComponentResult = [
   selected: MentionableSelectValue | null,
-  MentionableSelect: FulfilledCurriedBuilder<
-    AdaptorMentionableSelectComponent,
-    {
-      type: "mentionableSelect";
-      customId: string;
-      maxValues: 1;
-    },
-    AdaptorMentionableSelectComponent
-  >
+  MentionableSelect: MentionableSelectComponentBuilder<{
+    customId: string;
+    maxValues: 1;
+  }>
 ];
 
 export const useMentionableSelectComponent = (

@@ -8,9 +8,8 @@ import { useCustomId } from "../state/useCustomId";
 
 import type {
   AdaptorSelectOption,
-  AdaptorStringSelectComponent,
+  StringSelectComponentBuilder,
 } from "../../adaptor";
-import type { FulfilledCurriedBuilder } from "../../util/curriedBuilder";
 import type { SetOptional } from "type-fest";
 
 export type StringSelectItem<T> = Omit<AdaptorSelectOption<T>, "value"> & {
@@ -30,28 +29,19 @@ export type StringSelectItemResult<T> = StringSelectItem<T> & {
 
 export type UseStringSelectComponentResult<T> = [
   selectResult: StringSelectItemResult<T>[],
-  StringSelect: FulfilledCurriedBuilder<
-    AdaptorStringSelectComponent<T>,
-    {
-      type: "stringSelect";
-      customId: string;
-      options: StringSelectItemResult<T>[];
-    },
-    AdaptorStringSelectComponent<T>
-  >
+  StringSelect: StringSelectComponentBuilder<{
+    customId: string;
+    options: AdaptorSelectOption<T>[];
+  }>
 ];
 
 export type UseStringSingleSelectComponentResult<T> = [
   selectResult: StringSelectItemResult<T> | null,
-  StringSelect: FulfilledCurriedBuilder<
-    AdaptorStringSelectComponent<T>,
-    {
-      type: "stringSelect";
-      customId: string;
-      options: StringSelectItemResult<T>[];
-    },
-    AdaptorStringSelectComponent<T>
-  >
+  StringSelect: StringSelectComponentBuilder<{
+    customId: string;
+    options: AdaptorSelectOption<T>[];
+    maxValues: 1;
+  }>
 ];
 
 export const useStringSelectComponent = <T>(param: {

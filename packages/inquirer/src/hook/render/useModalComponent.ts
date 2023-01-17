@@ -3,12 +3,14 @@ import { useButtonEvent } from "../effect/useButtonEvent";
 import { useModal } from "../effect/useModal";
 import { useCustomId } from "../state/useCustomId";
 
-import type { ButtonBuilder } from "../../adaptor";
+import type { ButtonComponentBuilder } from "../../adaptor";
 import type { UseModalParam } from "../effect/useModal";
 
 export type UseModalComponentResult<TKey extends string> = [
   result: Record<TKey, string> | null,
-  Button: ButtonBuilder<"customId">
+  Button: ButtonComponentBuilder<{
+    customId: string;
+  }>
 ];
 
 export const useModalComponent = <TKey extends string>(

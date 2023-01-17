@@ -4,8 +4,7 @@ import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
-import type { AdaptorButtonComponent } from "../../adaptor";
-import type { UnfulfilledCurriedBuilder } from "../../util/curriedBuilder";
+import type { ButtonComponentBuilder } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
 export type ValidateResult<T> = ValidateOkResult | ValidateErrorResult<T>;
@@ -30,11 +29,9 @@ export type ValidateResultState<T> =
 
 export type UseConfirmButtonResult<T> = [
   result: ValidateResultState<T>,
-  ConfirmButton: UnfulfilledCurriedBuilder<
-    AdaptorButtonComponent,
-    { type: "button"; customId: string },
-    AdaptorButtonComponent
-  >
+  ConfirmButton: ButtonComponentBuilder<{
+    customId: string;
+  }>
 ];
 
 export const useConfirmButtonComponent = <T = undefined>(
