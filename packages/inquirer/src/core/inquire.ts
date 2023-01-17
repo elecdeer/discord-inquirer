@@ -1,14 +1,14 @@
 import { createEventFlow } from "@elecdeer/event-flow";
 
+import { createHookContext } from "./hookContext";
 import { isMatchHash } from "../util/hash";
 import { immediateThrottle } from "../util/immediateThrottle";
 import { defaultLogger } from "../util/logger";
 import { createTimer } from "../util/timer";
-import { createHookContext } from "./hookContext";
 
+import type { Screen } from "./screen";
 import type { DiscordAdaptor, MessageMutualPayload } from "../adaptor";
 import type { Logger } from "../util/logger";
-import type { Screen } from "./screen";
 import type { IEventFlowHandler } from "@elecdeer/event-flow";
 
 type InquireResult<T extends Record<string, unknown>> = {

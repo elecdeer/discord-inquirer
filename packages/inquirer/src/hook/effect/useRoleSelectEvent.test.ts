@@ -1,12 +1,12 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { useRoleSelectEvent } from "./useRoleSelectEvent";
 import { createHookContext } from "../../core/hookContext";
 import {
   createAdaptorRoleMock,
   createAdaptorUserInvokedInteractionBaseMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useRoleSelectEvent } from "./useRoleSelectEvent";
 
 import type { AdaptorRoleSelectInteraction } from "../../adaptor";
 

@@ -1,9 +1,9 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { useObserveValue } from "./useObserveValue";
 import { createHookContext } from "../../core/hookContext";
 import { createDiscordAdaptorMock } from "../../mock";
 import { useState } from "../state/useState";
-import { useObserveValue } from "./useObserveValue";
 
 describe("packages/inquirer/src/hook/effect/useObserveValue", () => {
   describe("useObserveValue()", () => {

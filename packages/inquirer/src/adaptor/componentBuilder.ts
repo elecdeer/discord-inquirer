@@ -1,10 +1,6 @@
 import { createCurriedBuilder } from "../util/curriedBuilder";
 
 import type {
-  UnfulfilledCurriedBuilder,
-  FulfilledCurriedBuilder,
-} from "../util/curriedBuilder";
-import type {
   AdaptorButtonComponent,
   AdaptorChannelSelectComponent,
   AdaptorMentionableSelectComponent,
@@ -13,6 +9,10 @@ import type {
   AdaptorStringSelectComponent,
   AdaptorUserSelectComponent,
 } from "./structure";
+import type {
+  UnfulfilledCurriedBuilder,
+  FulfilledCurriedBuilder,
+} from "../util/curriedBuilder";
 
 export type ButtonComponentBuilder<T extends Partial<AdaptorButtonComponent>> =
   UnfulfilledCurriedBuilder<

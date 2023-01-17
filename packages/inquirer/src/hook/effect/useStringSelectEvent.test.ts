@@ -1,11 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { useStringSelectEvent } from "./useStringSelectEvent";
 import { createHookContext } from "../../core/hookContext";
 import {
   createAdaptorUserInvokedInteractionBaseMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useStringSelectEvent } from "./useStringSelectEvent";
 
 import type { AdaptorStringSelectInteraction } from "../../adaptor";
 

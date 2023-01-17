@@ -1,11 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { useButtonEvent } from "./useButtonEvent";
 import { createHookContext } from "../../core/hookContext";
 import {
   createAdaptorUserInvokedInteractionBaseMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useButtonEvent } from "./useButtonEvent";
 
 import type {
   AdaptorButtonInteraction,

@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { useChannelSelectEvent } from "./useChannelSelectEvent";
 import { createHookContext } from "../../core/hookContext";
 import {
   createAdaptorPartialNonThreadChannelMock,
@@ -7,7 +8,6 @@ import {
   createAdaptorUserInvokedInteractionBaseMock,
   createDiscordAdaptorMock,
 } from "../../mock";
-import { useChannelSelectEvent } from "./useChannelSelectEvent";
 
 import type {
   AdaptorChannelSelectInteraction,

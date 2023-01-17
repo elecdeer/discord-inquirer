@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 
+import { useEffect } from "./useEffect";
 import { createHookContext } from "../../core/hookContext";
 import { createDiscordAdaptorMock } from "../../mock";
-import { useEffect } from "./useEffect";
 
 describe("packages/inquirer/src/hook/useEffect", () => {
   describe("useEffect()", () => {

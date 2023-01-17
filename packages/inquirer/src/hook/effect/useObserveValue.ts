@@ -1,5 +1,5 @@
-import { useRef } from "../state/useRef";
 import { useEffect } from "./useEffect";
+import { useRef } from "../state/useRef";
 
 import type { Awaitable } from "../../util/types";
 

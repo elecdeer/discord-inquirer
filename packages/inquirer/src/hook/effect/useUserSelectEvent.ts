@@ -1,6 +1,6 @@
+import { useEffect } from "./useEffect";
 import { isAdaptorUserSelectInteraction, messageFacade } from "../../adaptor";
 import { getHookContext } from "../../core/hookContext";
-import { useEffect } from "./useEffect";
 
 import type {
   AdaptorUserSelectInteraction,

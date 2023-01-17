@@ -1,5 +1,5 @@
-import { resolveLazy } from "../../util/lazy";
 import { useState } from "./useState";
+import { resolveLazy } from "../../util/lazy";
 
 import type { Lazy } from "../../util/lazy";
 

@@ -4,8 +4,8 @@ import {
   TextInputStyle,
 } from "discord-api-types/v10";
 
-import { buttonStyleMap, channelTypesMap } from "../structure";
 import { transformers } from "./index";
+import { buttonStyleMap, channelTypesMap } from "../structure";
 
 import type {
   AdaptorButtonComponent,
