@@ -1,8 +1,7 @@
 import { Button } from "../../adaptor";
 import { useButtonEvent } from "../effect/useButtonEvent";
-import { useEffect } from "../effect/useEffect";
+import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
-import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 
 import type { AdaptorButtonComponent } from "../../adaptor";
@@ -49,7 +48,10 @@ export const useConfirmButtonComponent = <T = undefined>(
     ok: false,
   });
 
-  const valueChanged = useRef(false);
+  const markChanged = useObserveValue(validateResult, (value) => {
+    if (!value.ok) return;
+    onConfirm?.();
+  });
 
   useButtonEvent(customId, async (_, deferUpdate) => {
     //canConfirmの結果がresolveする前に3秒経ってしまうとinteractionがタイムアウトするため、deferInteractionAlwaysがtrueの場合は先に呼ぶ
@@ -66,15 +68,8 @@ export const useConfirmButtonComponent = <T = undefined>(
       ...result,
       checked: true,
     });
+    markChanged();
   });
-
-  //あまり良い実装ではない
-  useEffect(() => {
-    if (valueChanged.current && validateResult.ok) {
-      onConfirm?.();
-      valueChanged.current = false;
-    }
-  }, [validateResult]);
 
   const renderComponent = Button({
     customId,

@@ -13,6 +13,7 @@ export * from "./effect/useRoleSelectEvent";
 export * from "./effect/useChannelSelectEvent";
 export * from "./effect/useMentionableSelectEvent";
 export * from "./effect/useModal";
+export * from "./effect/useObserveValue";
 
 export * from "./render/useConfirmButtonComponent";
 export * from "./render/useCountButtonComponent";

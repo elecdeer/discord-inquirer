@@ -1,10 +1,9 @@
 import assert from "node:assert";
 
 import { UserSelect } from "../../adaptor";
-import { useEffect } from "../effect/useEffect";
+import { useObserveValue } from "../effect/useObserveValue";
 import { useUserSelectEvent } from "../effect/useUserSelectEvent";
 import { useCustomId } from "../state/useCustomId";
-import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
 
 import type { AdaptorUserSelectComponent } from "../../adaptor";
@@ -45,20 +44,14 @@ export const useUserSelectComponent = (
 
   const [selected, setSelected] = useState<UserSelectResultValue[]>([]);
 
+  const markChanged = useObserveValue(selected, param.onSelected);
+
   useUserSelectEvent(customId, async (_, users, deferUpdate) => {
     await deferUpdate();
 
     setSelected(users);
-    valueChanged.current = true;
+    markChanged();
   });
-
-  const valueChanged = useRef(false);
-  useEffect(() => {
-    if (valueChanged.current) {
-      param.onSelected?.(selected);
-      valueChanged.current = false;
-    }
-  }, [selected, param.onSelected]);
 
   return [
     selected,
