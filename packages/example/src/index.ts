@@ -1,16 +1,13 @@
 import {
-  Button,
   createScreen,
   inquire,
   Row,
-  useButtonEvent,
   useChannelSelectComponent,
   useConfirmButtonComponent,
-  useCustomId,
   useRoleSelectComponent,
   useStringSelectComponent,
   useUserSelectComponent,
-  useModal,
+  useModalComponent,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -185,7 +182,7 @@ const prompt: Prompt<{
 const prompt2: Prompt<{
   value: string;
 }> = (answer, close) => {
-  const [result, openModal] = useModal({
+  const [result, Button] = useModalComponent({
     title: "The modal",
     components: [
       {
@@ -199,11 +196,6 @@ const prompt2: Prompt<{
     },
   });
 
-  const buttonId = useCustomId("button");
-  useButtonEvent(buttonId, async (interaction) => {
-    openModal(interaction.id, interaction.token);
-  });
-
   return {
     content:
       result === null
@@ -212,8 +204,7 @@ const prompt2: Prompt<{
     components: [
       Row(
         Button({
-          style: "primary",
-          customId: buttonId,
+          style: "success",
           label: "open modal",
         })()
       ),

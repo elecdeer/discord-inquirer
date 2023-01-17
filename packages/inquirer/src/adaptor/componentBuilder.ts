@@ -1,5 +1,6 @@
 import { createCurriedBuilder } from "../util/curriedBuilder";
 
+import type { UnfulfilledCurriedBuilder } from "../util/curriedBuilder";
 import type {
   AdaptorButtonComponent,
   AdaptorChannelSelectComponent,
@@ -9,6 +10,13 @@ import type {
   AdaptorStringSelectComponent,
   AdaptorUserSelectComponent,
 } from "./structure";
+
+export type ButtonBuilder<T extends keyof AdaptorButtonComponent> =
+  UnfulfilledCurriedBuilder<
+    AdaptorButtonComponent,
+    Pick<AdaptorButtonComponent, T | "type">,
+    AdaptorButtonComponent
+  >;
 
 export const Button = createCurriedBuilder<AdaptorButtonComponent>()({
   type: "button",
