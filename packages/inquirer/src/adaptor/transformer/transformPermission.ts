@@ -26,7 +26,10 @@ const transformRoleTag = (role: APIRoleTags): AdaptorRoleTags => {
   return {
     botId: role.bot_id ?? null,
     integrationId: role.integration_id ?? null,
-    premiumSubscriber: role.premium_subscriber ?? null,
+    premiumSubscriber: role.premium_subscriber === null,
+    subscriptionListingId: role.subscription_listing_id ?? null,
+    availableForPurchase: role.available_for_purchase === null,
+    guildConnections: role.guild_connections === null,
   };
 };
 

@@ -167,5 +167,20 @@ export interface AdaptorRoleTags {
   /**
    * Whether this is the guild's premium subscriber role
    */
-  premiumSubscriber: true | null;
+  premiumSubscriber: boolean;
+
+  /**
+   * the id of this role's subscription sku and listing
+   */
+  subscriptionListingId: Snowflake | null;
+
+  /**
+   * whether this role is available for purchase
+   */
+  availableForPurchase: boolean;
+
+  /**
+   * whether this role is a guild's linked role
+   */
+  guildConnections: boolean;
 }
