@@ -4,6 +4,7 @@ export * from "./state/useMemo";
 export * from "./state/useReducer";
 export * from "./state/useRef";
 export { useState } from "./state/useState";
+export * from "./state/useSelectPaging";
 
 export * from "./effect/useButtonEvent";
 export { useEffect } from "./effect/useEffect";
