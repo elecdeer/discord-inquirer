@@ -8,9 +8,9 @@ import {
   useStringSelectComponent,
   useUserSelectComponent,
   useModalComponent,
-  splitEquality,
   useButtonComponent,
   useSelectPaging,
+  closeSplitter,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -74,7 +74,7 @@ client.on("ready", async (readyClient) => {
     //   log,
     // });
 
-    const result = inquire(prompt, {
+    const result = inquire(prompt3, {
       screen,
       adaptor,
       log,
@@ -220,14 +220,13 @@ const allOptions = [...Array(30)].map((_, i) => ({
   payload: i,
 }));
 const prompt3 = ((answer, close) => {
-  const { setPage, options } = useSelectPaging({
-    pageOptions: splitEquality(allOptions),
-  });
-  const [result, Select] = useStringSelectComponent({
-    options,
+  const { setPage, selectParams } = useSelectPaging({
+    pageOptions: closeSplitter(allOptions),
+    showSelectedAlways: true,
     maxValues: 3,
-    onMaxExceeded: "override",
+    minValues: 2,
   });
+  const [result, Select] = useStringSelectComponent(selectParams);
 
   const PrevButton = useButtonComponent({
     onClick: () => {
