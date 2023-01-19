@@ -74,7 +74,7 @@ client.on("ready", async (readyClient) => {
     //   log,
     // });
 
-    const result = inquire(prompt3, {
+    const result = inquire(prompt, {
       screen,
       adaptor,
       log,
@@ -156,12 +156,12 @@ const prompt: Prompt<{
           .join(",")}`
       : "Select 1 or 2 numbers",
     components: [
-      Row(
-        Select({
-          maxValues: 2,
-          minValues: 1,
-        })()
-      ),
+      // Row(
+      //   Select({
+      //     maxValues: 2,
+      //     minValues: 1,
+      //   })()
+      // ),
       Row(
         ChannelSelectComponent({
           maxValues: 2,
@@ -225,6 +225,8 @@ const prompt3 = ((answer, close) => {
   });
   const [result, Select] = useStringSelectComponent({
     options,
+    maxValues: 3,
+    onMaxExceeded: "override",
   });
 
   const PrevButton = useButtonComponent({
@@ -244,11 +246,7 @@ const prompt3 = ((answer, close) => {
       .map((item) => item.payload)
       .join(",")}`,
     components: [
-      Row(
-        Select({
-          maxValues: 3,
-        })()
-      ),
+      Row(Select()),
       Row(
         PrevButton({ style: "primary", label: "prev" })(),
         NextButton({ style: "primary", label: "next" })()

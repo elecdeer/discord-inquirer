@@ -5,6 +5,7 @@ import { useObserveValue } from "../effect/useObserveValue";
 import { useStringSelectEvent } from "../effect/useStringSelectEvent";
 import { useCollection } from "../state/useCollection";
 import { useCustomId } from "../state/useCustomId";
+import { useState } from "../state/useState";
 
 import type {
   AdaptorSelectOption,
@@ -32,6 +33,8 @@ export type UseStringSelectComponentResult<T> = [
   StringSelect: StringSelectComponentBuilder<{
     customId: string;
     options: AdaptorSelectOption<T>[];
+    minValues: number | undefined;
+    maxValues: number | undefined;
   }>
 ];
 
@@ -40,19 +43,30 @@ export type UseStringSingleSelectComponentResult<T> = [
   StringSelect: StringSelectComponentBuilder<{
     customId: string;
     options: AdaptorSelectOption<T>[];
+    minValues: number | undefined;
     maxValues: 1;
   }>
 ];
 
-export const useStringSelectComponent = <T>(param: {
+export type UseStringSelectComponentParams<T> = {
   options: readonly PartialStringSelectItem<T>[];
   onSelected?: (selected: StringSelectItemResult<T>[]) => void;
-}): UseStringSelectComponentResult<T> => {
+  minValues?: number;
+  maxValues?: number;
+  onMaxExceeded?: "keep" | "override" | "reject";
+};
+export const useStringSelectComponent = <T>(
+  param: UseStringSelectComponentParams<T>
+): UseStringSelectComponentResult<T> => {
+  const { onMaxExceeded = "override" } = param;
+
   const customId = useCustomId("stringSelect");
 
   const items = initialSelectItems(param.options);
 
-  const { setEach, get } = useCollection(
+  const [_, dispatch] = useState(0);
+
+  const { setEach, get, values } = useCollection(
     items.map((item) => [
       item.key,
       {
@@ -68,12 +82,45 @@ export const useStringSelectComponent = <T>(param: {
 
   const markChanged = useObserveValue(result, param.onSelected);
 
-  useStringSelectEvent(customId, async (_, values, deferUpdate) => {
+  useStringSelectEvent(customId, async (_, selectedKeys, deferUpdate) => {
+    const inactivePageSelectedKeys = items
+      .filter((item) => item.inactive === true && get(item.key)?.selected)
+      .map((item) => item.key);
+    let allSelectedKeys = [...inactivePageSelectedKeys, ...selectedKeys];
+
+    //TODO これselectedのやつは常にactiveにするのが正解じゃないか？
+
+    console.log(inactivePageSelectedKeys);
+    console.log(selectedKeys);
+    if (
+      param.maxValues !== undefined &&
+      allSelectedKeys.length > param.maxValues
+    ) {
+      if (onMaxExceeded === "reject") {
+        //deferUpdateしない
+        return;
+      } else if (onMaxExceeded === "keep") {
+        //既存のを優先
+        allSelectedKeys = [...inactivePageSelectedKeys, ...selectedKeys].slice(
+          0,
+          param.maxValues
+        );
+        console.log("keep", allSelectedKeys);
+      } else if (onMaxExceeded === "override") {
+        //新しいのを優先
+        allSelectedKeys = [...selectedKeys, ...inactivePageSelectedKeys].slice(
+          0,
+          param.maxValues
+        );
+        console.log("override", allSelectedKeys);
+      }
+      dispatch((n) => n + 1);
+    }
     await deferUpdate();
 
     setEach((prev, key) => {
-      const selected = values.includes(key);
-      if (prev.selected == selected) {
+      const selected = allSelectedKeys.includes(key);
+      if (prev.selected === selected) {
         return prev;
       } else {
         markChanged();
@@ -83,6 +130,7 @@ export const useStringSelectComponent = <T>(param: {
         };
       }
     });
+    console.log(allSelectedKeys);
   });
 
   const renderComponent = StringSelect({
@@ -94,6 +142,8 @@ export const useStringSelectComponent = <T>(param: {
         default: get(item.key)?.selected ?? false,
       }))
       .filter((item) => !(item.inactive ?? false)),
+    minValues: param.minValues,
+    maxValues: param.maxValues,
   });
 
   return [result, renderComponent];
@@ -111,15 +161,18 @@ const initialSelectItems = <T>(
   });
 };
 
-export const useStringSingleSelectComponent = <T>(param: {
-  options: readonly PartialStringSelectItem<T>[];
-  onSelected?: (selected: StringSelectItemResult<T> | null) => void;
-}): UseStringSingleSelectComponentResult<T> => {
+export const useStringSingleSelectComponent = <T>(
+  param: Omit<UseStringSelectComponentParams<T>, "onSelected" | "maxValues"> & {
+    onSelected?: (selected: StringSelectItemResult<T> | null) => void;
+  }
+): UseStringSingleSelectComponentResult<T> => {
   const [result, Select] = useStringSelectComponent({
     options: param.options,
     onSelected: (selected) => {
       param.onSelected?.(singleResult(selected));
     },
+    minValues: param.minValues,
+    maxValues: 1,
   });
 
   const singleResult = (resultList: StringSelectItemResult<T>[]) => {
@@ -128,10 +181,5 @@ export const useStringSingleSelectComponent = <T>(param: {
     return selected[0] ?? null;
   };
 
-  return [
-    singleResult(result),
-    Select({
-      maxValues: 1,
-    }),
-  ];
+  return [singleResult(result), Select];
 };
