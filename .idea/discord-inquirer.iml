@@ -5,6 +5,10 @@
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/inquirer/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/example/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/discordjs-adaptor/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/event-flow/dist" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

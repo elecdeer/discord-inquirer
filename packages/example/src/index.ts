@@ -2,12 +2,17 @@ import {
   createScreen,
   inquire,
   Row,
+  Button,
   useChannelSelectComponent,
   useConfirmButtonComponent,
   useRoleSelectComponent,
   useStringSelectComponent,
   useUserSelectComponent,
   useModalComponent,
+  useButtonComponent,
+  usePagedSelectComponent,
+  closeSplitter,
+  useState,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -71,7 +76,7 @@ client.on("ready", async (readyClient) => {
     //   log,
     // });
 
-    const result = inquire(prompt2, {
+    const result = inquire(prompt3, {
       screen,
       adaptor,
       log,
@@ -153,12 +158,12 @@ const prompt: Prompt<{
           .join(",")}`
       : "Select 1 or 2 numbers",
     components: [
-      Row(
-        Select({
-          maxValues: 2,
-          minValues: 1,
-        })()
-      ),
+      // Row(
+      //   Select({
+      //     maxValues: 2,
+      //     minValues: 1,
+      //   })()
+      // ),
       Row(
         ChannelSelectComponent({
           maxValues: 2,
@@ -211,5 +216,67 @@ const prompt2: Prompt<{
     ],
   };
 };
+
+const allOptions = [...Array(30)].map((_, i) => ({
+  label: `${i}`,
+  payload: i,
+}));
+const allOptionsSet = allOptions.map((item) => ({
+  ...item,
+  default: true,
+}));
+
+const prompt3 = ((answer, close) => {
+  const [options, setOptions] = useState(allOptions);
+
+  const { setPage, page, pageNum, result, Select } = usePagedSelectComponent({
+    optionsResolver: closeSplitter(options),
+    showSelectedAlways: false,
+    pageTorus: true,
+    onSelected: (selected) => {
+      console.log("completelySelected", selected);
+    },
+  });
+
+  const AllSetButton = useButtonComponent({
+    onClick: () => {
+      setOptions(allOptionsSet);
+    },
+  });
+
+  const PrevButton = useButtonComponent({
+    onClick: () => {
+      setPage((page) => page - 1);
+    },
+  });
+  const NextButton = useButtonComponent({
+    onClick: () => {
+      setPage((page) => page + 1);
+    },
+  });
+
+  return {
+    content: `selected: ${result
+      .filter((item) => item.selected)
+      .map((item) => item.payload)
+      .join(",")}`,
+    components: [
+      Row(Select()),
+      Row(
+        PrevButton({ style: "primary", label: "prev" })(),
+        Button({
+          customId: "pageShow",
+          style: "secondary",
+          label: `${page + 1}/${pageNum}`,
+          disabled: true,
+        })(),
+        NextButton({ style: "primary", label: "next" })(),
+        AllSetButton({ style: "success", label: "all set" })()
+      ),
+    ],
+  };
+}) satisfies Prompt<{
+  value: number;
+}>;
 
 await client.login(process.env.DISCORD_TOKEN);

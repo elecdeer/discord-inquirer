@@ -16,19 +16,18 @@ export * from "./effect/useModal";
 export * from "./effect/useObserveValue";
 
 export * from "./render/useConfirmButtonComponent";
-export * from "./render/useCountButtonComponent";
 export * from "./render/useStringSelectComponent";
 export * from "./render/useUserSelectComponent";
 export * from "./render/useRoleSelectComponent";
 export * from "./render/useChannelSelectComponent";
 export * from "./render/useMentionableSelectComponent";
 export * from "./render/useModalComponent";
+export * from "./render/useButtonComponent";
+export * from "./render/usePagedSelectComponent";
 
 /*
 実装予定
 
-useCounterComponent
-  - 数値 + の3ボタン
 useSelectPaging
 	option[]を受け取って、page値とsetPageとページ内のoption[]を返す
 
