@@ -1,8 +1,10 @@
 import { StringSelect } from "../../adaptor";
+import { useEffect } from "../effect/useEffect";
 import { useObserveValue } from "../effect/useObserveValue";
 import { useStringSelectEvent } from "../effect/useStringSelectEvent";
 import { useCollection } from "../state/useCollection";
 import { useCustomId } from "../state/useCustomId";
+import { useRef } from "../state/useRef";
 
 import type {
   AdaptorSelectOption,
@@ -11,14 +13,14 @@ import type {
 import type { SetOptional } from "type-fest";
 
 export type StringSelectItem<T> = Omit<AdaptorSelectOption<T>, "value"> & {
-  key: string;
   payload: T;
-  inactive?: boolean;
+  key: string;
+  inactive: boolean;
 };
 
 export type PartialStringSelectItem<T> = SetOptional<
   StringSelectItem<T>,
-  "key"
+  "key" | "inactive"
 >;
 
 export type StringSelectItemResult<T> = StringSelectItem<T> & {
@@ -48,131 +50,138 @@ export type UseStringSingleSelectComponentResult<T> = [
 export type UseStringSelectComponentParams<T> = {
   options: readonly PartialStringSelectItem<T>[];
   onSelected?: (selected: StringSelectItemResult<T>[]) => void;
-  /**
-   * 選択可能な最小数
-   * ただし、inactiveであるオプションが存在する場合は、0個選択が許容される
-   * @default 0
-   */
   minValues?: number;
-} & (
-  | {
-      showSelectedAlways?: false;
-      maxValues?: number;
-    }
-  | {
-      /**
-       * 選択されているオプションをinactiveであっても常に表示するかどうか
-       * trueの場合、maxValuesは20以下のnumberである必要がある
-       */
-      showSelectedAlways: true;
-
-      /**
-       * 選択可能な最大数
-       * showSelectedAlwaysがtrueの場合、maxValuesは20以下のnumberである必要がある
-       */
-      maxValues: number;
-    }
-);
+  maxValues?: number;
+};
 
 export const useStringSelectComponent = <T>({
   options,
   onSelected,
   maxValues,
   minValues,
-  showSelectedAlways = true,
 }: UseStringSelectComponentParams<T>): UseStringSelectComponentResult<T> => {
   const customId = useCustomId("stringSelect");
 
-  const items = initialSelectItems(options);
+  const completedOptions = completeOptions(options);
+  console.log("completedOptions", completedOptions);
 
-  const { setEach, get } = useCollection(
-    items.map((item) => [
-      item.key,
-      {
-        key: item.key,
-        selected: item.selected,
-      },
-    ])
-  );
-  const result = items.map((item) => ({
-    ...item,
-    selected: get(item.key)?.selected ?? false,
-  }));
-
-  const markChanged = useObserveValue(result, onSelected);
-
-  useStringSelectEvent(customId, async (_, selectedKeys, deferUpdate) => {
-    if (pageMaxValue === 0) return; //他のページの選択済みで枠が埋まっている場合はreject
-
-    await deferUpdate();
-
-    const allSelectedKeys = [
-      ...(showSelectedAlways
-        ? []
-        : inactiveSelectedOptions.map((item) => item.key)),
-      ...selectedKeys,
-    ];
-
-    setEach((prev, key) => {
-      const selected = allSelectedKeys.includes(key);
-      if (prev.selected === selected) {
-        return prev;
-      } else {
-        markChanged();
-        return {
-          ...prev,
-          selected,
-        };
-      }
-    });
+  const [optionsWithSelected, getSelectedState] = useSelectState({
+    customId,
+    options: completedOptions,
+    selectedUpdateHook: (key, prev, next) => {
+      if (prev === next) return false;
+      markUpdate();
+      return true;
+    },
   });
 
-  const inactiveOptions = items.filter((item) => item.inactive === true);
-  const inactiveSelectedOptions = inactiveOptions.filter(
-    (item) => get(item.key)?.selected ?? false
-  );
-  const activeOptions = items.filter((item) => item.inactive !== true);
+  const markUpdate = useObserveValue(optionsWithSelected, onSelected);
 
-  const pageOptions = [
-    ...(showSelectedAlways ? inactiveSelectedOptions : []),
-    ...activeOptions,
-  ].map(
+  const activeOptions = optionsWithSelected.filter((item) => !item.inactive);
+  const pageOptions = activeOptions.map(
     (item) =>
       ({
         value: item.key,
         label: item.label,
-        default: get(item.key)?.selected ?? false,
+        default: getSelectedState(item.key),
         description: item.description,
         emoji: item.emoji,
       } satisfies AdaptorSelectOption<unknown>)
   );
 
-  //この辺はuseSelectPagingに移したい気もするが、それには選択状態を渡さないと行けない
-  const pageMaxValue =
-    showSelectedAlways || maxValues === undefined
-      ? maxValues
-      : maxValues - inactiveSelectedOptions.length;
-  const pageMinValue = inactiveOptions.length > 0 ? 0 : minValues;
-
   const renderComponent = StringSelect({
     customId,
     options: pageOptions,
-    minValues: pageMinValue,
-    maxValues:
-      pageMaxValue === undefined ? undefined : Math.max(pageMaxValue, 1),
+    minValues: minValues,
+    maxValues: maxValues,
   });
 
-  return [result, renderComponent];
+  return [optionsWithSelected, renderComponent];
 };
 
-const initialSelectItems = <T>(
+export const useSelectState = <T extends StringSelectItem<unknown>>({
+  customId,
+  options,
+  selectedUpdateHook,
+}: {
+  customId: string;
+  options: readonly T[];
+  selectedUpdateHook?: (
+    key: string,
+    prev: boolean,
+    next: boolean,
+    selectedKeys: string[]
+  ) => boolean;
+}): [
+  optionsWithSelected: (T & {
+    selected: boolean;
+  })[],
+  getSelectedState: (key: string) => boolean
+] => {
+  //optionsが変わったら、collectionをリセットする
+  const { setEach, get, reset, map } = useCollection<string, boolean>(
+    options.map((item) => [item.key, item.default ?? false])
+  );
+
+  const ref = useRef(options);
+  const willReset = useRef(false);
+  if (ref.current !== options) {
+    console.log("will reset", ref.current, options);
+    willReset.current = true;
+    ref.current = options;
+  }
+
+  useEffect(() => {
+    console.log("useEffect", willReset.current);
+    if (willReset.current) {
+      reset();
+      console.log("reset");
+      willReset.current = false;
+    }
+  });
+
+  console.log("map", map());
+
+  const getSelectedState = (key: string) => get(key) ?? false;
+
+  const optionsWithSelected = options.map((option) => ({
+    ...option,
+    selected: getSelectedState(option.key),
+  }));
+
+  useStringSelectEvent(customId, async (_, selectedKeys, deferUpdate) => {
+    //選択状態が何も変化しないinteractionはそもそもAPIから送られないことを前提としている
+    let updated = false;
+
+    setEach((prev, key) => {
+      const selected = selectedKeys.includes(key);
+      const shouldUpdate =
+        selectedUpdateHook ?? ((_, _prev, _next) => _prev !== _next);
+      if (shouldUpdate(key, prev, selected, selectedKeys)) {
+        updated = true;
+        return selected;
+      } else {
+        return prev;
+      }
+    });
+
+    if (updated) {
+      await deferUpdate();
+    }
+  });
+
+  return [optionsWithSelected, getSelectedState];
+};
+
+const completeOptions = <T>(
   items: readonly PartialStringSelectItem<T>[]
 ): StringSelectItemResult<T>[] => {
   return items.map((item, index) => {
     return {
       ...item,
-      selected: item.default ?? false,
       key: item.key ?? `select-item-${index}`,
+      selected: item.default ?? false,
+      inactive: item.inactive ?? false,
     };
   });
 };

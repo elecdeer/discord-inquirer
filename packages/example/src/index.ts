@@ -2,6 +2,7 @@ import {
   createScreen,
   inquire,
   Row,
+  Button,
   useChannelSelectComponent,
   useConfirmButtonComponent,
   useRoleSelectComponent,
@@ -9,8 +10,9 @@ import {
   useUserSelectComponent,
   useModalComponent,
   useButtonComponent,
-  useSelectPaging,
+  usePagedSelectComponent,
   closeSplitter,
+  useState,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -219,14 +221,28 @@ const allOptions = [...Array(30)].map((_, i) => ({
   label: `${i}`,
   payload: i,
 }));
+const allOptionsSet = allOptions.map((item) => ({
+  ...item,
+  default: true,
+}));
+
 const prompt3 = ((answer, close) => {
-  const { setPage, selectParams } = useSelectPaging({
-    pageOptions: closeSplitter(allOptions),
-    showSelectedAlways: true,
-    maxValues: 3,
-    minValues: 2,
+  const [options, setOptions] = useState(allOptions);
+
+  const { setPage, page, pageNum, result, Select } = usePagedSelectComponent({
+    optionsResolver: closeSplitter(options),
+    showSelectedAlways: false,
+    pageTorus: true,
+    onSelected: (selected) => {
+      console.log("completelySelected", selected);
+    },
   });
-  const [result, Select] = useStringSelectComponent(selectParams);
+
+  const AllSetButton = useButtonComponent({
+    onClick: () => {
+      setOptions(allOptionsSet);
+    },
+  });
 
   const PrevButton = useButtonComponent({
     onClick: () => {
@@ -248,7 +264,14 @@ const prompt3 = ((answer, close) => {
       Row(Select()),
       Row(
         PrevButton({ style: "primary", label: "prev" })(),
-        NextButton({ style: "primary", label: "next" })()
+        Button({
+          customId: "pageShow",
+          style: "secondary",
+          label: `${page + 1}/${pageNum}`,
+          disabled: true,
+        })(),
+        NextButton({ style: "primary", label: "next" })(),
+        AllSetButton({ style: "success", label: "all set" })()
       ),
     ],
   };

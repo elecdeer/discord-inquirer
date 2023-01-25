@@ -4,7 +4,6 @@ export * from "./state/useMemo";
 export * from "./state/useReducer";
 export * from "./state/useRef";
 export { useState } from "./state/useState";
-export * from "./state/useSelectPaging";
 
 export * from "./effect/useButtonEvent";
 export { useEffect } from "./effect/useEffect";
@@ -24,6 +23,7 @@ export * from "./render/useChannelSelectComponent";
 export * from "./render/useMentionableSelectComponent";
 export * from "./render/useModalComponent";
 export * from "./render/useButtonComponent";
+export * from "./render/usePagedSelectComponent";
 
 /*
 実装予定
