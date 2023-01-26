@@ -1,3 +1,5 @@
+import assert from "node:assert";
+
 import type { DiscordAdaptor, Snowflake } from "../adaptor";
 
 export type HookContext = {
@@ -7,8 +9,9 @@ export type HookContext = {
     hookType: string;
     index: number;
   }[];
-  mountHooks: ((messageId: Snowflake) => void)[];
-  unmountHooks: (() => void)[];
+  renderIndex: number;
+  mountHooks: ((messageId: Snowflake, updated: boolean) => void)[][];
+  unmountHooks: (() => void)[][];
   adaptor: DiscordAdaptor;
   dispatch: () => void;
 };
@@ -43,6 +46,7 @@ export const createHookContext = (
   const context: HookContext = {
     index: 0,
     hookValues: [],
+    renderIndex: 0,
     mountHooks: [],
     unmountHooks: [],
     adaptor: adaptor,
@@ -52,25 +56,64 @@ export const createHookContext = (
   const startRender = () => {
     context.index = 0;
     bindHookContext(context);
+
+    context.mountHooks.push([]);
+    context.unmountHooks.push([]);
+    return context.renderIndex;
   };
 
   const endRender = () => {
     unbindHookContext();
+    context.renderIndex++;
   };
 
-  const mount = (messageId: Snowflake) => {
-    context.mountHooks.forEach((hook) => hook(messageId));
-    context.mountHooks = [];
+  const callMountHooks = (
+    renderIndex: number,
+    messageId: Snowflake,
+    updated: boolean
+  ) => {
+    const currentMountHooks = context.mountHooks[renderIndex];
+    assert(currentMountHooks !== undefined);
+
+    while (currentMountHooks.length > 0) {
+      const hook = currentMountHooks.shift();
+      //length > 0の時点でhookは存在する
+      hook!(messageId, updated);
+    }
   };
 
-  const update = (messageId: Snowflake) => {
-    unmount();
-    mount(messageId);
+  const callUnmountHooks = (renderIndex: number) => {
+    const prevUnmountHooks = context.unmountHooks[renderIndex - 1];
+    assert(prevUnmountHooks !== undefined);
+
+    while (prevUnmountHooks.length > 0) {
+      const hook = prevUnmountHooks.shift();
+      //length > 0の時点でhookは存在する
+      hook!();
+    }
   };
 
-  const unmount = () => {
-    context.unmountHooks.forEach((hook) => hook());
-    context.unmountHooks = [];
+  const mount = (renderIndex: number, messageId: Snowflake) => {
+    batchDispatch(context, () => {
+      callMountHooks(renderIndex, messageId, true);
+    });
+  };
+
+  const update = (
+    renderIndex: number,
+    messageId: Snowflake,
+    edited: boolean
+  ) => {
+    batchDispatch(context, () => {
+      callUnmountHooks(renderIndex);
+      callMountHooks(renderIndex, messageId, edited);
+    });
+  };
+
+  const unmount = (renderIndex: number) => {
+    batchDispatch(context, () => {
+      callUnmountHooks(renderIndex);
+    });
   };
 
   return {
@@ -104,6 +147,21 @@ export const stockHookValue =
 
 export const takeValue = <T>(ctx: HookContext, index: number): T => {
   return ctx.hookValues[index]?.value as T;
+};
+
+export const batchDispatch = (ctx: HookContext, cb: () => void) => {
+  const prevDispatch = ctx.dispatch;
+
+  let isDispatched = false;
+  ctx.dispatch = () => {
+    isDispatched = true;
+  };
+  cb();
+  ctx.dispatch = prevDispatch;
+
+  if (isDispatched) {
+    ctx.dispatch();
+  }
 };
 
 export const isDepsChanged = (

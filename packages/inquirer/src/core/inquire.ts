@@ -1,6 +1,6 @@
 import { createEventFlow } from "@elecdeer/event-flow";
 
-import { createHookContext } from "./hookContext";
+import { createHookContext, getHookContext } from "./hookContext";
 import { isMatchHash } from "../util/hash";
 import { immediateThrottle } from "../util/immediateThrottle";
 import { defaultLogger } from "../util/logger";
@@ -106,20 +106,55 @@ export const inquire = <T extends Record<string, unknown>>(
     });
   };
 
+  const render = (): {
+    renderIndex: number;
+    renderResult: MessageMutualPayload;
+  } => {
+    log("debug", "start render");
+    let shouldReRender = false;
+
+    //render中にdispatchが発生した場合は、再度renderを行う
+    const renderIndex = hookContext.startRender();
+    const ctx = getHookContext();
+
+    console.log("dispatch override");
+    const prevDispatch = ctx.dispatch;
+    ctx.dispatch = () => {
+      console.log("dispatched in render");
+      shouldReRender = true;
+    };
+
+    const promptResult = prompt(answer, close);
+
+    console.log("dispatch override end");
+    ctx.dispatch = prevDispatch;
+
+    hookContext.endRender();
+
+    if (shouldReRender) {
+      console.log("rerender");
+      return render();
+    } else {
+      log("debug", "end render");
+      return {
+        renderIndex,
+        renderResult: promptResult,
+      };
+    }
+  };
+
   const open = async () => {
     log("debug", "inquirer open");
 
-    hookContext.startRender();
-    const promptResult = prompt(answer, close);
-    hookContext.endRender();
+    const { renderIndex, renderResult } = render();
 
     log("debug", {
-      renderResult: promptResult,
+      renderResult: renderResult,
     });
 
-    const commitResult = await screen.commit(promptResult);
+    const commitResult = await screen.commit(renderResult);
     if (commitResult.updated) {
-      hookContext.mount(commitResult.messageId);
+      hookContext.mount(renderIndex, commitResult.messageId);
       log("debug", `payload mounted messageId: ${commitResult.messageId}`);
       resetIdleTimer();
     } else {
@@ -131,17 +166,24 @@ export const inquire = <T extends Record<string, unknown>>(
   const update = immediateThrottle(async () => {
     log("debug", "inquirer update");
 
-    hookContext.startRender();
-    const promptResult = prompt(answer, close);
-    hookContext.endRender();
+    const { renderIndex, renderResult } = render();
 
     log("debug", {
-      renderResult: promptResult,
+      renderResult: renderResult,
     });
 
-    const commitResult = await screen.commit(promptResult);
+    const commitResult = await screen.commit(renderResult);
+    if (commitResult.messageId !== null) {
+      hookContext.update(
+        renderIndex,
+        commitResult.messageId,
+        commitResult.updated
+      );
+    } else {
+      log("warn", "messageId is null");
+    }
+
     if (commitResult.updated) {
-      hookContext.update(commitResult.messageId);
       log("debug", `payload updated messageId: ${commitResult.messageId}`);
       resetIdleTimer();
     }
@@ -151,18 +193,16 @@ export const inquire = <T extends Record<string, unknown>>(
     log("debug", "inquirer close");
     answerEvent.offAll();
 
-    hookContext.startRender();
-    const promptResult = prompt(answer, close);
-    hookContext.endRender();
+    const { renderIndex, renderResult } = render();
 
     log("debug", {
-      renderResult: promptResult,
+      renderResult: renderResult,
     });
 
-    await screen.commit(promptResult);
+    await screen.commit(renderResult);
     await screen.close();
 
-    hookContext.unmount();
+    hookContext.unmount(renderIndex);
     log("debug", "payload unmounted");
 
     disposeTimers();

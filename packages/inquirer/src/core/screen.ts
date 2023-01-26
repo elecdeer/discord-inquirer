@@ -43,6 +43,7 @@ const completeScreenConfig = (config: Partial<ScreenConfig>): ScreenConfig => {
 export type CommitResult =
   | {
       updated: false;
+      messageId: Snowflake | null;
     }
   | {
       initial: boolean;
@@ -76,6 +77,7 @@ export const createScreen = (
       log("warn", "this screen is already closed");
       return {
         updated: false,
+        messageId: editor?.messageId ?? null,
       };
     }
 
@@ -94,6 +96,7 @@ export const createScreen = (
         });
         return {
           updated: false,
+          messageId: editor?.messageId ?? null,
         };
       }
 
@@ -123,6 +126,7 @@ export const createScreen = (
           });
           return {
             updated: false,
+            messageId: editor?.messageId ?? null,
           };
         }
 
@@ -139,6 +143,7 @@ export const createScreen = (
         };
         return {
           updated: false,
+          messageId: editor?.messageId ?? null,
         };
       }
     }

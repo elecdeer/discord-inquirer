@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import {
   createScreen,
   inquire,
@@ -13,6 +14,9 @@ import {
   usePagedSelectComponent,
   closeSplitter,
   useState,
+  useEffect,
+  batchDispatch,
+  getHookContext,
 } from "discord-inquirer";
 import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client, SlashCommandBuilder } from "discord.js";
@@ -76,7 +80,7 @@ client.on("ready", async (readyClient) => {
     //   log,
     // });
 
-    const result = inquire(prompt3, {
+    const result = inquire(prompt4, {
       screen,
       adaptor,
       log,
@@ -272,6 +276,60 @@ const prompt3 = ((answer, close) => {
         })(),
         NextButton({ style: "primary", label: "next" })(),
         AllSetButton({ style: "success", label: "all set" })()
+      ),
+    ],
+  };
+}) satisfies Prompt<{
+  value: number;
+}>;
+
+const prompt4 = ((answer, close) => {
+  const [count, setCount] = useState(0);
+  const ctx = getHookContext();
+
+  const PlusButton = useButtonComponent({
+    onClick: () => {
+      setCount((page) => page + 1);
+    },
+  });
+  // const ctx = getHookContext();
+  const PlusPlusButton = useButtonComponent({
+    onClick: () => {
+      setCount((page) => page + 1);
+      setCount((page) => page + 1);
+    },
+  });
+
+  const PlusPlusBatchedButton = useButtonComponent({
+    onClick: () => {
+      batchDispatch(ctx, () => {
+        setCount((page) => page + 1);
+        setCount((page) => page + 1);
+      });
+    },
+  });
+
+  if (count < 5) {
+    console.log("setCountInRender", count);
+    setCount((prev) => prev + 1);
+  }
+
+  useEffect(() => {
+    const id = randomUUID();
+
+    console.log(`mounted ${id}`);
+    return () => {
+      console.log(`unmounted ${id}`);
+    };
+  });
+
+  return {
+    content: `count: ${count}`,
+    components: [
+      Row(
+        PlusButton({ style: "primary", label: "+" })(),
+        PlusPlusButton({ style: "primary", label: "++" })(),
+        PlusPlusBatchedButton({ style: "primary", label: "++ batched" })()
       ),
     ],
   };
