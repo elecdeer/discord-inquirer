@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { useCollection } from "./useCollection";
-import { createHookContext } from "../../core/hookContext";
+import { createHookCycle } from "../../core/hookContext";
 import { createDiscordAdaptorMock } from "../../mock";
 
 describe("packages/inquirer/src/hook/useCollection", () => {
   describe("useCollection()", () => {
-    let controller: ReturnType<typeof createHookContext> | undefined;
+    let controller: ReturnType<typeof createHookCycle> | undefined;
 
     afterEach(() => {
       try {
@@ -18,7 +18,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
     describe("set()", () => {
       test("setした値が保持される", () => {
-        controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+        controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
         {
           controller.startRender();
@@ -43,7 +43,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
       test("前回と異なる値をsetするとdispatchされる", () => {
         const dispatch = vi.fn();
-        controller = createHookContext(createDiscordAdaptorMock(), dispatch);
+        controller = createHookCycle(createDiscordAdaptorMock(), dispatch);
 
         {
           controller.startRender();
@@ -60,7 +60,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
       test("前回と同じ値をsetするとdispatchされない", () => {
         const dispatch = vi.fn();
-        controller = createHookContext(createDiscordAdaptorMock(), dispatch);
+        controller = createHookCycle(createDiscordAdaptorMock(), dispatch);
 
         const value2 = { value: "2" };
 
@@ -81,7 +81,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
     describe("setEach()", () => {
       test("保持している各エントリに対してsetできる", () => {
         const dispatch = vi.fn();
-        controller = createHookContext(createDiscordAdaptorMock(), dispatch);
+        controller = createHookCycle(createDiscordAdaptorMock(), dispatch);
 
         {
           controller.startRender();
@@ -111,7 +111,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
       test("全てのエントリに変化が無い場合はdispatchされない", () => {
         const dispatch = vi.fn();
-        controller = createHookContext(createDiscordAdaptorMock(), dispatch);
+        controller = createHookCycle(createDiscordAdaptorMock(), dispatch);
 
         {
           controller.startRender();
@@ -131,7 +131,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
     describe("delete()", () => {
       test("値をdeleteできる", () => {
-        controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+        controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
         {
           controller.startRender();
@@ -160,7 +160,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
     describe("reset()", () => {
       test("reset()を呼び出すとinitialStateの値にリセットされる", () => {
-        controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+        controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
         {
           controller.startRender();

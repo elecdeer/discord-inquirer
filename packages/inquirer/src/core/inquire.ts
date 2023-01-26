@@ -1,6 +1,6 @@
 import { createEventFlow } from "@elecdeer/event-flow";
 
-import { createHookContext, getHookContext } from "./hookContext";
+import { createHookCycle, getHookContext } from "./hookContext";
 import { isMatchHash } from "../util/hash";
 import { immediateThrottle } from "../util/immediateThrottle";
 import { defaultLogger } from "../util/logger";
@@ -208,7 +208,7 @@ export const inquire = <T extends Record<string, unknown>>(
     disposeTimers();
   });
 
-  const hookContext = createHookContext(adaptor, update);
+  const hookContext = createHookCycle(adaptor, update);
   const { resetIdleTimer, disposeTimers } = createInquireTimer(
     {
       time,

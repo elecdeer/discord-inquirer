@@ -39,7 +39,7 @@ const unbindHookContext = () => {
   hookContext = undefined;
 };
 
-export const createHookContext = (
+export const createHookCycle = (
   adaptor: DiscordAdaptor,
   dispatch: () => void
 ) => {

@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { useEffect } from "./useEffect";
-import { createHookContext } from "../../core/hookContext";
+import { createHookCycle } from "../../core/hookContext";
 import { createDiscordAdaptorMock } from "../../mock";
 
 describe("packages/inquirer/src/hook/useEffect", () => {
   describe("useEffect()", () => {
-    let controller: ReturnType<typeof createHookContext> | undefined;
+    let controller: ReturnType<typeof createHookCycle> | undefined;
 
     afterEach(() => {
       try {
@@ -17,7 +17,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("mount時に正しくコールバックが呼ばれる", () => {
-      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
@@ -38,7 +38,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("unmount時に正しくクリーンナップが呼ばれる", () => {
-      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       const cleanup = vi.fn();
 
@@ -53,7 +53,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("マウントが行われない場合はコールバックは呼ばれない", () => {
-      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
@@ -65,7 +65,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("depsを指定しない場合は毎回呼ばれる", () => {
-      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
@@ -90,7 +90,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("depsが空配列の場合は初回のみ呼ばれる", () => {
-      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      const controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 
@@ -112,7 +112,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
     });
 
     test("depsが指定されている場合はdepsが変わるまで呼ばれない", () => {
-      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      const controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       const callback = vi.fn();
 

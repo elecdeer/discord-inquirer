@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useModal } from "./useModal";
-import { createHookContext } from "../../core/hookContext";
+import { createHookCycle } from "../../core/hookContext";
 import {
   createAdaptorUserInvokedInteractionBaseMock,
   createDiscordAdaptorMock,
@@ -18,7 +18,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
   describe("useModal()", () => {
     test("openを呼んだときにinteractionが返信される", () => {
       const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookContext(adaptorMock, vi.fn());
+      const controller = createHookCycle(adaptorMock, vi.fn());
 
       controller.startRender();
       const [_, open] = useModal({
@@ -72,7 +72,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
         }),
       } satisfies DiscordAdaptor;
 
-      const controller = createHookContext(adaptorMock, vi.fn());
+      const controller = createHookCycle(adaptorMock, vi.fn());
 
       const onSubmit = vi.fn();
 

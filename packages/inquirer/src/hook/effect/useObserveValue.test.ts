@@ -1,14 +1,14 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useObserveValue } from "./useObserveValue";
-import { createHookContext } from "../../core/hookContext";
+import { createHookCycle } from "../../core/hookContext";
 import { createDiscordAdaptorMock } from "../../mock";
 import { useState } from "../state/useState";
 
 describe("packages/inquirer/src/hook/effect/useObserveValue", () => {
   describe("useObserveValue()", () => {
     test("返り値の関数で変更がマークされたとき、mount後にhandlerが呼ばれる", () => {
-      const controller = createHookContext(createDiscordAdaptorMock(), () => {
+      const controller = createHookCycle(createDiscordAdaptorMock(), () => {
         // noop
       });
 
@@ -37,7 +37,7 @@ describe("packages/inquirer/src/hook/effect/useObserveValue", () => {
     });
 
     test("変更がマークされなかった時はhandlerが呼ばれない", () => {
-      const controller = createHookContext(createDiscordAdaptorMock(), () => {
+      const controller = createHookCycle(createDiscordAdaptorMock(), () => {
         // noop
       });
 

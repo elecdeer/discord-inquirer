@@ -1,13 +1,13 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useReducer } from "./useReducer";
-import { createHookContext } from "../../core/hookContext";
+import { createHookCycle } from "../../core/hookContext";
 import { createDiscordAdaptorMock } from "../../mock";
 
 describe("packages/inquirer/src/hook/useReducer", () => {
   describe("useReducer()", () => {
     test("actionによって状態が遷移する", () => {
-      const controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      const controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       const reducer = (
         state: number,

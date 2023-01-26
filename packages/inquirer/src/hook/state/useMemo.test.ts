@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { useMemo } from "./useMemo";
-import { createHookContext } from "../../core/hookContext";
+import { createHookCycle } from "../../core/hookContext";
 import { createDiscordAdaptorMock } from "../../mock";
 
 describe("packages/inquirer/src/hook/useMemo", () => {
   describe("useMemo()", () => {
-    let controller: ReturnType<typeof createHookContext> | undefined;
+    let controller: ReturnType<typeof createHookCycle> | undefined;
 
     afterEach(() => {
       try {
@@ -17,7 +17,7 @@ describe("packages/inquirer/src/hook/useMemo", () => {
     });
 
     test("値が保持される", () => {
-      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       {
         controller.startRender();
@@ -35,7 +35,7 @@ describe("packages/inquirer/src/hook/useMemo", () => {
     });
 
     test("depsが変更されなかった場合はfactory()が呼ばれない", () => {
-      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       const deps = [1, "bar"];
 
@@ -57,7 +57,7 @@ describe("packages/inquirer/src/hook/useMemo", () => {
     });
 
     test("depsが変化した際にfactory()が呼ばれ新しい値が保持される", () => {
-      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       {
         controller.startRender();

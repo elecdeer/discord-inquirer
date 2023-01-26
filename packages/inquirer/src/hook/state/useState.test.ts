@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { useState } from "./useState";
-import { createHookContext } from "../../core/hookContext";
+import { createHookCycle } from "../../core/hookContext";
 import { createDiscordAdaptorMock } from "../../mock";
 
 describe("packages/inquirer/src/hook/useState", () => {
   describe("useState()", () => {
-    let controller: ReturnType<typeof createHookContext> | undefined;
+    let controller: ReturnType<typeof createHookCycle> | undefined;
 
     afterEach(() => {
       try {
@@ -17,7 +17,7 @@ describe("packages/inquirer/src/hook/useState", () => {
     });
 
     test("初期値が保持される", () => {
-      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       {
         controller.startRender();
@@ -35,7 +35,7 @@ describe("packages/inquirer/src/hook/useState", () => {
     });
 
     test("setStateで正しく状態が保存される", () => {
-      controller = createHookContext(createDiscordAdaptorMock(), vi.fn());
+      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
       {
         controller.startRender();
@@ -66,7 +66,7 @@ describe("packages/inquirer/src/hook/useState", () => {
 
     test("setStateの呼び出しでdispatchが呼ばれる", () => {
       const dispatch = vi.fn();
-      controller = createHookContext(createDiscordAdaptorMock(), dispatch);
+      controller = createHookCycle(createDiscordAdaptorMock(), dispatch);
 
       {
         controller.startRender();

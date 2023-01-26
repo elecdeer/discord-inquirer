@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useStringSelectEvent } from "./useStringSelectEvent";
-import { createHookContext } from "../../core/hookContext";
+import { createHookCycle } from "../../core/hookContext";
 import {
   createAdaptorUserInvokedInteractionBaseMock,
   createDiscordAdaptorMock,
@@ -13,7 +13,7 @@ describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
   describe("useStringSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookContext(adaptorMock, vi.fn());
+      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
 
       controller.startRender();
@@ -48,7 +48,7 @@ describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
       const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookContext(adaptorMock, vi.fn());
+      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
 
       controller.startRender();

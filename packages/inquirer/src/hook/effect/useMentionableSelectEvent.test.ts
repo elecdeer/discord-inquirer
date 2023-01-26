@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useMentionableSelectEvent } from "./useMentionableSelectEvent";
-import { createHookContext } from "../../core/hookContext";
+import { createHookCycle } from "../../core/hookContext";
 import {
   createAdaptorPartialMemberMock,
   createAdaptorRoleMock,
@@ -22,7 +22,7 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
   describe("useMentionableSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookContext(adaptorMock, vi.fn());
+      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
 
       controller.startRender();
@@ -81,7 +81,7 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
       const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookContext(adaptorMock, vi.fn());
+      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
 
       controller.startRender();
