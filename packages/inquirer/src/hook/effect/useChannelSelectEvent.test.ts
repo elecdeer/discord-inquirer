@@ -1,13 +1,12 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useChannelSelectEvent } from "./useChannelSelectEvent";
-import { createHookCycle } from "../../core/hookContext";
 import {
   createAdaptorPartialNonThreadChannelMock,
   createAdaptorPartialThreadChannelBaseMock,
   createAdaptorUserInvokedInteractionBaseMock,
-  createDiscordAdaptorMock,
-} from "../../mock";
+  renderHook,
+} from "../../testing";
 
 import type {
   AdaptorChannelSelectInteraction,
@@ -18,16 +17,10 @@ import type {
 describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
   describe("useChannelSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
-
-      controller.startRender();
-
-      useChannelSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
+      const { emitInteraction } = renderHook(() =>
+        useChannelSelectEvent("customId", handle)
+      );
 
       const channels = {
         channelIdA: {
@@ -52,7 +45,7 @@ describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
           },
         },
       } satisfies AdaptorChannelSelectInteraction;
-      adaptorMock.emitInteraction!(interactionMock);
+      emitInteraction(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
@@ -62,23 +55,15 @@ describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
-
-      controller.unmount();
     });
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
+      const { emitInteraction } = renderHook(() =>
+        useChannelSelectEvent("customId", handle)
+      );
 
-      controller.startRender();
-
-      useChannelSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
-
-      adaptorMock.emitInteraction!({
+      emitInteraction({
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
@@ -87,7 +72,7 @@ describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
         },
       });
 
-      adaptorMock.emitInteraction!({
+      emitInteraction({
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
@@ -106,8 +91,6 @@ describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
       } satisfies AdaptorChannelSelectInteraction);
 
       expect(handle).not.toHaveBeenCalled();
-
-      controller.unmount();
     });
   });
 });

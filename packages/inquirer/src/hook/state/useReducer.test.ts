@@ -1,14 +1,11 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { useReducer } from "./useReducer";
-import { createHookCycle } from "../../core/hookContext";
-import { createDiscordAdaptorMock } from "../../mock";
+import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useReducer", () => {
   describe("useReducer()", () => {
     test("actionによって状態が遷移する", () => {
-      const controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
       const reducer = (
         state: number,
         action: { type: "increment" | "decrement" }
@@ -21,29 +18,28 @@ describe("packages/inquirer/src/hook/useReducer", () => {
         }
       };
 
-      {
-        controller.startRender();
-        const [state, dispatch] = useReducer(reducer, 0);
+      const { result, act } = renderHook(() => {
+        const [value, dispatch] = useReducer(reducer, 0);
+        return {
+          value,
+          dispatch,
+        };
+      });
 
-        dispatch({ type: "increment" });
-        expect(state).toBe(0);
-        controller.endRender();
-      }
+      expect(result.current.value).toBe(0);
 
-      {
-        controller.startRender();
-        const [state, dispatch] = useReducer(reducer, 0);
-        expect(state).toBe(1);
-        dispatch({ type: "decrement" });
-        controller.endRender();
-      }
+      act(() => {
+        result.current.dispatch({ type: "increment" });
+      });
 
-      {
-        controller.startRender();
-        const [state] = useReducer(reducer, 0);
-        expect(state).toBe(0);
-        controller.endRender();
-      }
+      expect(result.current.value).toBe(1);
+
+      act(() => {
+        result.current.dispatch({ type: "decrement" });
+        result.current.dispatch({ type: "decrement" });
+      });
+
+      expect(result.current.value).toBe(-1);
     });
   });
 });

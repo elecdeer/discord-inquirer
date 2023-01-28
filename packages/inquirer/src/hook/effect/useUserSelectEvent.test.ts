@@ -1,29 +1,22 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useUserSelectEvent } from "./useUserSelectEvent";
-import { createHookCycle } from "../../core/hookContext";
 import {
   createAdaptorPartialMemberMock,
   createAdaptorUserInvokedInteractionBaseMock,
   createAdaptorUserMock,
-  createDiscordAdaptorMock,
-} from "../../mock";
+  renderHook,
+} from "../../testing";
 
 import type { AdaptorUserSelectInteraction } from "../../adaptor";
 
 describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
   describe("useUserSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
-
-      controller.startRender();
-
-      useUserSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
+      const { emitInteraction } = renderHook(() =>
+        useUserSelectEvent("customId", handle)
+      );
 
       const users = {
         userIdA: createAdaptorUserMock({ id: "userIdA" }),
@@ -47,7 +40,7 @@ describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
           },
         },
       } satisfies AdaptorUserSelectInteraction;
-      adaptorMock.emitInteraction!(interactionMock);
+      emitInteraction(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
@@ -66,23 +59,15 @@ describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
-
-      controller.unmount();
     });
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
+      const { emitInteraction } = renderHook(() =>
+        useUserSelectEvent("customId", handle)
+      );
 
-      controller.startRender();
-
-      useUserSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
-
-      adaptorMock.emitInteraction!({
+      emitInteraction({
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
@@ -91,7 +76,7 @@ describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
         },
       });
 
-      adaptorMock.emitInteraction!({
+      emitInteraction({
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
@@ -110,8 +95,6 @@ describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
       } satisfies AdaptorUserSelectInteraction);
 
       expect(handle).not.toHaveBeenCalled();
-
-      controller.unmount();
     });
   });
 });

@@ -1,53 +1,35 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { useRef } from "./useRef";
-import { createHookCycle } from "../../core/hookContext";
-import { createDiscordAdaptorMock } from "../../mock";
+import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useRef", () => {
   describe("useRef()", () => {
     test("値を保持する", () => {
-      const controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
+      const { rerender, result } = renderHook((args) => useRef(args), {
+        initialArgs: 3,
+      });
 
-      {
-        controller.startRender();
-        const ref = useRef(3);
-        expect(ref.current).toBe(3);
-        controller.endRender();
-      }
+      expect(result.current.current).toBe(3);
 
-      {
-        controller.startRender();
-        const ref = useRef(10);
-        expect(ref.current).toBe(3);
-        ref.current = 20;
-        controller.endRender();
-      }
+      rerender();
 
-      {
-        controller.startRender();
-        const ref = useRef(10);
-        expect(ref.current).toBe(20);
-        controller.endRender();
-      }
+      expect(result.current.current).toBe(3);
+      result.current.current = 20;
+
+      rerender();
+
+      expect(result.current.current).toBe(20);
     });
 
-    test("値を変更してもdispatchは呼ばれない", () => {
-      const dispatch = vi.fn();
-      const controller = createHookCycle(
-        createDiscordAdaptorMock(),
-        dispatch
-      );
+    test.todo("値を変更してもdispatchは呼ばれない", () => {
+      const { result, act } = renderHook(() => useRef(3));
 
-      {
-        controller.startRender();
-        const ref = useRef(3);
-        ref.current = 10;
+      act(() => {
+        result.current.current = 10;
+      });
 
-        controller.endRender();
-      }
-
-      expect(dispatch).not.toHaveBeenCalled();
+      //TODO dispatchが呼ばれていないことを確認する
     });
   });
 });

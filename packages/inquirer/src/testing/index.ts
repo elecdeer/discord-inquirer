@@ -5,3 +5,4 @@ export * from "./adaptorRoleMock";
 export * from "./adaptorUserMock";
 export * from "./adaptorMemberMock";
 export * from "./adaptorChannelMock";
+export * from "./testRenderer";

@@ -4,9 +4,11 @@ import { vi } from "vitest";
 import type { DiscordAdaptor } from "../adaptor";
 import type { AdaptorInteraction } from "../adaptor";
 
-export const createDiscordAdaptorMock = (): DiscordAdaptor & {
+export type AdaptorMock = DiscordAdaptor & {
   emitInteraction: (interaction: AdaptorInteraction) => void;
-} => {
+};
+
+export const createDiscordAdaptorMock = (): AdaptorMock => {
   const handlerFlow = createEventFlow<AdaptorInteraction>();
 
   return {

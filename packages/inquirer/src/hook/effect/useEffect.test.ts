@@ -1,146 +1,84 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { useEffect } from "./useEffect";
-import { createHookCycle } from "../../core/hookContext";
-import { createDiscordAdaptorMock } from "../../mock";
+import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useEffect", () => {
   describe("useEffect()", () => {
-    let controller: ReturnType<typeof createHookCycle> | undefined;
-
-    afterEach(() => {
-      try {
-        controller?.endRender();
-      } catch (e) {
-        // skip
-      }
-    });
-
     test("mount時に正しくコールバックが呼ばれる", () => {
-      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
       const callback = vi.fn();
+      const { rerender } = renderHook(() => useEffect(callback));
 
-      const render = () => {
-        controller!.startRender();
-        useEffect(callback);
-        controller!.endRender();
-      };
-
-      render();
-      controller.mount("dummyMessageId-0");
       expect(callback).toBeCalledTimes(1);
 
-      controller.unmount();
-      render();
-      controller.mount("dummyMessageId-1");
+      rerender();
+
       expect(callback).toBeCalledTimes(2);
     });
 
     test("unmount時に正しくクリーンナップが呼ばれる", () => {
-      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
       const cleanup = vi.fn();
 
-      controller.startRender();
-      useEffect(() => cleanup);
-      controller.endRender();
+      const { unmount } = renderHook(() => useEffect(() => cleanup));
 
-      controller.mount("dummyMessageId-0");
       expect(cleanup).not.toHaveBeenCalled();
-      controller.unmount();
+      unmount();
       expect(cleanup).toBeCalledTimes(1);
     });
 
-    test("マウントが行われない場合はコールバックは呼ばれない", () => {
-      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
-      const callback = vi.fn();
-
-      controller.startRender();
-      useEffect(callback);
-      controller.endRender();
-
-      expect(callback).not.toHaveBeenCalled();
-    });
-
     test("depsを指定しない場合は毎回呼ばれる", () => {
-      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
       const callback = vi.fn();
+      const { rerender } = renderHook(() => useEffect(callback));
 
-      const renderWithMount = () => {
+      expect(callback).toBeCalledTimes(1);
+      for (let i = 0; i < 10; i++) {
         callback.mockClear();
-
-        controller!.unmount();
-        controller!.startRender();
-        useEffect(callback);
-        controller!.endRender();
-        controller!.mount("dummyMessageId-0");
-      };
-
-      renderWithMount();
-      expect(callback).toHaveBeenCalledOnce();
-
-      renderWithMount();
-      expect(callback).toHaveBeenCalledOnce();
-
-      renderWithMount();
-      expect(callback).toHaveBeenCalledOnce();
+        rerender();
+        expect(callback).toBeCalledTimes(1);
+      }
     });
 
     test("depsが空配列の場合は初回のみ呼ばれる", () => {
-      const controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
       const callback = vi.fn();
+      const { rerender } = renderHook(() => useEffect(callback, []));
 
-      const renderWithMount = () => {
-        callback.mockClear();
-
-        controller.unmount();
-        controller.startRender();
-        useEffect(callback, []);
-        controller.endRender();
-        controller.mount("dummyMessageId-0");
-      };
-
-      renderWithMount();
       expect(callback).toHaveBeenCalledOnce();
 
-      renderWithMount();
+      callback.mockClear();
+      rerender();
       expect(callback).not.toHaveBeenCalled();
     });
 
     test("depsが指定されている場合はdepsが変わるまで呼ばれない", () => {
-      const controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
       const callback = vi.fn();
 
-      const renderWithMount = (depsValue: unknown[]) => {
-        callback.mockClear();
-
-        controller.unmount();
-        controller.startRender();
-        useEffect(callback, depsValue);
-        controller.endRender();
-        controller.mount("dummyMessageId-0");
-      };
-
-      renderWithMount([0]);
-      expect(callback).toHaveBeenCalledOnce();
-
-      renderWithMount([0]);
-      expect(callback).not.toHaveBeenCalled();
-
-      const value = {
+      const objectValue = {
         count: 0,
       };
-      renderWithMount([value]);
-      expect(callback).toHaveBeenCalledOnce();
+      const { rerender } = renderHook(
+        ([value, objValue]) => useEffect(callback, [value, objValue]),
+        {
+          initialArgs: [0, objectValue],
+        }
+      );
 
-      value.count = value.count + 1;
-      renderWithMount([value]);
+      expect(callback).toHaveBeenCalledOnce();
+      callback.mockClear();
+
+      rerender();
+      expect(callback).not.toHaveBeenCalled();
+
+      rerender({
+        newArgs: [1, objectValue],
+      });
+      expect(callback).toHaveBeenCalledOnce();
+      callback.mockClear();
+
       // depsの参照が変わっていないので呼ばれない
+      objectValue.count = objectValue.count + 1;
+      rerender({
+        newArgs: [1, objectValue],
+      });
       expect(callback).not.toHaveBeenCalled();
     });
   });

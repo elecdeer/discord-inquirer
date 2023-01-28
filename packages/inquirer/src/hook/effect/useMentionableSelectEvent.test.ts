@@ -1,14 +1,13 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useMentionableSelectEvent } from "./useMentionableSelectEvent";
-import { createHookCycle } from "../../core/hookContext";
 import {
   createAdaptorPartialMemberMock,
   createAdaptorRoleMock,
   createAdaptorUserInvokedInteractionBaseMock,
   createAdaptorUserMock,
-  createDiscordAdaptorMock,
-} from "../../mock";
+  renderHook,
+} from "../../testing";
 
 import type {
   AdaptorMentionableSelectInteraction,
@@ -21,16 +20,10 @@ import type {
 describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
   describe("useMentionableSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
-
-      controller.startRender();
-
-      useMentionableSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
+      const { emitInteraction } = renderHook(() =>
+        useMentionableSelectEvent("customId", handle)
+      );
 
       const users = {
         userIdA: createAdaptorUserMock({ id: "userIdA" }),
@@ -56,7 +49,7 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
           },
         },
       } satisfies AdaptorMentionableSelectInteraction;
-      adaptorMock.emitInteraction!(interactionMock);
+      emitInteraction(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
@@ -75,23 +68,15 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
-
-      controller.unmount();
     });
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
+      const { emitInteraction } = renderHook(() =>
+        useMentionableSelectEvent("customId", handle)
+      );
 
-      controller.startRender();
-
-      useMentionableSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
-
-      adaptorMock.emitInteraction!({
+      emitInteraction({
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
@@ -100,7 +85,7 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
         },
       });
 
-      adaptorMock.emitInteraction!({
+      emitInteraction({
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
@@ -118,8 +103,6 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
       } satisfies AdaptorMentionableSelectInteraction);
 
       expect(handle).not.toHaveBeenCalled();
-
-      controller.unmount();
     });
   });
 });

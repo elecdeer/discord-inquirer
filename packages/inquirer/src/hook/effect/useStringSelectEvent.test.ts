@@ -1,27 +1,20 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useStringSelectEvent } from "./useStringSelectEvent";
-import { createHookCycle } from "../../core/hookContext";
 import {
   createAdaptorUserInvokedInteractionBaseMock,
-  createDiscordAdaptorMock,
-} from "../../mock";
+  renderHook,
+} from "../../testing";
 
 import type { AdaptorStringSelectInteraction } from "../../adaptor";
 
 describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
   describe("useStringSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
-
-      controller.startRender();
-
-      useStringSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
+      const { emitInteraction } = renderHook(() =>
+        useStringSelectEvent("customId", handle)
+      );
 
       const interactionMock = {
         ...createAdaptorUserInvokedInteractionBaseMock(),
@@ -32,7 +25,7 @@ describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
           values: ["value1", "value2"],
         },
       } satisfies AdaptorStringSelectInteraction;
-      adaptorMock.emitInteraction!(interactionMock);
+      emitInteraction(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
@@ -42,23 +35,15 @@ describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
-
-      controller.unmount();
     });
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
+      const { emitInteraction } = renderHook(() =>
+        useStringSelectEvent("customId", handle)
+      );
 
-      controller.startRender();
-
-      useStringSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
-
-      adaptorMock.emitInteraction!({
+      emitInteraction({
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
@@ -68,7 +53,7 @@ describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
         },
       });
 
-      adaptorMock.emitInteraction!({
+      emitInteraction({
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
@@ -78,8 +63,6 @@ describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
       });
 
       expect(handle).not.toHaveBeenCalled();
-
-      controller.unmount();
     });
   });
 });

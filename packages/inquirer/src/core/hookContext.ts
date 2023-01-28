@@ -39,10 +39,19 @@ const unbindHookContext = () => {
   hookContext = undefined;
 };
 
+export type HookCycle = {
+  startRender: () => number;
+  endRender: () => void;
+  mount: (renderIndex: number, messageId: Snowflake) => void;
+  unmount: (renderIndex: number) => void;
+  update: (renderIndex: number, messageId: Snowflake, edited: boolean) => void;
+  context: HookContext;
+};
+
 export const createHookCycle = (
   adaptor: DiscordAdaptor,
   dispatch: () => void
-) => {
+): HookCycle => {
   const context: HookContext = {
     index: 0,
     hookValues: [],
@@ -83,7 +92,7 @@ export const createHookCycle = (
   };
 
   const callUnmountHooks = (renderIndex: number) => {
-    const prevUnmountHooks = context.unmountHooks[renderIndex - 1];
+    const prevUnmountHooks = context.unmountHooks[renderIndex];
     assert(prevUnmountHooks !== undefined);
 
     while (prevUnmountHooks.length > 0) {
@@ -105,7 +114,7 @@ export const createHookCycle = (
     edited: boolean
   ) => {
     batchDispatch(context, () => {
-      callUnmountHooks(renderIndex);
+      callUnmountHooks(renderIndex - 1);
       callMountHooks(renderIndex, messageId, edited);
     });
   };
@@ -122,6 +131,7 @@ export const createHookCycle = (
     mount,
     unmount,
     update,
+    context,
   };
 };
 
@@ -147,6 +157,20 @@ export const stockHookValue =
 
 export const takeValue = <T>(ctx: HookContext, index: number): T => {
   return ctx.hookValues[index]?.value as T;
+};
+
+export const deferDispatch = (ctx: HookContext, cb: () => void) => {
+  const prevDispatch = ctx.dispatch;
+  let dispatched = false;
+
+  ctx.dispatch = () => {
+    dispatched = true;
+  };
+  cb();
+
+  ctx.dispatch = prevDispatch;
+
+  return dispatched;
 };
 
 export const batchDispatch = (ctx: HookContext, cb: () => void) => {

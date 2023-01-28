@@ -106,7 +106,7 @@ export const inquire = <T extends Record<string, unknown>>(
     });
   };
 
-  const render = (): {
+  const renderPrompt = (): {
     renderIndex: number;
     renderResult: MessageMutualPayload;
   } => {
@@ -133,7 +133,7 @@ export const inquire = <T extends Record<string, unknown>>(
 
     if (shouldReRender) {
       console.log("rerender");
-      return render();
+      return renderPrompt();
     } else {
       log("debug", "end render");
       return {
@@ -146,7 +146,7 @@ export const inquire = <T extends Record<string, unknown>>(
   const open = async () => {
     log("debug", "inquirer open");
 
-    const { renderIndex, renderResult } = render();
+    const { renderIndex, renderResult } = renderPrompt();
 
     log("debug", {
       renderResult: renderResult,
@@ -166,7 +166,7 @@ export const inquire = <T extends Record<string, unknown>>(
   const update = immediateThrottle(async () => {
     log("debug", "inquirer update");
 
-    const { renderIndex, renderResult } = render();
+    const { renderIndex, renderResult } = renderPrompt();
 
     log("debug", {
       renderResult: renderResult,
@@ -193,7 +193,7 @@ export const inquire = <T extends Record<string, unknown>>(
     log("debug", "inquirer close");
     answerEvent.offAll();
 
-    const { renderIndex, renderResult } = render();
+    const { renderIndex, renderResult } = renderPrompt();
 
     log("debug", {
       renderResult: renderResult,

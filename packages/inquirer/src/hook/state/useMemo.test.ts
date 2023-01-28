@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { useMemo } from "./useMemo";
 import { createHookCycle } from "../../core/hookContext";
-import { createDiscordAdaptorMock } from "../../mock";
+import { createDiscordAdaptorMock, renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useMemo", () => {
   describe("useMemo()", () => {
@@ -17,63 +17,61 @@ describe("packages/inquirer/src/hook/useMemo", () => {
     });
 
     test("値が保持される", () => {
-      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
+      const { rerender, result } = renderHook(
+        (args) => useMemo(() => args, []),
+        {
+          initialArgs: 3,
+        }
+      );
 
-      {
-        controller.startRender();
-        const memo = useMemo(() => 3, []);
-        expect(memo).toBe(3);
-        controller.endRender();
-      }
+      expect(result.current).toBe(3);
 
-      {
-        controller.startRender();
-        const memo = useMemo(() => 10, []);
-        expect(memo).toBe(3);
-        controller.endRender();
-      }
+      rerender({
+        newArgs: 10,
+      });
+
+      expect(result.current).toBe(3);
     });
 
     test("depsが変更されなかった場合はfactory()が呼ばれない", () => {
-      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
       const deps = [1, "bar"];
 
-      {
-        controller.startRender();
-        const factory = vi.fn(() => 3);
-        useMemo(factory, deps);
-        expect(factory).toHaveBeenCalled();
-        controller.endRender();
-      }
+      const { rerender, result } = renderHook(
+        (args) => useMemo(() => args, deps),
+        {
+          initialArgs: 3,
+        }
+      );
 
-      {
-        controller.startRender();
-        const factory = vi.fn(() => 10);
-        useMemo(factory, deps);
-        expect(factory).not.toHaveBeenCalled();
-        controller.endRender();
-      }
+      expect(result.current).toBe(3);
+
+      rerender({
+        newArgs: 10,
+      });
+
+      expect(result.current).toBe(3);
     });
 
     test("depsが変化した際にfactory()が呼ばれ新しい値が保持される", () => {
       controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
 
-      {
-        controller.startRender();
-        const memo = useMemo(() => 3, [1, "bar"]);
-        expect(memo).toBe(3);
-        controller.endRender();
-      }
+      const factory = vi.fn(() => 10);
+      const { rerender, result } = renderHook(
+        (deps) => useMemo(factory, deps),
+        {
+          initialArgs: [1, "bar"],
+        }
+      );
+      expect(factory).toHaveBeenCalledOnce();
+      factory.mockClear();
 
-      {
-        controller.startRender();
-        const factory = vi.fn(() => 10);
-        const memo = useMemo(factory, [1, "changed"]);
-        expect(memo).toBe(10);
-        expect(factory).toHaveBeenCalled();
-        controller.endRender();
-      }
+      expect(result.current).toBe(10);
+
+      rerender({
+        newArgs: [1, "changed"],
+      });
+
+      expect(factory).toHaveBeenCalledOnce();
     });
   });
 });

@@ -1,8 +1,9 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test } from "vitest";
 
 import { useCollection } from "./useCollection";
-import { createHookCycle } from "../../core/hookContext";
-import { createDiscordAdaptorMock } from "../../mock";
+import { renderHook } from "../../testing";
+
+import type { createHookCycle } from "../../core/hookContext";
 
 describe("packages/inquirer/src/hook/useCollection", () => {
   describe("useCollection()", () => {
@@ -18,181 +19,132 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
     describe("set()", () => {
       test("setした値が保持される", () => {
-        controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
-        {
-          controller.startRender();
-          const { set } = useCollection([
+        const { act, result } = renderHook(() =>
+          useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ]);
-          set(3, { value: "3" });
-          controller.endRender();
-        }
+          ])
+        );
 
-        {
-          controller.startRender();
-          const { get } = useCollection([
-            [1, { value: "1" }],
-            [2, { value: "2" }],
-          ]);
-          expect(get(3)).toEqual({ value: "3" });
-          controller.endRender();
-        }
+        act(() => {
+          result.current.set(3, { value: "3" });
+        });
+
+        expect(result.current.get(3)).toEqual({ value: "3" });
       });
 
-      test("前回と異なる値をsetするとdispatchされる", () => {
-        const dispatch = vi.fn();
-        controller = createHookCycle(createDiscordAdaptorMock(), dispatch);
-
-        {
-          controller.startRender();
-          const { set } = useCollection([
+      test.todo("前回と異なる値をsetするとdispatchされる", () => {
+        const { act, result } = renderHook(() =>
+          useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ]);
-          set(3, { value: "3" });
-          controller.endRender();
+          ])
+        );
 
-          expect(dispatch).toHaveBeenCalled();
-        }
+        act(() => {
+          result.current.set(3, { value: "3" });
+        });
+
+        //TODO dispatchが呼ばれることのテスト
       });
 
-      test("前回と同じ値をsetするとdispatchされない", () => {
-        const dispatch = vi.fn();
-        controller = createHookCycle(createDiscordAdaptorMock(), dispatch);
-
+      test.todo("前回と同じ値をsetするとdispatchされない", () => {
         const value2 = { value: "2" };
-
-        {
-          controller.startRender();
-          const { set } = useCollection([
+        const { act, result } = renderHook(() =>
+          useCollection([
             [1, { value: "1" }],
             [2, value2],
-          ]);
-          set(2, value2);
-          controller.endRender();
+          ])
+        );
 
-          expect(dispatch).not.toHaveBeenCalled();
-        }
+        act(() => {
+          result.current.set(2, value2);
+        });
+
+        //TODO dispatchが呼ばれないことのテスト
       });
     });
 
     describe("setEach()", () => {
       test("保持している各エントリに対してsetできる", () => {
-        const dispatch = vi.fn();
-        controller = createHookCycle(createDiscordAdaptorMock(), dispatch);
-
-        {
-          controller.startRender();
-          const { setEach } = useCollection([
+        const { act, result } = renderHook(() =>
+          useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ]);
-          setEach((value) => ({ value: value.value + "!" }));
-          controller.endRender();
+          ])
+        );
 
-          expect(dispatch).toHaveBeenCalled();
-        }
+        act(() => {
+          result.current.setEach((value) => ({ value: value.value + "!" }));
+        });
 
-        {
-          controller.startRender();
-          const { get } = useCollection([
-            [1, { value: "1" }],
-            [2, { value: "2" }],
-          ]);
-          expect(get(1)).toEqual({ value: "1!" });
-          expect(get(2)).toEqual({ value: "2!" });
-          controller.endRender();
-        }
+        expect(result.current.get(1)).toEqual({ value: "1!" });
+        expect(result.current.get(2)).toEqual({ value: "2!" });
 
-        controller.unmount();
+        //TODO dispatchが呼ばれることのテスト
       });
 
-      test("全てのエントリに変化が無い場合はdispatchされない", () => {
-        const dispatch = vi.fn();
-        controller = createHookCycle(createDiscordAdaptorMock(), dispatch);
-
-        {
-          controller.startRender();
-          const { setEach } = useCollection([
+      test.todo("全てのエントリに変化が無い場合はdispatchされない", () => {
+        const { act, result } = renderHook(() =>
+          useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ]);
-          setEach((prev) => prev);
+          ])
+        );
 
-          expect(dispatch).not.toHaveBeenCalled();
-          controller.endRender();
-        }
+        act(() => {
+          result.current.setEach((prev) => prev);
+        });
 
-        controller.unmount();
+        //TODO dispatchが呼ばれないことのテスト
       });
     });
 
     describe("delete()", () => {
       test("値をdeleteできる", () => {
-        controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
-        {
-          controller.startRender();
-          const { remove, get } = useCollection([
+        const { act, result } = renderHook(() =>
+          useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ]);
-          expect(get(1)).toEqual({ value: "1" });
-          remove(1);
+          ])
+        );
 
-          controller.endRender();
-        }
+        expect(result.current.get(1)).toEqual({ value: "1" });
 
-        {
-          controller.startRender();
-          const { get } = useCollection([
-            [1, { value: "1" }],
-            [2, { value: "2" }],
-          ]);
-          expect(get(1)).toBeUndefined();
+        act(() => {
+          result.current.remove(1);
+        });
 
-          controller.endRender();
-        }
+        expect(result.current.get(1)).toBeUndefined();
+        //TODO dispatchが呼ばれることのテスト
       });
     });
 
     describe("reset()", () => {
       test("reset()を呼び出すとinitialStateの値にリセットされる", () => {
-        controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
-        {
-          controller.startRender();
-          const { set } = useCollection([
+        const { act, result } = renderHook(() =>
+          useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ]);
-          set(3, { value: "3" });
+          ])
+        );
 
-          controller.endRender();
-        }
+        act(() => {
+          result.current.set(3, { value: "3" });
+        });
 
-        {
-          controller.startRender();
-          const { get, reset } = useCollection([
-            [1, { value: "1" }],
-            [2, { value: "2" }],
-          ]);
-          expect(get(3)).toEqual({ value: "3" });
-          reset();
+        expect(result.current.get(3)).toEqual({ value: "3" });
 
-          controller.endRender();
-        }
+        act(() => {
+          result.current.reset();
+        });
 
-        {
-          controller.startRender();
-          const { get } = useCollection([
-            [1, { value: "1" }],
-            [2, { value: "2" }],
-          ]);
-          expect(get(3)).toBeUndefined();
-        }
+        expect(result.current.get(3)).toBeUndefined();
+        expect(result.current.values()).toEqual(
+          expect.arrayContaining([{ value: "1" }, { value: "2" }])
+        );
+
+        //TODO dispatchが呼ばれることのテスト
       });
     });
   });

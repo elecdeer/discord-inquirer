@@ -1,28 +1,21 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useRoleSelectEvent } from "./useRoleSelectEvent";
-import { createHookCycle } from "../../core/hookContext";
 import {
   createAdaptorRoleMock,
   createAdaptorUserInvokedInteractionBaseMock,
-  createDiscordAdaptorMock,
-} from "../../mock";
+  renderHook,
+} from "../../testing";
 
 import type { AdaptorRoleSelectInteraction } from "../../adaptor";
 
 describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
   describe("useRoleSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
-
-      controller.startRender();
-
-      useRoleSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
+      const { emitInteraction } = renderHook(() =>
+        useRoleSelectEvent("customId", handle)
+      );
 
       const roles = {
         roleIdA: createAdaptorRoleMock({ id: "roleIdA" }),
@@ -41,7 +34,7 @@ describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
         },
       } satisfies AdaptorRoleSelectInteraction;
 
-      adaptorMock.emitInteraction!(interactionMock);
+      emitInteraction(interactionMock);
 
       expect(handle).toBeCalledWith(
         {
@@ -51,23 +44,15 @@ describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
-
-      controller.unmount();
     });
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookCycle(adaptorMock, vi.fn());
       const handle = vi.fn();
+      const { emitInteraction } = renderHook(() =>
+        useRoleSelectEvent("customId", handle)
+      );
 
-      controller.startRender();
-
-      useRoleSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
-
-      adaptorMock.emitInteraction!({
+      emitInteraction({
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
@@ -82,7 +67,7 @@ describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
         },
       });
 
-      adaptorMock.emitInteraction!({
+      emitInteraction!({
         ...createAdaptorUserInvokedInteractionBaseMock(),
         type: "messageComponent",
         data: {
@@ -92,8 +77,6 @@ describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
       });
 
       expect(handle).not.toHaveBeenCalled();
-
-      controller.unmount();
     });
   });
 });
