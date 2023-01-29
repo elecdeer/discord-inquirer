@@ -124,7 +124,7 @@ export const createAdaptorPermissionsDefaultDenyFaker =
 
 export const createAdaptorRoleFaker = (next: RandomSource) => {
   const random = createRandomHelper(next);
-  return (data?: Partial<AdaptorPermissions>) => {
+  return (data?: Partial<AdaptorRole>) => {
     return {
       id: random.nextSnowflake(),
       name: random.nextString(10),

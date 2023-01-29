@@ -69,7 +69,7 @@ export const renderHook = <TResult, TArgs>(
   const hookCycle = createHookCycle(
     adaptor,
     vi.fn(() => {
-      console.log("original dispatch call");
+      // noop
     })
   );
 

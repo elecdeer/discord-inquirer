@@ -12,10 +12,14 @@ import type {
   AdaptorModalSubmitInteraction,
   AdaptorNonLinkButtonComponent,
   AdaptorPartialChannel,
+  AdaptorPartialNonThreadChannel,
+  AdaptorPartialThreadChannel,
+  AdaptorRole,
   AdaptorRoleSelectComponent,
   AdaptorRoleSelectInteraction,
   AdaptorStringSelectComponent,
   AdaptorStringSelectInteraction,
+  AdaptorUser,
   AdaptorUserSelectComponent,
   AdaptorUserSelectInteraction,
   Snowflake,
@@ -47,7 +51,7 @@ export const createEmitInteractionTestUtil = (
 
   const emitStringSelectInteraction = (
     customId: Snowflake,
-    values: string[],
+    values: readonly string[],
     overrideParam?: Readonly<Partial<AdaptorStringSelectInteraction>>
   ) => {
     const interaction: AdaptorStringSelectInteraction = {
@@ -56,7 +60,7 @@ export const createEmitInteractionTestUtil = (
       data: {
         customId: customId,
         componentType: "stringSelect",
-        values: values,
+        values: [...values],
       },
       ...overrideParam,
     };
@@ -66,10 +70,12 @@ export const createEmitInteractionTestUtil = (
 
   const emitUserSelectInteraction = (
     customId: Snowflake,
-    dummyUserNum: number,
+    dummyUsers: number | readonly Partial<AdaptorUser>[],
     overrideParam?: Readonly<Partial<AdaptorUserSelectInteraction>>
   ) => {
-    const userList = [...Array(dummyUserNum)].map(() => faker.user());
+    const userList = Array.isArray(dummyUsers)
+      ? dummyUsers.map((user) => faker.user(user))
+      : [...Array(dummyUsers)].map(() => faker.user());
     const members = Object.fromEntries(
       userList.map((user) => [user.id, faker.partialMember()])
     );
@@ -95,10 +101,12 @@ export const createEmitInteractionTestUtil = (
 
   const emitRoleSelectInteraction = (
     customId: Snowflake,
-    dummyRoleNum: number,
+    dummyRole: number | readonly Partial<AdaptorRole>[],
     overrideParam?: Readonly<Partial<AdaptorRoleSelectInteraction>>
   ) => {
-    const roleList = [...Array(dummyRoleNum)].map(() => faker.role());
+    const roleList = Array.isArray(dummyRole)
+      ? dummyRole.map((role) => faker.role(role))
+      : [...Array(dummyRole)].map(() => faker.role());
     const roles = Object.fromEntries(roleList.map((role) => [role.id, role]));
 
     const interaction: AdaptorRoleSelectInteraction = {
@@ -120,24 +128,25 @@ export const createEmitInteractionTestUtil = (
 
   const emitChannelSelectInteraction = (
     customId: Snowflake,
-    dummyChannelTypes: readonly AdaptorPartialChannel["type"][],
+    dummyChannelTypes: readonly (Partial<AdaptorPartialChannel> &
+      Pick<AdaptorPartialChannel, "type">)[],
     overrideParam?: Readonly<Partial<AdaptorChannelSelectInteraction>>
   ) => {
-    const channelList = dummyChannelTypes.map((type) => {
+    const channelList = dummyChannelTypes.map((channel) => {
       if (
-        type === "announcementThread" ||
-        type === "publicThread" ||
-        type === "privateThread"
+        channel.type === "announcementThread" ||
+        channel.type === "publicThread" ||
+        channel.type === "privateThread"
       ) {
         return {
-          type: type,
-          ...faker.partialThreadChannel(),
-        };
+          type: channel.type,
+          ...faker.partialThreadChannel(channel),
+        } satisfies AdaptorPartialThreadChannel;
       } else {
         return {
-          type: type,
-          ...faker.partialNonThreadChannel(),
-        };
+          type: channel.type,
+          ...faker.partialNonThreadChannel(channel),
+        } satisfies AdaptorPartialNonThreadChannel;
       }
     });
     const channels = Object.fromEntries(
@@ -163,15 +172,22 @@ export const createEmitInteractionTestUtil = (
 
   const emitMentionableSelectInteraction = (
     customId: Snowflake,
-    dummyMentionables: ("user" | "role")[],
+    dummyMentionables: (
+      | ({
+          type: "user";
+        } & Partial<AdaptorUser>)
+      | ({
+          type: "role";
+        } & Partial<AdaptorRole>)
+    )[],
     overrideParam?: Readonly<Partial<AdaptorMentionableSelectInteraction>>
   ) => {
     const userList = dummyMentionables
-      .filter((mentionable) => mentionable === "user")
-      .map(() => faker.user());
+      .filter((mentionable) => mentionable.type === "user")
+      .map((value) => faker.user(value as Partial<AdaptorUser>));
     const roleList = dummyMentionables
-      .filter((mentionable) => mentionable === "role")
-      .map(() => faker.role());
+      .filter((mentionable) => mentionable.type === "role")
+      .map((value) => faker.role(value as Partial<AdaptorRole>));
     const mentionableList = [...userList, ...roleList];
 
     const users = Object.fromEntries(userList.map((user) => [user.id, user]));
@@ -270,10 +286,13 @@ export const createEmitInteractionTestUtil = (
 
   const selectUserSelectComponent = (
     component: Readonly<AdaptorUserSelectComponent>,
-    dummyUserNum: number,
+    dummyUsers: number | readonly Partial<AdaptorUser>[],
     overrideParam?: Readonly<Partial<AdaptorUserSelectInteraction>>
   ) => {
     const customId = component.customId;
+    const dummyUserNum = Array.isArray(dummyUsers)
+      ? dummyUsers.length
+      : (dummyUsers as number);
     assertSelectEmit(component, dummyUserNum);
 
     return emitUserSelectInteraction(customId, dummyUserNum, overrideParam);
@@ -281,10 +300,13 @@ export const createEmitInteractionTestUtil = (
 
   const selectRoleSelectComponent = (
     component: Readonly<AdaptorRoleSelectComponent>,
-    dummyRoleNum: number,
+    dummyRoles: number | readonly Partial<AdaptorRole>[],
     overrideParam?: Readonly<Partial<AdaptorRoleSelectInteraction>>
   ) => {
     const customId = component.customId;
+    const dummyRoleNum = Array.isArray(dummyRoles)
+      ? dummyRoles.length
+      : (dummyRoles as number);
     assertSelectEmit(component, dummyRoleNum);
 
     return emitRoleSelectInteraction(customId, dummyRoleNum, overrideParam);
@@ -292,15 +314,16 @@ export const createEmitInteractionTestUtil = (
 
   const selectChannelSelectComponent = (
     component: Readonly<AdaptorChannelSelectComponent>,
-    dummyChannelTypes: readonly AdaptorPartialChannel["type"][],
+    dummyChannels: readonly (Partial<AdaptorPartialChannel> &
+      Pick<AdaptorPartialChannel, "type">)[],
     overrideParam?: Readonly<Partial<AdaptorChannelSelectInteraction>>
   ) => {
     const customId = component.customId;
-    assertSelectEmit(component, dummyChannelTypes.length);
+    assertSelectEmit(component, dummyChannels.length);
 
     if (component.channelTypes !== undefined) {
       const capableChannelTypes = component.channelTypes;
-      dummyChannelTypes.forEach((type) => {
+      dummyChannels.forEach(({ type }) => {
         if (!capableChannelTypes.includes(type)) {
           throw new InvalidInteractionError(
             `not includes in component.channelTypes: ${type}`
@@ -309,16 +332,19 @@ export const createEmitInteractionTestUtil = (
       });
     }
 
-    return emitChannelSelectInteraction(
-      customId,
-      dummyChannelTypes,
-      overrideParam
-    );
+    return emitChannelSelectInteraction(customId, dummyChannels, overrideParam);
   };
 
   const selectMentionableSelectComponent = (
     component: Readonly<AdaptorMentionableSelectComponent>,
-    dummyMentionables: ("user" | "role")[],
+    dummyMentionables: (
+      | ({
+          type: "user";
+        } & Partial<AdaptorUser>)
+      | ({
+          type: "role";
+        } & Partial<AdaptorRole>)
+    )[],
     overrideParam?: Readonly<Partial<AdaptorMentionableSelectInteraction>>
   ) => {
     const customId = component.customId;

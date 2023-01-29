@@ -13,7 +13,7 @@ describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
 
       const interaction = interactionHelper.emitChannelSelectInteraction(
         "customId",
-        ["guildText", "publicThread"]
+        [{ type: "guildText" }, { type: "publicThread" }]
       );
 
       expect(handle).toBeCalledWith(
@@ -33,8 +33,8 @@ describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
       );
 
       interactionHelper.emitChannelSelectInteraction("unmatchedCustomId", [
-        "guildText",
-        "publicThread",
+        { type: "guildText" },
+        { type: "publicThread" },
       ]);
       interactionHelper.emitButtonInteraction("customId");
 

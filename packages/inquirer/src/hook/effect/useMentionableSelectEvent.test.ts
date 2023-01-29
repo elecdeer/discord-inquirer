@@ -13,7 +13,7 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
 
       const interaction = interactionHelper.emitMentionableSelectInteraction(
         "customId",
-        ["user", "role"]
+        [{ type: "user" }, { type: "role" }]
       );
 
       expect(handle).toBeCalledWith(
@@ -41,8 +41,8 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
 
       interactionHelper.emitButtonInteraction("customId");
       interactionHelper.emitMentionableSelectInteraction("unmatchedCustomId", [
-        "user",
-        "role",
+        { type: "user" },
+        { type: "role" },
       ]);
 
       expect(handle).not.toHaveBeenCalled();
