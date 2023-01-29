@@ -22,14 +22,18 @@ describe("packages/inquirer/src/hook/useRef", () => {
       expect(result.current.current).toBe(20);
     });
 
-    test.todo("値を変更してもdispatchは呼ばれない", () => {
-      const { result, act } = renderHook(() => useRef(3));
+    test("値を変更してもdispatchは呼ばれない", () => {
+      let renderNum = 0;
+      const { result, act } = renderHook(() => {
+        renderNum++;
+        return useRef(3);
+      });
 
       act(() => {
         result.current.current = 10;
       });
 
-      //TODO dispatchが呼ばれていないことを確認する
+      expect(renderNum).toBe(1);
     });
   });
 });

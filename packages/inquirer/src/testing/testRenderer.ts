@@ -106,6 +106,9 @@ export const renderHook = <TResult, TArgs>(
     randomSource
   );
 
+  //TODO async関係のUtilを作る
+  // waitForとwaitForNextUpdateは必要そう
+
   return {
     result: result as {
       current: TResult;

@@ -33,46 +33,58 @@ describe("packages/inquirer/src/hook/useCollection", () => {
         expect(result.current.get(3)).toEqual({ value: "3" });
       });
 
-      test.todo("前回と異なる値をsetするとdispatchされる", () => {
-        const { act, result } = renderHook(() =>
-          useCollection([
+      test("前回と異なる値をsetするとdispatchされる", () => {
+        let renderNum = 0;
+        const { act, result } = renderHook(() => {
+          renderNum++;
+          return useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ])
-        );
+          ]);
+        });
+
+        expect(renderNum).toBe(1);
 
         act(() => {
           result.current.set(3, { value: "3" });
         });
 
-        //TODO dispatchが呼ばれることのテスト
+        expect(renderNum).toBe(2);
       });
 
-      test.todo("前回と同じ値をsetするとdispatchされない", () => {
+      test("前回と同じ値をsetするとdispatchされない", () => {
+        let renderNum = 0;
         const value2 = { value: "2" };
-        const { act, result } = renderHook(() =>
-          useCollection([
+        const { act, result } = renderHook(() => {
+          renderNum++;
+          return useCollection([
             [1, { value: "1" }],
             [2, value2],
-          ])
-        );
+          ]);
+        });
+
+        expect(renderNum).toBe(1);
 
         act(() => {
           result.current.set(2, value2);
         });
 
-        //TODO dispatchが呼ばれないことのテスト
+        expect(renderNum).toBe(1);
       });
     });
 
     describe("setEach()", () => {
       test("保持している各エントリに対してsetできる", () => {
-        const { act, result } = renderHook(() =>
-          useCollection([
+        let renderNum = 0;
+        const { act, result } = renderHook(() => {
+          renderNum++;
+          return useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ])
-        );
+          ]);
+        });
+
+        expect(renderNum).toBe(1);
 
         act(() => {
           result.current.setEach((value) => ({ value: value.value + "!" }));
@@ -80,54 +92,64 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
         expect(result.current.get(1)).toEqual({ value: "1!" });
         expect(result.current.get(2)).toEqual({ value: "2!" });
-
-        //TODO dispatchが呼ばれることのテスト
+        expect(renderNum).toBe(2);
       });
 
-      test.todo("全てのエントリに変化が無い場合はdispatchされない", () => {
-        const { act, result } = renderHook(() =>
-          useCollection([
+      test("全てのエントリに変化が無い場合はdispatchされない", () => {
+        let renderNum = 0;
+        const { act, result } = renderHook(() => {
+          renderNum++;
+          return useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ])
-        );
+          ]);
+        });
+
+        expect(renderNum).toBe(1);
 
         act(() => {
           result.current.setEach((prev) => prev);
         });
 
-        //TODO dispatchが呼ばれないことのテスト
+        expect(renderNum).toBe(1);
       });
     });
 
     describe("delete()", () => {
       test("値をdeleteできる", () => {
-        const { act, result } = renderHook(() =>
-          useCollection([
+        let renderNum = 0;
+        const { act, result } = renderHook(() => {
+          renderNum++;
+          return useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ])
-        );
+          ]);
+        });
 
         expect(result.current.get(1)).toEqual({ value: "1" });
+
+        expect(renderNum).toBe(1);
 
         act(() => {
           result.current.remove(1);
         });
 
+        expect(renderNum).toBe(2);
+
         expect(result.current.get(1)).toBeUndefined();
-        //TODO dispatchが呼ばれることのテスト
       });
     });
 
     describe("reset()", () => {
       test("reset()を呼び出すとinitialStateの値にリセットされる", () => {
-        const { act, result } = renderHook(() =>
-          useCollection([
+        let renderNum = 0;
+        const { act, result } = renderHook(() => {
+          renderNum++;
+          return useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ])
-        );
+          ]);
+        });
 
         act(() => {
           result.current.set(3, { value: "3" });
@@ -135,16 +157,18 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
         expect(result.current.get(3)).toEqual({ value: "3" });
 
+        expect(renderNum).toBe(2);
+
         act(() => {
           result.current.reset();
         });
+
+        expect(renderNum).toBe(3);
 
         expect(result.current.get(3)).toBeUndefined();
         expect(result.current.values()).toEqual(
           expect.arrayContaining([{ value: "1" }, { value: "2" }])
         );
-
-        //TODO dispatchが呼ばれることのテスト
       });
     });
   });

@@ -6,7 +6,7 @@ import { renderHook } from "../../testing";
 describe("packages/inquirer/src/hook/useState", () => {
   describe("useState()", () => {
     test("初期値が保持される", () => {
-      const { result, rerender, act } = renderHook(
+      const { result, rerender } = renderHook(
         (args) => {
           const [value, setState] = useState(args);
           return {
@@ -55,8 +55,12 @@ describe("packages/inquirer/src/hook/useState", () => {
       expect(result.current.value).toBe(15);
     });
 
-    test.todo("setStateの呼び出しでdispatchが呼ばれる", () => {
+    test("setStateの呼び出しでdispatchが呼ばれる", () => {
+      let renderNum = 0;
+
       const { result, act } = renderHook(() => {
+        renderNum++;
+
         const [value, setState] = useState(2);
         return {
           value,
@@ -64,17 +68,19 @@ describe("packages/inquirer/src/hook/useState", () => {
         };
       });
 
+      expect(renderNum).toBe(1);
+
       act(() => {
         result.current.setState(3);
       });
 
-      //TODO dispatchが呼ばれていることを確認する
+      expect(renderNum).toBe(2);
 
       act(() => {
         result.current.setState((prev) => prev + 2);
       });
 
-      //TODO dispatchが呼ばれていることを確認する
+      expect(renderNum).toBe(3);
     });
 
     test("context外で呼び出すとエラーになる", () => {
