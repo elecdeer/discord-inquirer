@@ -1,36 +1,23 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useStringSelectEvent } from "./useStringSelectEvent";
-import {
-  createAdaptorUserInvokedInteractionBaseMock,
-  renderHook,
-} from "../../testing";
-
-import type { AdaptorStringSelectInteraction } from "../../adaptor";
+import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
   describe("useStringSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const handle = vi.fn();
-      const { emitInteraction } = renderHook(() =>
+      const { interactionHelper } = renderHook(() =>
         useStringSelectEvent("customId", handle)
       );
 
-      const interactionMock = {
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "stringSelect",
-          customId: "customId",
-          values: ["value1", "value2"],
-        },
-      } satisfies AdaptorStringSelectInteraction;
-      emitInteraction(interactionMock);
+      const interaction = interactionHelper.emitStringSelectInteraction(
+        "customId",
+        ["value1", "value2"]
+      );
 
       expect(handle).toBeCalledWith(
-        {
-          ...interactionMock,
-        },
+        interaction,
         ["value1", "value2"],
         expect.anything()
       );
@@ -39,28 +26,15 @@ describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
       const handle = vi.fn();
-      const { emitInteraction } = renderHook(() =>
+      const { interactionHelper } = renderHook(() =>
         useStringSelectEvent("customId", handle)
       );
 
-      emitInteraction({
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "stringSelect",
-          customId: "customIdUnMatch",
-          values: [],
-        },
-      });
-
-      emitInteraction({
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "button",
-          customId: "customId",
-        },
-      });
+      interactionHelper.emitStringSelectInteraction("unmatchedCustomId", [
+        "value1",
+        "value2",
+      ]);
+      interactionHelper.emitButtonInteraction("customId");
 
       expect(handle).not.toHaveBeenCalled();
     });

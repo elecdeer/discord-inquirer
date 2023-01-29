@@ -1,11 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useModal } from "./useModal";
-import {
-  createAdaptorUserInvokedInteractionBaseMock,
-  createDiscordAdaptorMock,
-  renderHook,
-} from "../../testing";
+import { createDiscordAdaptorMock, renderHook } from "../../testing";
 
 import type {
   AdaptorInteractionResponse,
@@ -72,7 +68,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
 
       const onSubmit = vi.fn();
 
-      const { result, emitInteraction, rerender } = renderHook(
+      const { result, interactionHelper, rerender } = renderHook(
         () =>
           useModal({
             title: "title",
@@ -100,24 +96,18 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
       await new Promise((resolve) => setTimeout(resolve, 1));
 
       //開かれたモーダルの回答が送信された
-      emitInteraction({
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "modalSubmit",
-        id: "modalSubmitResponseInteractionId",
-        token: "modalSubmitResponseInteractionToken",
-        data: {
-          customId: sentInteractionResponse!.data.customId,
-          fields: {
-            [sentInteractionResponse!.data.components[0].components[0]
-              .customId]: "value",
-          },
-        },
-      });
+      const interaction = interactionHelper.confirmModal(
+        sentInteractionResponse!.data,
+        {
+          [sentInteractionResponse!.data.components[0].components[0].customId]:
+            "value",
+        }
+      );
 
       //modalSubmitに対してdeferredUpdateが返信される
       expect(adaptorMock.sendInteractionResponse).toBeCalledWith(
-        "modalSubmitResponseInteractionId",
-        "modalSubmitResponseInteractionToken",
+        interaction.id,
+        interaction.token,
         {
           type: "deferredUpdateMessage",
         } satisfies AdaptorInteractionResponseDeferredUpdate

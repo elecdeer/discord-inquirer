@@ -1,16 +1,11 @@
 import assert from "node:assert";
 import { vi } from "vitest";
 
-import { createAdaptorUserInvokedInteractionBaseMock } from "./adaptorInteractionMock";
 import { createDiscordAdaptorMock } from "./discordAdaptorMock";
+import { createEmitInteractionTestUtil } from "./emitInteractionUtil";
 import { createHookCycle, deferDispatch } from "../core/hookContext";
 
 import type { AdaptorMock } from "./discordAdaptorMock";
-import type {
-  AdaptorInteraction,
-  AdaptorNonLinkButtonComponent,
-} from "../adaptor";
-import type { AdaptorButtonInteraction, Snowflake } from "../adaptor";
 import type { HookCycle } from "../core/hookContext";
 
 // implements reference: https://github.com/testing-library/react-hooks-testing-library/blob/c7a2e979fb8a51271d0d3032c7a03b6fb6ebd3e6/src/core/index.ts
@@ -97,33 +92,9 @@ export const renderHook = <TResult, TArgs>(
   let latestMessageId = getRandomMessageId();
   renderer.render(latestMessageId);
 
-  const interactionHelper = {
-    emitButtonInteraction: (
-      customId: Snowflake,
-      overrideParam?: Partial<AdaptorButtonInteraction>
-    ) => {
-      const interaction: AdaptorButtonInteraction = {
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          customId: customId,
-          componentType: "button",
-        },
-        ...overrideParam,
-      };
-      adaptor.emitInteraction(interaction);
-    },
-    clickButtonComponent: (
-      component: AdaptorNonLinkButtonComponent,
-      overrideParam?: Partial<AdaptorButtonInteraction>
-    ) => {
-      const customId = component.customId;
-      if (component.disabled) {
-        throw new Error("button is disabled");
-      }
-      interactionHelper.emitButtonInteraction(customId, overrideParam);
-    },
-  };
+  const interactionHelper = createEmitInteractionTestUtil(
+    adaptor.emitInteraction
+  );
 
   return {
     result: result as {
@@ -145,10 +116,8 @@ export const renderHook = <TResult, TArgs>(
       latestMessageId = messageId ?? latestMessageId;
       await renderer.actAsync(cb, latestMessageId);
     },
-    emitInteraction: (interaction: AdaptorInteraction) => {
-      adaptor.emitInteraction(interaction);
-    },
     adaptorMock: adaptor,
+    interactionHelper: interactionHelper,
   };
 };
 

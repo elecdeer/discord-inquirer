@@ -1,68 +1,31 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useMentionableSelectEvent } from "./useMentionableSelectEvent";
-import {
-  createAdaptorPartialMemberMock,
-  createAdaptorRoleMock,
-  createAdaptorUserInvokedInteractionBaseMock,
-  createAdaptorUserMock,
-  renderHook,
-} from "../../testing";
-
-import type {
-  AdaptorMentionableSelectInteraction,
-  AdaptorPartialMember,
-  AdaptorRole,
-  AdaptorUser,
-  Snowflake,
-} from "../../adaptor";
+import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
   describe("useMentionableSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const handle = vi.fn();
-      const { emitInteraction } = renderHook(() =>
+      const { interactionHelper } = renderHook(() =>
         useMentionableSelectEvent("customId", handle)
       );
 
-      const users = {
-        userIdA: createAdaptorUserMock({ id: "userIdA" }),
-      } satisfies Record<Snowflake, AdaptorUser>;
-      const members = {
-        userIdA: createAdaptorPartialMemberMock({ nick: "nickA" }),
-      } satisfies Record<Snowflake, AdaptorPartialMember>;
-      const roles = {
-        roleIdA: createAdaptorRoleMock({ id: "roleIdA" }),
-      } satisfies Record<Snowflake, AdaptorRole>;
-
-      const interactionMock = {
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "mentionableSelect",
-          customId: "customId",
-          values: ["userIdA", "roleIdA"],
-          resolved: {
-            users,
-            members,
-            roles,
-          },
-        },
-      } satisfies AdaptorMentionableSelectInteraction;
-      emitInteraction(interactionMock);
+      const interaction = interactionHelper.emitMentionableSelectInteraction(
+        "customId",
+        ["user", "role"]
+      );
 
       expect(handle).toBeCalledWith(
-        {
-          ...interactionMock,
-        },
+        interaction,
         expect.arrayContaining([
           {
             type: "user",
-            ...users.userIdA,
+            ...interaction.data.resolved.users[interaction.data.values[0]],
           },
           {
             type: "role",
-            ...roles.roleIdA,
+            ...interaction.data.resolved.roles[interaction.data.values[1]],
           },
         ]),
         expect.anything()
@@ -72,35 +35,15 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
       const handle = vi.fn();
-      const { emitInteraction } = renderHook(() =>
+      const { interactionHelper } = renderHook(() =>
         useMentionableSelectEvent("customId", handle)
       );
 
-      emitInteraction({
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "button",
-          customId: "customId",
-        },
-      });
-
-      emitInteraction({
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "mentionableSelect",
-          customId: "unmatchedCustomId",
-          values: ["roleIdA"],
-          resolved: {
-            users: {},
-            members: {},
-            roles: {
-              roleIdA: createAdaptorRoleMock({ id: "roleIdA" }),
-            },
-          },
-        },
-      } satisfies AdaptorMentionableSelectInteraction);
+      interactionHelper.emitButtonInteraction("customId");
+      interactionHelper.emitMentionableSelectInteraction("unmatchedCustomId", [
+        "user",
+        "role",
+      ]);
 
       expect(handle).not.toHaveBeenCalled();
     });

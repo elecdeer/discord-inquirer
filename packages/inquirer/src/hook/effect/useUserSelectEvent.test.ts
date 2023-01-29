@@ -1,59 +1,33 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useUserSelectEvent } from "./useUserSelectEvent";
-import {
-  createAdaptorPartialMemberMock,
-  createAdaptorUserInvokedInteractionBaseMock,
-  createAdaptorUserMock,
-  renderHook,
-} from "../../testing";
-
-import type { AdaptorUserSelectInteraction } from "../../adaptor";
+import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
   describe("useUserSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
       const handle = vi.fn();
-      const { emitInteraction } = renderHook(() =>
+      const { interactionHelper } = renderHook(() =>
         useUserSelectEvent("customId", handle)
       );
 
-      const users = {
-        userIdA: createAdaptorUserMock({ id: "userIdA" }),
-        userIdB: createAdaptorUserMock({ id: "userIdB" }),
-      };
-      const members = {
-        userIdA: createAdaptorPartialMemberMock({ nick: "nickA" }),
-        userIdB: createAdaptorPartialMemberMock({ nick: "nickB" }),
-      };
-
-      const interactionMock = {
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "userSelect",
-          customId: "customId",
-          values: ["userIdA", "userIdB"],
-          resolved: {
-            users: users,
-            members: members,
-          },
-        },
-      } satisfies AdaptorUserSelectInteraction;
-      emitInteraction(interactionMock);
+      const interaction = interactionHelper.emitUserSelectInteraction(
+        "customId",
+        2
+      );
 
       expect(handle).toBeCalledWith(
-        {
-          ...interactionMock,
-        },
+        interaction,
         expect.arrayContaining([
           {
-            ...users.userIdA,
-            member: members.userIdA,
+            ...interaction.data.resolved.users[interaction.data.values[0]],
+            member:
+              interaction.data.resolved.members[interaction.data.values[0]],
           },
           {
-            ...users.userIdB,
-            member: members.userIdB,
+            ...interaction.data.resolved.users[interaction.data.values[1]],
+            member:
+              interaction.data.resolved.members[interaction.data.values[1]],
           },
         ]),
         expect.anything()
@@ -63,36 +37,12 @@ describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
       const handle = vi.fn();
-      const { emitInteraction } = renderHook(() =>
+      const { interactionHelper } = renderHook(() =>
         useUserSelectEvent("customId", handle)
       );
 
-      emitInteraction({
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "button",
-          customId: "customId",
-        },
-      });
-
-      emitInteraction({
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "userSelect",
-          customId: "unmatchedCustomId",
-          values: ["userIdA"],
-          resolved: {
-            users: {
-              userIdA: createAdaptorUserMock({ id: "userIdA" }),
-            },
-            members: {
-              userIdA: createAdaptorPartialMemberMock({ nick: "nickA" }),
-            },
-          },
-        },
-      } satisfies AdaptorUserSelectInteraction);
+      interactionHelper.emitUserSelectInteraction("unmatchedCustomId", 2);
+      interactionHelper.emitButtonInteraction("customId");
 
       expect(handle).not.toHaveBeenCalled();
     });
