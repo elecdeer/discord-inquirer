@@ -4,6 +4,7 @@ import { vi } from "vitest";
 import { createDiscordAdaptorMock } from "./discordAdaptorMock";
 import { createEmitInteractionTestUtil } from "./emitInteractionUtil";
 import { createHookCycle, deferDispatch } from "../core/hookContext";
+import { createRandomSource } from "../util/randomSource";
 
 import type { AdaptorMock } from "./discordAdaptorMock";
 import type { HookCycle } from "../core/hookContext";
@@ -13,6 +14,7 @@ import type { HookCycle } from "../core/hookContext";
 export type RenderHookOptions<TArgs> = {
   initialArgs?: TArgs;
   adaptor?: AdaptorMock;
+  randomSource?: () => number;
 };
 
 type Result<V, E> =
@@ -58,10 +60,13 @@ const resultContainer = <T>() => {
 
 export const renderHook = <TResult, TArgs>(
   runHook: (args: TArgs) => TResult,
-  options = {} as RenderHookOptions<TArgs>
+  options?: RenderHookOptions<TArgs>
 ) => {
-  const { initialArgs = undefined, adaptor = createDiscordAdaptorMock() } =
-    options;
+  const {
+    initialArgs = undefined,
+    adaptor = createDiscordAdaptorMock(),
+    randomSource = createRandomSource(23),
+  } = options ?? {};
 
   const { result, setValue, setError } = resultContainer();
   let args = initialArgs;
@@ -93,7 +98,8 @@ export const renderHook = <TResult, TArgs>(
   renderer.render(latestMessageId);
 
   const interactionHelper = createEmitInteractionTestUtil(
-    adaptor.emitInteraction
+    adaptor.emitInteraction,
+    randomSource
   );
 
   return {

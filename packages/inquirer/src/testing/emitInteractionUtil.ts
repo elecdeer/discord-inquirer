@@ -1,5 +1,4 @@
 import { adaptorFaker } from "./adaptorFaker";
-import { createRandomSource } from "../util/randomSource";
 
 import type {
   AdaptorButtonInteraction,
@@ -28,9 +27,9 @@ import type { RandomSource } from "../util/randomSource";
 
 export const createEmitInteractionTestUtil = (
   emitInteraction: (interaction: AdaptorInteraction) => void,
-  randomSource?: RandomSource
+  randomSource: RandomSource
 ) => {
-  const faker = adaptorFaker(randomSource ?? createRandomSource(23));
+  const faker = adaptorFaker(randomSource);
 
   const emitButtonInteraction = (
     customId: Snowflake,
