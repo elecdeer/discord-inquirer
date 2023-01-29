@@ -7,7 +7,7 @@ export const useReducer = <S, A>(
   const [state, setState] = useState(initialState);
 
   const dispatch = (action: A) => {
-    setState(reducer(state, action));
+    setState((prev) => reducer(prev, action));
   };
 
   return [state, dispatch];

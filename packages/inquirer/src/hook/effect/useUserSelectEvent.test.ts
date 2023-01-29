@@ -1,117 +1,50 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useUserSelectEvent } from "./useUserSelectEvent";
-import { createHookContext } from "../../core/hookContext";
-import {
-  createAdaptorPartialMemberMock,
-  createAdaptorUserInvokedInteractionBaseMock,
-  createAdaptorUserMock,
-  createDiscordAdaptorMock,
-} from "../../mock";
-
-import type { AdaptorUserSelectInteraction } from "../../adaptor";
+import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
   describe("useUserSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookContext(adaptorMock, vi.fn());
       const handle = vi.fn();
+      const { interactionHelper } = renderHook(() =>
+        useUserSelectEvent("customId", handle)
+      );
 
-      controller.startRender();
-
-      useUserSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
-
-      const users = {
-        userIdA: createAdaptorUserMock({ id: "userIdA" }),
-        userIdB: createAdaptorUserMock({ id: "userIdB" }),
-      };
-      const members = {
-        userIdA: createAdaptorPartialMemberMock({ nick: "nickA" }),
-        userIdB: createAdaptorPartialMemberMock({ nick: "nickB" }),
-      };
-
-      const interactionMock = {
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "userSelect",
-          customId: "customId",
-          values: ["userIdA", "userIdB"],
-          resolved: {
-            users: users,
-            members: members,
-          },
-        },
-      } satisfies AdaptorUserSelectInteraction;
-      adaptorMock.emitInteraction!(interactionMock);
+      const interaction = interactionHelper.emitUserSelectInteraction(
+        "customId",
+        2
+      );
 
       expect(handle).toBeCalledWith(
-        {
-          ...interactionMock,
-        },
+        interaction,
         expect.arrayContaining([
           {
-            ...users.userIdA,
-            member: members.userIdA,
+            ...interaction.data.resolved.users[interaction.data.values[0]],
+            member:
+              interaction.data.resolved.members[interaction.data.values[0]],
           },
           {
-            ...users.userIdB,
-            member: members.userIdB,
+            ...interaction.data.resolved.users[interaction.data.values[1]],
+            member:
+              interaction.data.resolved.members[interaction.data.values[1]],
           },
         ]),
         expect.anything()
       );
       expect(handle).toBeCalledTimes(1);
-
-      controller.unmount();
     });
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookContext(adaptorMock, vi.fn());
       const handle = vi.fn();
+      const { interactionHelper } = renderHook(() =>
+        useUserSelectEvent("customId", handle)
+      );
 
-      controller.startRender();
-
-      useUserSelectEvent("customId", handle);
-
-      controller.mount("messageId");
-      controller.endRender();
-
-      adaptorMock.emitInteraction!({
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "button",
-          customId: "customId",
-        },
-      });
-
-      adaptorMock.emitInteraction!({
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "messageComponent",
-        data: {
-          componentType: "userSelect",
-          customId: "unmatchedCustomId",
-          values: ["userIdA"],
-          resolved: {
-            users: {
-              userIdA: createAdaptorUserMock({ id: "userIdA" }),
-            },
-            members: {
-              userIdA: createAdaptorPartialMemberMock({ nick: "nickA" }),
-            },
-          },
-        },
-      } satisfies AdaptorUserSelectInteraction);
+      interactionHelper.emitUserSelectInteraction("unmatchedCustomId", 2);
+      interactionHelper.emitButtonInteraction("customId");
 
       expect(handle).not.toHaveBeenCalled();
-
-      controller.unmount();
     });
   });
 });

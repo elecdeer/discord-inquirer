@@ -1,11 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { useModal } from "./useModal";
-import { createHookContext } from "../../core/hookContext";
-import {
-  createAdaptorUserInvokedInteractionBaseMock,
-  createDiscordAdaptorMock,
-} from "../../mock";
+import { createDiscordAdaptorMock, renderHook } from "../../testing";
 
 import type {
   AdaptorInteractionResponse,
@@ -17,22 +13,20 @@ import type {
 describe("packages/inquirer/src/hook/effect/useModal", () => {
   describe("useModal()", () => {
     test("openを呼んだときにinteractionが返信される", () => {
-      const adaptorMock = createDiscordAdaptorMock();
-      const controller = createHookContext(adaptorMock, vi.fn());
+      const { result, adaptorMock } = renderHook(() =>
+        useModal({
+          title: "title",
+          components: [
+            {
+              key: "key",
+              style: "short",
+              label: "label",
+            },
+          ],
+        })
+      );
 
-      controller.startRender();
-      const [_, open] = useModal({
-        title: "title",
-        components: [
-          {
-            key: "key",
-            style: "short",
-            label: "label",
-          },
-        ],
-      });
-      controller.endRender();
-      controller.mount("messageId");
+      const [_, open] = result.current;
 
       open("interactionId", "interactionToken");
 
@@ -72,26 +66,28 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
         }),
       } satisfies DiscordAdaptor;
 
-      const controller = createHookContext(adaptorMock, vi.fn());
-
       const onSubmit = vi.fn();
 
-      //初回render
-      controller.startRender();
-      const [resultInitial, open] = useModal({
-        title: "title",
-        components: [
-          {
-            key: "bar",
-            style: "short",
-            label: "label",
-          },
-        ],
-        onSubmit: onSubmit,
-      });
+      const { result, interactionHelper, rerender, act } = renderHook(
+        () =>
+          useModal({
+            title: "title",
+            components: [
+              {
+                key: "bar",
+                style: "short",
+                label: "label",
+              },
+            ],
+            onSubmit: onSubmit,
+          }),
+        {
+          adaptor: adaptorMock,
+        }
+      );
+
+      const [resultInitial, open] = result.current;
       expect(resultInitial).toBe(null);
-      controller.endRender();
-      controller.mount("messageId");
 
       //モーダルを開く
       open("interactionId", "interactionToken");
@@ -99,47 +95,31 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
       //sendInteractionResponseは非同期なのでそれが完了するまで待つ必要がある
       await new Promise((resolve) => setTimeout(resolve, 1));
 
-      //開かれたモーダルの回答が送信された
-      adaptorMock.emitInteraction({
-        ...createAdaptorUserInvokedInteractionBaseMock(),
-        type: "modalSubmit",
-        id: "modalSubmitResponseInteractionId",
-        token: "modalSubmitResponseInteractionToken",
-        data: {
-          customId: sentInteractionResponse!.data.customId,
-          fields: {
+      act(() => {
+        //開かれたモーダルの回答が送信された
+        const interaction = interactionHelper.confirmModal(
+          sentInteractionResponse!.data,
+          {
             [sentInteractionResponse!.data.components[0].components[0]
               .customId]: "value",
-          },
-        },
-      });
+          }
+        );
 
-      //modalSubmitに対してdeferredUpdateが返信される
-      expect(adaptorMock.sendInteractionResponse).toBeCalledWith(
-        "modalSubmitResponseInteractionId",
-        "modalSubmitResponseInteractionToken",
-        {
-          type: "deferredUpdateMessage",
-        } satisfies AdaptorInteractionResponseDeferredUpdate
-      );
-
-      controller.startRender();
-      const [result] = useModal({
-        title: "title",
-        components: [
+        //modalSubmitに対してdeferredUpdateが返信される
+        expect(adaptorMock.sendInteractionResponse).toBeCalledWith(
+          interaction.id,
+          interaction.token,
           {
-            key: "bar",
-            style: "short",
-            label: "label",
-          },
-        ],
-        onSubmit: onSubmit,
+            type: "deferredUpdateMessage",
+          } satisfies AdaptorInteractionResponseDeferredUpdate
+        );
       });
-      expect(result).toEqual({
+
+      rerender();
+
+      expect(result.current[0]).toEqual({
         bar: "value",
       });
-      controller.endRender();
-      controller.update("messageId");
 
       expect(onSubmit).toBeCalledWith({
         bar: "value",

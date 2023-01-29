@@ -35,13 +35,14 @@ export const useEffectWithContext =
     const prevDeps = takeValue<unknown[] | undefined>(ctx, current);
     const changed = isDepsChanged(prevDeps, deps);
 
+    //前回のrender時とdepsが変わっていたらcb実行を予約
     if (changed) {
-      //前回のrender時とdepsが変わっていたらcb実行を予約
-      ctx.mountHooks.push((message) => {
+      const renderIndex = ctx.renderIndex;
+      ctx.mountHooks[renderIndex].push((message) => {
         const clean = callback(message);
 
         if (clean !== undefined) {
-          ctx.unmountHooks.push(clean);
+          ctx.unmountHooks[renderIndex].push(clean);
         }
       });
     }
