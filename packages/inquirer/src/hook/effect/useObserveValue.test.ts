@@ -38,7 +38,9 @@ describe("packages/inquirer/src/hook/effect/useObserveValue", () => {
         };
       });
 
-      result.current.setState(10);
+      act(() => {
+        result.current.setState(10);
+      });
 
       expect(handler).not.toBeCalled();
     });

@@ -74,7 +74,11 @@ export const renderHook = <TResult, TArgs>(
   const hookCycle = createHookCycle(
     adaptor,
     vi.fn(() => {
-      // noop
+      //dispatchを呼ぶ可能性のある操作をする場合はactで囲う必要がある
+      console.warn(
+        "any function call that may call dispatch must be enclosed in act"
+      );
+      console.trace("");
     })
   );
 

@@ -68,7 +68,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
 
       const onSubmit = vi.fn();
 
-      const { result, interactionHelper, rerender } = renderHook(
+      const { result, interactionHelper, rerender, act } = renderHook(
         () =>
           useModal({
             title: "title",
@@ -95,23 +95,25 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
       //sendInteractionResponseは非同期なのでそれが完了するまで待つ必要がある
       await new Promise((resolve) => setTimeout(resolve, 1));
 
-      //開かれたモーダルの回答が送信された
-      const interaction = interactionHelper.confirmModal(
-        sentInteractionResponse!.data,
-        {
-          [sentInteractionResponse!.data.components[0].components[0].customId]:
-            "value",
-        }
-      );
+      act(() => {
+        //開かれたモーダルの回答が送信された
+        const interaction = interactionHelper.confirmModal(
+          sentInteractionResponse!.data,
+          {
+            [sentInteractionResponse!.data.components[0].components[0]
+              .customId]: "value",
+          }
+        );
 
-      //modalSubmitに対してdeferredUpdateが返信される
-      expect(adaptorMock.sendInteractionResponse).toBeCalledWith(
-        interaction.id,
-        interaction.token,
-        {
-          type: "deferredUpdateMessage",
-        } satisfies AdaptorInteractionResponseDeferredUpdate
-      );
+        //modalSubmitに対してdeferredUpdateが返信される
+        expect(adaptorMock.sendInteractionResponse).toBeCalledWith(
+          interaction.id,
+          interaction.token,
+          {
+            type: "deferredUpdateMessage",
+          } satisfies AdaptorInteractionResponseDeferredUpdate
+        );
+      });
 
       rerender();
 
