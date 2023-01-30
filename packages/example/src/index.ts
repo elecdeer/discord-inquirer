@@ -52,9 +52,16 @@ client.on("ready", async (readyClient) => {
         compact: 5,
       });
 
-      if (type === "debug") console.log(inspectMsg);
-      if (type === "warn") console.warn(inspectMsg);
-      if (type === "error") console.error(inspectMsg);
+      const time = new Date().toISOString();
+      const prefix = `[${time}] [${type}]`;
+      const inspectMsgWithPrefix = inspectMsg
+        .split("\n")
+        .map((line) => `${prefix} ${line}`)
+        .join("\n");
+
+      if (type === "debug") console.log(inspectMsgWithPrefix);
+      if (type === "warn") console.warn(inspectMsgWithPrefix);
+      if (type === "error") console.error(inspectMsgWithPrefix);
     };
 
     const adaptor = createDiscordJsAdaptor(readyClient);
@@ -80,7 +87,7 @@ client.on("ready", async (readyClient) => {
     //   log,
     // });
 
-    const result = inquire(prompt4, {
+    const result = inquire(prompt3, {
       screen,
       adaptor,
       log,
@@ -225,26 +232,21 @@ const allOptions = [...Array(30)].map((_, i) => ({
   label: `${i}`,
   payload: i,
 }));
-const allOptionsSet = allOptions.map((item) => ({
-  ...item,
-  default: true,
-}));
 
 const prompt3 = ((answer, close) => {
-  const [options, setOptions] = useState(allOptions);
+  const { setPage, page, pageNum, result, Select, stateAccessor } =
+    usePagedSelectComponent({
+      optionsResolver: closeSplitter(allOptions),
+      showSelectedAlways: false,
+      pageTorus: true,
+      onSelected: (selected) => {
+        console.log("completelySelected", selected);
+      },
+    });
 
-  const { setPage, page, pageNum, result, Select } = usePagedSelectComponent({
-    optionsResolver: closeSplitter(options),
-    showSelectedAlways: false,
-    pageTorus: true,
-    onSelected: (selected) => {
-      console.log("completelySelected", selected);
-    },
-  });
-
-  const AllSetButton = useButtonComponent({
+  const ReverseSetButton = useButtonComponent({
     onClick: () => {
-      setOptions(allOptionsSet);
+      stateAccessor.setEach((selected) => !selected);
     },
   });
 
@@ -275,7 +277,7 @@ const prompt3 = ((answer, close) => {
           disabled: true,
         })(),
         NextButton({ style: "primary", label: "next" })(),
-        AllSetButton({ style: "success", label: "all set" })()
+        ReverseSetButton({ style: "success", label: "reverse set" })()
       ),
     ],
   };

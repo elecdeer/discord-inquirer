@@ -5,7 +5,11 @@ import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
-import type { StringSelectItemResult } from "./useStringSelectComponent";
+import type {
+  StringSelectItemResult,
+  StringSelectItem,
+  UseSelectResult,
+} from "./useStringSelectComponent";
 import type { PartialStringSelectItem } from "./useStringSelectComponent";
 import type {
   AdaptorSelectOption,
@@ -31,15 +35,20 @@ export type UsePagedSelectComponentParams<T> = {
     }
 );
 
-export type UsePagedSelectComponentResult<T> = [
-  selectResult: StringSelectItemResult<T>[],
-  StringSelect: StringSelectComponentBuilder<{
+export type UsePagedSelectComponentResult<T> = {
+  result: (StringSelectItemResult<T> & { page: number })[];
+  Select: StringSelectComponentBuilder<{
     customId: string;
     options: AdaptorSelectOption<T>[];
     minValues: 0;
     maxValues: number | undefined;
-  }>
-];
+  }>;
+  page: number;
+  pageNum: number;
+  setPage: (dispatch: Lazy<number, number>) => void;
+
+  stateAccessor: UseSelectResult<StringSelectItem<T>>[1];
+};
 
 //DiscordAPIの制限
 const maximumOptionNum = 25;
@@ -51,7 +60,7 @@ export const usePagedSelectComponent = <T>({
   minValues,
   showSelectedAlways,
   pageTorus = false,
-}: UsePagedSelectComponentParams<T>) => {
+}: UsePagedSelectComponentParams<T>): UsePagedSelectComponentResult<T> => {
   const splitOptions = optionsResolver(
     showSelectedAlways === true
       ? maximumOptionNum - maxValues
@@ -105,7 +114,7 @@ export const usePagedSelectComponent = <T>({
   };
 
   const customId = useCustomId("stringSelect");
-  const [optionsWithSelected, getSelectedState] = useSelectState({
+  const [optionsWithSelected, stateAccessor] = useSelectState({
     customId,
     options: allOptions,
     selectedUpdateHook: (key, prev, next, selectedKeys) => {
@@ -139,7 +148,7 @@ export const usePagedSelectComponent = <T>({
       ({
         value: item.key,
         label: item.label,
-        default: getSelectedState(item.key),
+        default: stateAccessor.get(item.key),
         description: item.description,
         emoji: item.emoji,
       } satisfies AdaptorSelectOption<unknown>)
@@ -172,6 +181,7 @@ export const usePagedSelectComponent = <T>({
       minValues: pageMinValues,
       maxValues: pageMaxValues ?? pageOptions.length,
     }),
+    stateAccessor: stateAccessor,
   };
 };
 
