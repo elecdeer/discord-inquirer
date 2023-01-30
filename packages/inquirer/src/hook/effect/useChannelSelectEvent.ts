@@ -3,7 +3,7 @@ import {
   isAdaptorChannelSelectInteraction,
   messageFacade,
 } from "../../adaptor";
-import { getHookContext } from "../../core/hookContext";
+import { batchDispatchAsync, getHookContext } from "../../core/hookContext";
 
 import type {
   AdaptorChannelSelectInteraction,
@@ -14,12 +14,14 @@ import type { Awaitable } from "../../util/types";
 export const useChannelSelectEvent = (
   customId: string,
   handle: (
-    interaction: AdaptorChannelSelectInteraction,
-    channels: AdaptorPartialChannel[],
+    interaction: Readonly<AdaptorChannelSelectInteraction>,
+    channels: readonly AdaptorPartialChannel[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const adapter = getHookContext().adaptor;
+  const ctx = getHookContext();
+  const adapter = ctx.adaptor;
+
   useEffect(() => {
     const facade = messageFacade(adapter);
 
@@ -34,13 +36,10 @@ export const useChannelSelectEvent = (
       const channels = interaction.data.values.map(
         (id) => interaction.data.resolved.channels[id]
       );
-      handle(
-        {
-          ...interaction,
-        },
-        channels,
-        deferUpdate
-      );
+
+      void batchDispatchAsync(ctx, async () => {
+        await handle(interaction, channels, deferUpdate);
+      });
     });
 
     return () => {

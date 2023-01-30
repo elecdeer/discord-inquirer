@@ -38,7 +38,7 @@ export const useUserSelectComponent = (
   useUserSelectEvent(customId, async (_, users, deferUpdate) => {
     await deferUpdate();
 
-    setSelected(users);
+    setSelected([...users]);
     markChanged();
   });
 

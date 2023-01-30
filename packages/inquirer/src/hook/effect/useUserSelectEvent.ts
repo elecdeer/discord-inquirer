@@ -1,6 +1,6 @@
 import { useEffect } from "./useEffect";
 import { isAdaptorUserSelectInteraction, messageFacade } from "../../adaptor";
-import { getHookContext } from "../../core/hookContext";
+import { batchDispatchAsync, getHookContext } from "../../core/hookContext";
 
 import type {
   AdaptorUserSelectInteraction,
@@ -16,12 +16,14 @@ export type UserSelectResultValue = AdaptorUser & {
 export const useUserSelectEvent = (
   customId: string,
   handle: (
-    interaction: AdaptorUserSelectInteraction,
-    users: UserSelectResultValue[],
+    interaction: Readonly<AdaptorUserSelectInteraction>,
+    users: readonly UserSelectResultValue[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const adapter = getHookContext().adaptor;
+  const ctx = getHookContext();
+  const adapter = ctx.adaptor;
+
   useEffect(() => {
     const facade = messageFacade(adapter);
 
@@ -42,13 +44,9 @@ export const useUserSelectEvent = (
         };
       });
 
-      handle(
-        {
-          ...interaction,
-        },
-        users,
-        deferUpdate
-      );
+      void batchDispatchAsync(ctx, async () => {
+        await handle(interaction, users, deferUpdate);
+      });
     });
 
     return () => {

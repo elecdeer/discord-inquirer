@@ -1,8 +1,7 @@
 import { createEventFlow } from "@elecdeer/event-flow";
 
-import { createHookCycle, getHookContext } from "./hookContext";
+import { createHookCycle, deferDispatch, getHookContext } from "./hookContext";
 import { isMatchHash } from "../util/hash";
-import { immediateThrottle } from "../util/immediateThrottle";
 import { defaultLogger } from "../util/logger";
 import { createTimer } from "../util/timer";
 
@@ -110,35 +109,31 @@ export const inquire = <T extends Record<string, unknown>>(
     renderIndex: number;
     renderResult: MessageMutualPayload;
   } => {
-    let shouldReRender = false;
-
     //render中にdispatchが発生した場合は、再度renderを行う
     const renderIndex = hookContext.startRender();
-    log("debug", `render #${renderIndex} start render`);
+    log("debug", `render #${renderIndex} start`);
     const ctx = getHookContext();
 
     log("debug", `render #${renderIndex} dispatch override`);
-    const prevDispatch = ctx.dispatch;
-    ctx.dispatch = () => {
-      log("debug", `render #${renderIndex} dispatched in render`);
-      shouldReRender = true;
-    };
 
-    const promptResult = prompt(answer, close);
+    let promptResult: MessageMutualPayload;
+    const dispatched = deferDispatch(ctx, () => {
+      promptResult = prompt(answer, close);
+    });
 
     log("debug", `render #${renderIndex} dispatch override end`);
-    ctx.dispatch = prevDispatch;
 
     hookContext.endRender();
+    log("debug", `render #${renderIndex} end`);
 
-    if (shouldReRender) {
+    if (dispatched) {
       log("debug", `render #${renderIndex} rerender`);
       return renderPrompt();
     } else {
-      log("debug", `render #${renderIndex} end render`);
+      log("debug", `render #${renderIndex} complete`);
       return {
         renderIndex,
-        renderResult: promptResult,
+        renderResult: promptResult!,
       };
     }
   };
@@ -159,11 +154,11 @@ export const inquire = <T extends Record<string, unknown>>(
       resetIdleTimer();
     } else {
       log("error", "failed to initial commit");
-      close();
+      await close();
     }
   };
 
-  const update = immediateThrottle(async () => {
+  const update = async () => {
     log("debug", "inquirer update");
 
     const { renderIndex, renderResult } = renderPrompt();
@@ -187,9 +182,9 @@ export const inquire = <T extends Record<string, unknown>>(
       log("debug", `payload updated messageId: ${commitResult.messageId}`);
       resetIdleTimer();
     }
-  });
+  };
 
-  const close = immediateThrottle(async () => {
+  const close = async () => {
     log("debug", "inquirer close");
     answerEvent.offAll();
 
@@ -206,7 +201,7 @@ export const inquire = <T extends Record<string, unknown>>(
     log("debug", "payload unmounted");
 
     disposeTimers();
-  });
+  };
 
   const hookContext = createHookCycle(adaptor, update);
   const { resetIdleTimer, disposeTimers } = createInquireTimer(

@@ -16,7 +16,7 @@ const stockValue = stockHookValue(hookType);
 
 export const useEffect = (
   callback: (messageId: Snowflake) => void | (() => void),
-  deps?: unknown[]
+  deps?: readonly unknown[]
 ) => {
   const ctx = getHookContext();
   return useEffectWithContext(ctx)(callback, deps);
@@ -26,7 +26,7 @@ export const useEffectWithContext =
   (ctx: HookContext) =>
   (
     callback: (messageId: Snowflake) => void | (() => void),
-    deps?: unknown[]
+    deps?: readonly unknown[]
   ) => {
     const current = takeIndex(ctx);
 

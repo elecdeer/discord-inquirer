@@ -1,6 +1,6 @@
 import { useEffect } from "./useEffect";
 import { isAdaptorRoleSelectInteraction, messageFacade } from "../../adaptor";
-import { getHookContext } from "../../core/hookContext";
+import { batchDispatchAsync, getHookContext } from "../../core/hookContext";
 
 import type {
   AdaptorRole,
@@ -12,12 +12,14 @@ import type { Awaitable } from "../../util/types";
 export const useRoleSelectEvent = (
   customId: Snowflake,
   handle: (
-    interaction: AdaptorRoleSelectInteraction,
-    values: AdaptorRole[],
+    interaction: Readonly<AdaptorRoleSelectInteraction>,
+    values: readonly AdaptorRole[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const adapter = getHookContext().adaptor;
+  const ctx = getHookContext();
+  const adapter = ctx.adaptor;
+
   useEffect(() => {
     const facade = messageFacade(adapter);
 
@@ -32,13 +34,10 @@ export const useRoleSelectEvent = (
       const roles = interaction.data.values.map(
         (id) => interaction.data.resolved.roles[id]
       );
-      handle(
-        {
-          ...interaction,
-        },
-        roles,
-        deferUpdate
-      );
+
+      void batchDispatchAsync(ctx, async () => {
+        await handle(interaction, roles, deferUpdate);
+      });
     });
 
     return () => {

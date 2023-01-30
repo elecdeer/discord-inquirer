@@ -1,6 +1,7 @@
 import assert from "node:assert";
 
 import type { DiscordAdaptor, Snowflake } from "../adaptor";
+import type { Awaitable } from "../util/types";
 
 export type HookContext = {
   index: number;
@@ -173,24 +174,54 @@ export const deferDispatch = (ctx: HookContext, cb: () => void) => {
   return dispatched;
 };
 
-export const batchDispatch = (ctx: HookContext, cb: () => void) => {
+export const batchDispatch = <T>(ctx: HookContext, cb: () => T): T => {
+  console.log("batchDispatch");
   const prevDispatch = ctx.dispatch;
+  console.log(`#${ctx.renderIndex} patch dispatch`);
 
   let isDispatched = false;
   ctx.dispatch = () => {
     isDispatched = true;
   };
-  cb();
+  const result = cb();
   ctx.dispatch = prevDispatch;
+  console.log(`#${ctx.renderIndex} unpatch dispatch`);
 
   if (isDispatched) {
+    console.log(`#${ctx.renderIndex} call dispatch`);
     ctx.dispatch();
   }
+
+  return result;
+};
+
+export const batchDispatchAsync = async <T>(
+  ctx: HookContext,
+  cb: () => Awaitable<T>
+): Promise<T> => {
+  console.log("batchDispatchAsync");
+  const prevDispatch = ctx.dispatch;
+  console.log(`#${ctx.renderIndex} patch dispatch`);
+
+  let isDispatched = false;
+  ctx.dispatch = () => {
+    isDispatched = true;
+  };
+  const result = await cb();
+  ctx.dispatch = prevDispatch;
+  console.log(`#${ctx.renderIndex} unpatch dispatch`);
+
+  if (isDispatched) {
+    console.log(`#${ctx.renderIndex} call dispatch`);
+    ctx.dispatch();
+  }
+
+  return result;
 };
 
 export const isDepsChanged = (
-  prevDeps: unknown[] | undefined,
-  deps: unknown[] | undefined
+  prevDeps: readonly unknown[] | undefined,
+  deps: readonly unknown[] | undefined
 ) => {
   return (
     prevDeps === undefined ||

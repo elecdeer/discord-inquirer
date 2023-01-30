@@ -7,7 +7,7 @@ import {
   useChannelSelectComponent,
   useConfirmButtonComponent,
   useRoleSelectComponent,
-  useStringSelectComponent,
+  useSelectComponent,
   useUserSelectComponent,
   useModalComponent,
   useButtonComponent,
@@ -87,7 +87,7 @@ client.on("ready", async (readyClient) => {
     //   log,
     // });
 
-    const result = inquire(prompt3, {
+    const result = inquire(prompt4, {
       screen,
       adaptor,
       log,
@@ -104,7 +104,7 @@ client.on("ready", async (readyClient) => {
 const prompt: Prompt<{
   selected: number[];
 }> = (answer, close) => {
-  const [result, Select] = useStringSelectComponent({
+  const [result, Select] = useSelectComponent({
     options: [
       {
         label: "1",
@@ -297,6 +297,7 @@ const prompt4 = ((answer, close) => {
   // const ctx = getHookContext();
   const PlusPlusButton = useButtonComponent({
     onClick: () => {
+      console.log("setCountTwice");
       setCount((page) => page + 1);
       setCount((page) => page + 1);
     },
@@ -305,6 +306,7 @@ const prompt4 = ((answer, close) => {
   const PlusPlusBatchedButton = useButtonComponent({
     onClick: () => {
       batchDispatch(ctx, () => {
+        console.log("setCountTwice");
         setCount((page) => page + 1);
         setCount((page) => page + 1);
       });
@@ -312,7 +314,7 @@ const prompt4 = ((answer, close) => {
   });
 
   if (count < 5) {
-    console.log("setCountInRender", count);
+    // console.log("setCountInRender", count);
     setCount((prev) => prev + 1);
   }
 
