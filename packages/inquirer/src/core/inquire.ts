@@ -110,32 +110,32 @@ export const inquire = <T extends Record<string, unknown>>(
     renderIndex: number;
     renderResult: MessageMutualPayload;
   } => {
-    log("debug", "start render");
     let shouldReRender = false;
 
     //render中にdispatchが発生した場合は、再度renderを行う
     const renderIndex = hookContext.startRender();
+    log("debug", `render #${renderIndex} start render`);
     const ctx = getHookContext();
 
-    console.log("dispatch override");
+    log("debug", `render #${renderIndex} dispatch override`);
     const prevDispatch = ctx.dispatch;
     ctx.dispatch = () => {
-      console.log("dispatched in render");
+      log("debug", `render #${renderIndex} dispatched in render`);
       shouldReRender = true;
     };
 
     const promptResult = prompt(answer, close);
 
-    console.log("dispatch override end");
+    log("debug", `render #${renderIndex} dispatch override end`);
     ctx.dispatch = prevDispatch;
 
     hookContext.endRender();
 
     if (shouldReRender) {
-      console.log("rerender");
+      log("debug", `render #${renderIndex} rerender`);
       return renderPrompt();
     } else {
-      log("debug", "end render");
+      log("debug", `render #${renderIndex} end render`);
       return {
         renderIndex,
         renderResult: promptResult,
