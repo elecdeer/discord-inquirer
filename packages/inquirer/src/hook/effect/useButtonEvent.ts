@@ -1,6 +1,6 @@
 import { useEffect } from "./useEffect";
 import { isAdaptorButtonInteraction, messageFacade } from "../../adaptor";
-import { getHookContext } from "../../core/hookContext";
+import { batchDispatchAsync, getHookContext } from "../../core/hookContext";
 
 import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
@@ -8,11 +8,12 @@ import type { Awaitable } from "../../util/types";
 export const useButtonEvent = (
   customId: string,
   handle: (
-    interaction: AdaptorInteractionBase,
+    interaction: Readonly<AdaptorInteractionBase>,
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const adapter = getHookContext().adaptor;
+  const ctx = getHookContext();
+  const adapter = ctx.adaptor;
   useEffect(() => {
     const facade = messageFacade(adapter);
 
@@ -24,12 +25,9 @@ export const useButtonEvent = (
         await facade.deferUpdate(interaction.id, interaction.token);
       };
 
-      handle(
-        {
-          ...interaction,
-        },
-        deferUpdate
-      );
+      void batchDispatchAsync(ctx, async () => {
+        await handle(interaction, deferUpdate);
+      });
     });
 
     return () => {

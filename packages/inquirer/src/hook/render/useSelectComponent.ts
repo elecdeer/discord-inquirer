@@ -109,7 +109,7 @@ export type UseSelectStateParam<T extends SelectItem<unknown>> = {
     key: string,
     prev: boolean,
     next: boolean,
-    selectedKeys: string[]
+    selectedKeys: readonly string[]
   ) => boolean;
 };
 

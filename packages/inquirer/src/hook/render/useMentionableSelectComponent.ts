@@ -37,7 +37,7 @@ export const useMentionableSelectComponent = (
   useMentionableSelectEvent(customId, async (_, userOrRoles, deferUpdate) => {
     await deferUpdate();
 
-    setSelected(userOrRoles);
+    setSelected([...userOrRoles]);
     markChanged();
   });
 

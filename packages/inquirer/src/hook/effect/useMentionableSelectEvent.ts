@@ -3,7 +3,7 @@ import {
   isAdaptorMentionableSelectInteraction,
   messageFacade,
 } from "../../adaptor";
-import { getHookContext } from "../../core/hookContext";
+import { batchDispatchAsync, getHookContext } from "../../core/hookContext";
 
 import type {
   AdaptorMentionableSelectInteraction,
@@ -24,12 +24,14 @@ export type MentionableSelectValue =
 export const useMentionableSelectEvent = (
   customId: Snowflake,
   handle: (
-    interaction: AdaptorMentionableSelectInteraction,
-    userOrRoles: MentionableSelectValue[],
+    interaction: Readonly<AdaptorMentionableSelectInteraction>,
+    userOrRoles: readonly MentionableSelectValue[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const adapter = getHookContext().adaptor;
+  const ctx = getHookContext();
+  const adapter = ctx.adaptor;
+
   useEffect(() => {
     const facade = messageFacade(adapter);
 
@@ -63,13 +65,10 @@ export const useMentionableSelectEvent = (
         .filter(
           (value): value is MentionableSelectValue => value !== undefined
         );
-      handle(
-        {
-          ...interaction,
-        },
-        values,
-        deferUpdate
-      );
+
+      void batchDispatchAsync(ctx, async () => {
+        await handle(interaction, values, deferUpdate);
+      });
     });
 
     return () => {

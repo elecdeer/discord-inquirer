@@ -37,7 +37,7 @@ export const useRoleSelectComponent = (
   useRoleSelectEvent(customId, async (_, roles, deferUpdate) => {
     await deferUpdate();
 
-    setSelected(roles);
+    setSelected([...roles]);
     markChanged();
   });
 
