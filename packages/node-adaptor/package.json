@@ -1,6 +1,9 @@
 {
   "name": "discord-inquirer-adaptor-node",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "description": "node.js adaptor for discord-inquirer",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -24,6 +27,8 @@
   },
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
   "dependencies": {
+    "@noble/ed25519": "^1.7.1",
+    "discord-api-types": "^0.37.29",
     "discord-inquirer": "^0.0.0"
   },
   "devDependencies": {

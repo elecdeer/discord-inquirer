@@ -89,6 +89,10 @@ export interface AdaptorPingInteraction extends AdaptorInteractionBase {
   type: "ping";
 }
 
+export const isAdaptorPingInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorPingInteraction => interaction.type === "ping";
+
 export interface AdaptorApplicationCommandInteraction
   extends AdaptorUserInvokedInteractionBase {
   type: "applicationCommand";
@@ -97,6 +101,11 @@ export interface AdaptorApplicationCommandInteraction
    */
   data: unknown;
 }
+
+export const isAdaptorApplicationCommandInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorApplicationCommandInteraction =>
+  interaction.type === "applicationCommand";
 
 export interface AdaptorButtonInteraction
   extends AdaptorUserInvokedInteractionBase {
@@ -216,6 +225,11 @@ export interface AdaptorApplicationCommandAutoCompleteInteraction
    */
   data: unknown;
 }
+
+export const isAdaptorApplicationCommandAutoCompleteInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorApplicationCommandAutoCompleteInteraction =>
+  interaction.type === "applicationCommandAutoComplete";
 
 export interface AdaptorModalSubmitInteraction
   extends AdaptorUserInvokedInteractionBase {

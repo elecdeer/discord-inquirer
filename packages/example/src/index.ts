@@ -17,13 +17,15 @@ import {
   useEffect,
   batchDispatch,
   getHookContext,
+  isAdaptorApplicationCommandInteraction,
 } from "discord-inquirer";
-import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
+import { createNodeAdaptor } from "discord-inquirer-adaptor-node";
 import { Client, SlashCommandBuilder } from "discord.js";
 import { config } from "dotenv";
 import * as util from "util";
 
 import type { Prompt } from "discord-inquirer";
+import type { AdaptorInteraction } from "discord-inquirer/src";
 
 config();
 
@@ -31,75 +33,98 @@ const client = new Client({
   intents: [],
 });
 
-client.on("ready", async (readyClient) => {
-  console.log("Client is ready");
-
-  const command = new SlashCommandBuilder()
-    .setName("example")
-    .setDescription("This is an example command");
-  await readyClient.application.commands.create(command);
-
-  readyClient.on("interactionCreate", (interaction) => {
-    if (!(interaction.isCommand() && interaction.commandName === "example")) {
-      return;
-    }
-
-    const log = (type: "debug" | "warn" | "error", message: unknown) => {
-      const inspectMsg = util.inspect(message, {
-        depth: 10,
-        colors: true,
-        breakLength: 200,
-        compact: 5,
-      });
-
-      const time = new Date().toISOString();
-      const prefix = `[${time}] [${type}]`;
-      const inspectMsgWithPrefix = inspectMsg
-        .split("\n")
-        .map((line) => `${prefix} ${line}`)
-        .join("\n");
-
-      if (type === "debug") console.log(inspectMsgWithPrefix);
-      if (type === "warn") console.warn(inspectMsgWithPrefix);
-      if (type === "error") console.error(inspectMsgWithPrefix);
-    };
-
-    const adaptor = createDiscordJsAdaptor(readyClient);
-    const screen = createScreen(
-      adaptor,
-      {
-        type: "interaction",
-        interactionId: interaction.id,
-        token: interaction.token,
-      },
-      {
-        onClose: "deleteComponent",
-        log,
-      }
-    );
-
-    // const result = inquire(prompt, {
-    //   screen,
-    //   adaptor,
-    //   defaultResult: {
-    //     selected: [] as number[],
-    //   },
-    //   log,
-    // });
-
-    const result = inquire(prompt4, {
-      screen,
-      adaptor,
-      log,
-    });
-
-    result.resultEvent.on(({ key, value, all }) => {
-      console.log("key", key);
-      console.log("value", value);
-      console.log("all", all);
-    });
-  });
+const adaptor = createNodeAdaptor({
+  port: 8080,
+  applicationId: process.env.APPLICATION_ID!,
+  clientPublicKey: process.env.CLIENT_PUBLIC_KEY!,
+  botToken: process.env.DISCORD_TOKEN!,
 });
+
+adaptor.subscribeInteraction(async (interaction) => {
+  if (!isAdaptorApplicationCommandInteraction(interaction)) return;
+
+  //TODO fixme
+  const data = interaction.data as any;
+
+  if (data.name !== "example") return;
+
+  await openPrompt(interaction);
+});
+
+// client.on("ready", async (readyClient) => {
+//   console.log("Client is ready");
+//
+//   const command = new SlashCommandBuilder()
+//     .setName("example")
+//     .setDescription("This is an example command");
+//   await readyClient.application.commands.create(command);
+//
+//   readyClient.on("interactionCreate", async (interaction) => {
+//     if (!(interaction.isCommand() && interaction.commandName === "example")) {
+//       return;
+//     }
+//
+//     await openPrompt(interaction);
+//   });
+// });
+
+const openPrompt = async (interaction: { id: string; token: string }) => {
+  const log = (type: "debug" | "warn" | "error", message: unknown) => {
+    const inspectMsg = util.inspect(message, {
+      depth: 10,
+      colors: true,
+      breakLength: 200,
+      compact: 5,
+    });
+
+    const time = new Date().toISOString();
+    const prefix = `[${time}] [${type}]`;
+    const inspectMsgWithPrefix = inspectMsg
+      .split("\n")
+      .map((line) => `${prefix} ${line}`)
+      .join("\n");
+
+    if (type === "debug") console.log(inspectMsgWithPrefix);
+    if (type === "warn") console.warn(inspectMsgWithPrefix);
+    if (type === "error") console.error(inspectMsgWithPrefix);
+  };
+
+  // const adaptor = createDiscordJsAdaptor(readyClient);
+
+  const screen = createScreen(
+    adaptor,
+    {
+      type: "interaction",
+      interactionId: interaction.id,
+      token: interaction.token,
+    },
+    {
+      onClose: "deleteComponent",
+      log,
+    }
+  );
+
+  // const result = inquire(prompt, {
+  //   screen,
+  //   adaptor,
+  //   defaultResult: {
+  //     selected: [] as number[],
+  //   },
+  //   log,
+  // });
+
+  const result = inquire(prompt4, {
+    screen,
+    adaptor,
+    log,
+  });
+
+  result.resultEvent.on(({ key, value, all }) => {
+    console.log("key", key);
+    console.log("value", value);
+    console.log("all", all);
+  });
+};
 
 const prompt: Prompt<{
   selected: number[];
