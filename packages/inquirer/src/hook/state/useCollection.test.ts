@@ -1,22 +1,10 @@
-import { afterEach, describe, expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { useCollection } from "./useCollection";
 import { renderHook } from "../../testing";
 
-import type { createHookCycle } from "../../core/hookContext";
-
 describe("packages/inquirer/src/hook/useCollection", () => {
   describe("useCollection()", () => {
-    let controller: ReturnType<typeof createHookCycle> | undefined;
-
-    afterEach(() => {
-      try {
-        controller?.endRender();
-      } catch (e) {
-        // skip
-      }
-    });
-
     describe("set()", () => {
       test("setした値が保持される", () => {
         const { act, result } = renderHook(() =>

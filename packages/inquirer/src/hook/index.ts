@@ -16,7 +16,7 @@ export * from "./effect/useModal";
 export * from "./effect/useObserveValue";
 
 export * from "./render/useConfirmButtonComponent";
-export * from "./render/useStringSelectComponent";
+export * from "./render/useSelectComponent";
 export * from "./render/useUserSelectComponent";
 export * from "./render/useRoleSelectComponent";
 export * from "./render/useChannelSelectComponent";

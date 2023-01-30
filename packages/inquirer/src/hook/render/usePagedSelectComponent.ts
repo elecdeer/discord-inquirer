@@ -1,4 +1,4 @@
-import { useSelectState } from "./useStringSelectComponent";
+import { useSelectState } from "./useSelectComponent";
 import { StringSelect } from "../../adaptor";
 import { resolveLazy } from "../../util/lazy";
 import { useObserveValue } from "../effect/useObserveValue";
@@ -6,11 +6,11 @@ import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
 import type {
-  StringSelectItemResult,
-  StringSelectItem,
+  SelectItemResult,
+  SelectItem,
   UseSelectResult,
-} from "./useStringSelectComponent";
-import type { PartialStringSelectItem } from "./useStringSelectComponent";
+} from "./useSelectComponent";
+import type { PartialSelectItem } from "./useSelectComponent";
 import type {
   AdaptorSelectOption,
   StringSelectComponentBuilder,
@@ -18,10 +18,8 @@ import type {
 import type { Lazy } from "../../util/lazy";
 
 export type UsePagedSelectComponentParams<T> = {
-  optionsResolver: (
-    maxItemNumPerPage: number
-  ) => PartialStringSelectItem<T>[][];
-  onSelected?: (selected: StringSelectItemResult<T>[]) => void;
+  optionsResolver: (maxItemNumPerPage: number) => PartialSelectItem<T>[][];
+  onSelected?: (selected: SelectItemResult<T>[]) => void;
   pageTorus?: boolean;
   minValues?: number;
 } & (
@@ -36,7 +34,7 @@ export type UsePagedSelectComponentParams<T> = {
 );
 
 export type UsePagedSelectComponentResult<T> = {
-  result: (StringSelectItemResult<T> & { page: number })[];
+  result: (SelectItemResult<T> & { page: number })[];
   Select: StringSelectComponentBuilder<{
     customId: string;
     options: AdaptorSelectOption<T>[];
@@ -47,7 +45,7 @@ export type UsePagedSelectComponentResult<T> = {
   pageNum: number;
   setPage: (dispatch: Lazy<number, number>) => void;
 
-  stateAccessor: UseSelectResult<StringSelectItem<T>>[1];
+  stateAccessor: UseSelectResult<SelectItem<T>>[1];
 };
 
 //DiscordAPIの制限
@@ -81,7 +79,7 @@ export const usePagedSelectComponent = <T>({
         ? maximumOptionNum - maxValues
         : maximumOptionNum
     );
-    const options: (StringSelectItemResult<T> & {
+    const options: (SelectItemResult<T> & {
       page: number;
     })[] = [];
     splitOptions.forEach((pageOptions, pageIndex) => {
@@ -105,7 +103,7 @@ export const usePagedSelectComponent = <T>({
   const allOptions = resolveOptions();
   console.log("allOptions", allOptions);
 
-  const pageOnSelected = (result: StringSelectItemResult<T>[]) => {
+  const pageOnSelected = (result: SelectItemResult<T>[]) => {
     //minValuesとmaxValuesを満たしていない場合はイベントを発火しない
     const selectedItems = result.filter((item) => item.selected);
     if (minValues !== undefined && selectedItems.length < minValues) return;
