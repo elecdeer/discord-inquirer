@@ -1,0 +1,33 @@
+{
+  "name": "discord-inquirer-adaptor-node",
+  "version": "0.0.0",
+  "description": "node.js adaptor for discord-inquirer",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "test": "# vitest run -r ./",
+    "test:watch": "# vitest watch -r ./",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint --cache 'src/**/*.ts' 'src/*.ts' --max-warnings 0",
+    "format": "prettier --cache --write 'src/**/*.ts' 'src/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elecdeer/discord-inquirer.git"
+  },
+  "author": "elecdeer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/elecdeer/discord-inquirer/issues"
+  },
+  "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
+  "dependencies": {
+    "discord-inquirer": "^0.0.0"
+  },
+  "devDependencies": {
+    "@monorepo/eslint-config": "*",
+    "@monorepo/tsconfig": "*"
+  }
+}
