@@ -6,7 +6,9 @@
   "module": "./dist/index.mjs",
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "start": "tsup && node --enable-source-maps --trace-uncaught ./dist/index.mjs",
+    "register-command": "tsup src/registerCommand.ts && node --enable-source-maps --trace-uncaught ./dist/registerCommand.mjs",
+    "node-example": "tsup src/nodeAdaptorExample.ts && node --enable-source-maps --trace-uncaught ./dist/nodeAdaptorExample.mjs",
+    "discordjs-example": "tsup src/discordjsAdaptorExample.ts && node --enable-source-maps --trace-uncaught ./dist/discordjsAdaptorExample.mjs",
     "lint": "eslint --cache 'src/**/*.ts' 'src/*.ts' --max-warnings 0",
     "format": "prettier --cache --write 'src/**/*.ts' 'src/*.ts'"
   },
@@ -23,10 +25,12 @@
   "dependencies": {
     "discord-inquirer": "*",
     "discord-inquirer-adaptor-discordjs": "*",
+    "discord-inquirer-adaptor-node": "*",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3"
   },
   "devDependencies": {
+    "@types/node": "^18.11.18",
     "@monorepo/eslint-config": "*",
     "@monorepo/tsconfig": "*"
   }
