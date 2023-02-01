@@ -104,9 +104,7 @@ export const createHookCycle = (
   };
 
   const mount = (renderIndex: number, messageId: Snowflake) => {
-    batchDispatch(context, () => {
-      callMountHooks(renderIndex, messageId, true);
-    });
+    callMountHooks(renderIndex, messageId, true);
   };
 
   const update = (
@@ -114,16 +112,12 @@ export const createHookCycle = (
     messageId: Snowflake,
     edited: boolean
   ) => {
-    batchDispatch(context, () => {
-      callUnmountHooks(renderIndex - 1);
-      callMountHooks(renderIndex, messageId, edited);
-    });
+    callUnmountHooks(renderIndex - 1);
+    callMountHooks(renderIndex, messageId, edited);
   };
 
   const unmount = (renderIndex: number) => {
-    batchDispatch(context, () => {
-      callUnmountHooks(renderIndex);
-    });
+    callUnmountHooks(renderIndex);
   };
 
   return {
@@ -176,6 +170,7 @@ export const deferDispatch = (ctx: HookContext, cb: () => void) => {
 
 export const batchDispatch = <T>(ctx: HookContext, cb: () => T): T => {
   console.log("batchDispatch");
+  console.trace();
   const prevDispatch = ctx.dispatch;
   console.log(`#${ctx.renderIndex} patch dispatch`);
 
@@ -200,8 +195,9 @@ export const batchDispatchAsync = async <T>(
   cb: () => Awaitable<T>
 ): Promise<T> => {
   console.log("batchDispatchAsync");
+  console.trace();
   const prevDispatch = ctx.dispatch;
-  console.log(`#${ctx.renderIndex} patch dispatch`);
+  console.log(`#${ctx.renderIndex} patch dispatch async`);
 
   let isDispatched = false;
   ctx.dispatch = () => {
@@ -209,10 +205,10 @@ export const batchDispatchAsync = async <T>(
   };
   const result = await cb();
   ctx.dispatch = prevDispatch;
-  console.log(`#${ctx.renderIndex} unpatch dispatch`);
+  console.log(`#${ctx.renderIndex} unpatch dispatch async`);
 
   if (isDispatched) {
-    console.log(`#${ctx.renderIndex} call dispatch`);
+    console.log(`#${ctx.renderIndex} call dispatch async`);
     ctx.dispatch();
   }
 
