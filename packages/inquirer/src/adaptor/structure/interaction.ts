@@ -1,4 +1,5 @@
 import type { AdaptorPartialMember } from "./guild";
+import type { AdaptorAttachment } from "./index";
 import type { AdaptorPermissions } from "./index";
 import type { AdaptorPartialChannel, Snowflake } from "./index";
 import type { AdaptorRole } from "./permissions";
@@ -89,23 +90,70 @@ export interface AdaptorPingInteraction extends AdaptorInteractionBase {
   type: "ping";
 }
 
-export const isAdaptorPingInteraction = (
-  interaction: AdaptorInteraction
-): interaction is AdaptorPingInteraction => interaction.type === "ping";
-
 export interface AdaptorApplicationCommandInteraction
   extends AdaptorUserInvokedInteractionBase {
   type: "applicationCommand";
-  /**
-   * discord-inquire will not use this
-   */
-  data: unknown;
+
+  data: {
+    id: Snowflake;
+    name: string;
+    type: "chatInput" | "user" | "message";
+    resolved: {
+      users: Record<Snowflake, AdaptorUser | undefined>;
+      members: Record<Snowflake, AdaptorPartialMember | undefined>;
+      roles: Record<Snowflake, AdaptorRole | undefined>;
+      channels: Record<Snowflake, AdaptorPartialChannel | undefined>;
+      attachments: Record<Snowflake, AdaptorAttachment | undefined>;
+    };
+    options: AdaptorApplicationCommandInteractionOption[];
+    guildId: Snowflake | null;
+    targetId: Snowflake | null;
+  };
 }
 
-export const isAdaptorApplicationCommandInteraction = (
-  interaction: AdaptorInteraction
-): interaction is AdaptorApplicationCommandInteraction =>
-  interaction.type === "applicationCommand";
+export type AdaptorApplicationCommandInteractionOption =
+  | AdaptorApplicationCommandInteractionOptionSubCommand
+  | AdaptorApplicationCommandInteractionOptionSubCommandGroup
+  | AdaptorApplicationCommandInteractionOptionString
+  | AdaptorApplicationCommandInteractionOptionBoolean
+  | AdaptorApplicationCommandInteractionOptionNumber
+  | AdaptorApplicationCommandInteractionOptionSnowflake;
+
+export interface AdaptorApplicationCommandInteractionOptionNumber {
+  type: "integer" | "number";
+  value: number;
+}
+
+export interface AdaptorApplicationCommandInteractionOptionString {
+  type: "string";
+  value: string;
+}
+
+export interface AdaptorApplicationCommandInteractionOptionBoolean {
+  type: "boolean";
+  value: boolean;
+}
+
+export interface AdaptorApplicationCommandInteractionOptionSnowflake {
+  type: "user" | "channel" | "role" | "mentionable" | "attachment";
+  value: Snowflake;
+}
+
+export interface AdaptorApplicationCommandInteractionOptionSubCommand {
+  type: "subCommand";
+  name: string;
+  options: Exclude<
+    AdaptorApplicationCommandInteractionOption,
+    | AdaptorApplicationCommandInteractionOptionSubCommand
+    | AdaptorApplicationCommandInteractionOptionSubCommandGroup
+  >[];
+}
+
+export interface AdaptorApplicationCommandInteractionOptionSubCommandGroup {
+  type: "subCommandGroup";
+  name: string;
+  options: AdaptorApplicationCommandInteractionOptionSubCommand[];
+}
 
 export interface AdaptorButtonInteraction
   extends AdaptorUserInvokedInteractionBase {
@@ -116,12 +164,6 @@ export interface AdaptorButtonInteraction
   };
 }
 
-export const isAdaptorButtonInteraction = (
-  interaction: AdaptorInteraction
-): interaction is AdaptorButtonInteraction =>
-  interaction.type === "messageComponent" &&
-  interaction.data.componentType === "button";
-
 export interface AdaptorStringSelectInteraction
   extends AdaptorUserInvokedInteractionBase {
   type: "messageComponent";
@@ -131,12 +173,6 @@ export interface AdaptorStringSelectInteraction
     values: string[];
   };
 }
-
-export const isAdaptorStringSelectInteraction = (
-  interaction: AdaptorInteraction
-): interaction is AdaptorStringSelectInteraction =>
-  interaction.type === "messageComponent" &&
-  interaction.data.componentType === "stringSelect";
 
 export interface AdaptorUserSelectInteraction
   extends AdaptorUserInvokedInteractionBase {
@@ -151,13 +187,6 @@ export interface AdaptorUserSelectInteraction
     };
   };
 }
-
-export const isAdaptorUserSelectInteraction = (
-  interaction: AdaptorInteraction
-): interaction is AdaptorUserSelectInteraction =>
-  interaction.type === "messageComponent" &&
-  interaction.data.componentType === "userSelect";
-
 export interface AdaptorRoleSelectInteraction
   extends AdaptorUserInvokedInteractionBase {
   type: "messageComponent";
@@ -170,12 +199,6 @@ export interface AdaptorRoleSelectInteraction
     };
   };
 }
-
-export const isAdaptorRoleSelectInteraction = (
-  interaction: AdaptorInteraction
-): interaction is AdaptorRoleSelectInteraction =>
-  interaction.type === "messageComponent" &&
-  interaction.data.componentType === "roleSelect";
 
 export interface AdaptorMentionableSelectInteraction
   extends AdaptorUserInvokedInteractionBase {
@@ -192,12 +215,6 @@ export interface AdaptorMentionableSelectInteraction
   };
 }
 
-export const isAdaptorMentionableSelectInteraction = (
-  interaction: AdaptorInteraction
-): interaction is AdaptorMentionableSelectInteraction =>
-  interaction.type === "messageComponent" &&
-  interaction.data.componentType === "mentionableSelect";
-
 export interface AdaptorChannelSelectInteraction
   extends AdaptorUserInvokedInteractionBase {
   type: "messageComponent";
@@ -210,6 +227,56 @@ export interface AdaptorChannelSelectInteraction
     };
   };
 }
+
+export interface AdaptorModalSubmitInteraction
+  extends AdaptorUserInvokedInteractionBase {
+  type: "modalSubmit";
+  data: {
+    customId: string;
+
+    //transformed
+    fields: Record<string, string>; //customId, value
+  };
+}
+
+export const isAdaptorPingInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorPingInteraction => interaction.type === "ping";
+
+export const isAdaptorApplicationCommandInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorApplicationCommandInteraction =>
+  interaction.type === "applicationCommand";
+
+export const isAdaptorButtonInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorButtonInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "button";
+
+export const isAdaptorStringSelectInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorStringSelectInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "stringSelect";
+
+export const isAdaptorUserSelectInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorUserSelectInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "userSelect";
+
+export const isAdaptorRoleSelectInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorRoleSelectInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "roleSelect";
+
+export const isAdaptorMentionableSelectInteraction = (
+  interaction: AdaptorInteraction
+): interaction is AdaptorMentionableSelectInteraction =>
+  interaction.type === "messageComponent" &&
+  interaction.data.componentType === "mentionableSelect";
 
 export const isAdaptorChannelSelectInteraction = (
   interaction: AdaptorInteraction
@@ -230,17 +297,6 @@ export const isAdaptorApplicationCommandAutoCompleteInteraction = (
   interaction: AdaptorInteraction
 ): interaction is AdaptorApplicationCommandAutoCompleteInteraction =>
   interaction.type === "applicationCommandAutoComplete";
-
-export interface AdaptorModalSubmitInteraction
-  extends AdaptorUserInvokedInteractionBase {
-  type: "modalSubmit";
-  data: {
-    customId: string;
-
-    //transformed
-    fields: Record<string, string>; //customId, value
-  };
-}
 
 export const isAdaptorModalSubmitInteraction = (
   interaction: AdaptorInteraction

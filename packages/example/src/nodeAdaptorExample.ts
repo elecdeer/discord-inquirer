@@ -7,7 +7,6 @@ import { openPrompt } from "./util/openPrompt";
 
 config();
 
-//TODO AdaptorApplicationCommandInteractionもパースするようにする
 //TODO コマンド登録のUtilityがあってもいいかも
 
 const adaptor = createNodeAdaptor({
@@ -19,12 +18,11 @@ const adaptor = createNodeAdaptor({
 
 adaptor.subscribeInteraction(async (interaction) => {
   if (!isAdaptorApplicationCommandInteraction(interaction)) return;
+  console.log("interactionReceived", interaction.data);
 
-  //TODO fixme
-  const data = interaction.data as any;
-  console.log("interactionReceived", data);
+  if (interaction.data.name !== commandData.name) return;
+  const option = interaction.data.options[0];
+  if (option.type !== "subCommand") return;
 
-  if (data.name !== commandData.name) return;
-
-  await openPrompt(adaptor)(interaction, data.options[0].name);
+  await openPrompt(adaptor)(interaction, option.name);
 });
