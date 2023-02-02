@@ -96,6 +96,12 @@ export const createAdaptorMemberFaker = (next: RandomSource) => {
         new Date("2030-12-31T23:59:59.999Z")
       ),
       premiumSince: null,
+      flag: {
+        didRejoin: false,
+        completedOnboarding: false,
+        bypassesVerification: false,
+        startedVerification: false,
+      },
       pending: false,
       permissions: null,
       communicationDisabledUntil: null,
