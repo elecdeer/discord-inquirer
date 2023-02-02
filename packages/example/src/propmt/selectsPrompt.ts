@@ -53,6 +53,7 @@ export const selectsPrompt: Prompt<{
         answer("channelSelected", selected);
         console.log("channel selected", selected);
       },
+      maxValues: 2,
     });
 
   const [userResult, UserSelectComponent] = useUserSelectComponent({
@@ -60,6 +61,7 @@ export const selectsPrompt: Prompt<{
       answer("userSelected", selected);
       console.log("user selected", selected);
     },
+    maxValues: 2,
   });
 
   const [roleResult, RoleSelectComponent] = useRoleSelectComponent({
@@ -67,6 +69,7 @@ export const selectsPrompt: Prompt<{
       answer("roleSelected", selected);
       console.log("role selected", selected);
     },
+    maxValues: 2,
   });
 
   const [mentionableResult, MentionableSelectComponent] =
@@ -75,6 +78,7 @@ export const selectsPrompt: Prompt<{
         answer("mentionableSelected", selected);
         console.log("mentionable selected", selected);
       },
+      maxValues: 2,
     });
 
   return {
@@ -112,26 +116,10 @@ export const selectsPrompt: Prompt<{
     ],
     components: [
       Row(Select({})()),
-      Row(
-        ChannelSelectComponent({
-          maxValues: 2,
-        })()
-      ),
-      Row(
-        UserSelectComponent({
-          maxValues: 2,
-        })()
-      ),
-      Row(
-        RoleSelectComponent({
-          maxValues: 2,
-        })()
-      ),
-      Row(
-        MentionableSelectComponent({
-          maxValues: 2,
-        })()
-      ),
+      Row(ChannelSelectComponent()),
+      Row(UserSelectComponent()),
+      Row(RoleSelectComponent()),
+      Row(MentionableSelectComponent()),
     ],
   };
 };
