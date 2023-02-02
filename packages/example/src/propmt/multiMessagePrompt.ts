@@ -4,14 +4,17 @@ import {
   useButtonComponent,
   useState,
   useUserSingleSelectComponent,
+  useMultiPagePrompt,
+  useEffect,
 } from "discord-inquirer";
 
-import type { Prompt, Snowflake } from "discord-inquirer";
+import type { Prompt, Snowflake, InquireResultEvent } from "discord-inquirer";
 
 export type MultiMessageSubType = "button" | "select";
 
 export type MainPromptAnswer = {
   setSubPage: MultiMessageSubType;
+  close: "empty";
 };
 
 export const mainPrompt: Prompt<MainPromptAnswer> = (answer, close) => {
@@ -36,6 +39,7 @@ export const mainPrompt: Prompt<MainPromptAnswer> = (answer, close) => {
 
   const CloseButton = useButtonComponent({
     onClick: () => {
+      answer("close", "empty");
       close();
     },
   });
@@ -85,3 +89,35 @@ export const subPromptSelect: Prompt<{
     components: [Row(SelectComponent())],
   };
 };
+
+export const subPrompt =
+  (
+    mainPageResultEvent: InquireResultEvent<MainPromptAnswer>
+  ): Prompt<{
+    count: number;
+    userId: Snowflake;
+  }> =>
+  (answer, close) => {
+    //promptの順番を変えてはいけない
+    const { setPage, result } = useMultiPagePrompt(
+      {
+        button: () => subPromptButton(answer, close),
+        select: () => subPromptSelect(answer, close),
+      },
+      "button"
+    );
+
+    useEffect(() => {
+      const { off } = mainPageResultEvent.on(({ key, value }) => {
+        if (key === "setSubPage") {
+          console.log("set sub page", value);
+          setPage(value);
+        }
+      });
+      return () => {
+        off();
+      };
+    });
+
+    return result;
+  };

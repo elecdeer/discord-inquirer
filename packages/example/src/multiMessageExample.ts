@@ -4,17 +4,10 @@ import { Client } from "discord.js";
 import { config } from "dotenv";
 
 import { multiMessageSubCommandData } from "./commandData";
-import {
-  mainPrompt,
-  subPromptButton,
-  subPromptSelect,
-} from "./propmt/multiMessagePrompt";
+import { mainPrompt, subPrompt } from "./propmt/multiMessagePrompt";
 import { log } from "./util/logger";
 
-import type {
-  MainPromptAnswer,
-  MultiMessageSubType,
-} from "./propmt/multiMessagePrompt";
+import type { MainPromptAnswer } from "./propmt/multiMessagePrompt";
 import type { Snowflake } from "discord.js";
 
 config();
@@ -56,55 +49,38 @@ client.on("ready", async (readyClient) => {
         token: interaction.token,
       },
       {
-        onClose: "keep",
+        onClose: "deleteMessage",
         log,
       }
     );
 
-    const { resultEvent } = inquire<MainPromptAnswer>(mainPrompt, {
+    const mainResult = inquire<MainPromptAnswer>(mainPrompt, {
       screen: mainScreen,
       adaptor,
       log,
     });
 
-    let count = 0;
-    let userId = "";
-    let closeOldSubPrompt: (() => Promise<void>) | undefined;
-
-    const openSubPrompt = async (value: MultiMessageSubType) => {
-      if (value === "button") {
-        const subResult = inquire<{
-          count: number;
-        }>(subPromptButton, {
-          screen: subScreen,
-          log,
-          adaptor,
-        });
-        closeOldSubPrompt = subResult.close;
-        subResult.resultEvent.on(({ value }) => {
-          count = value;
-        });
-      }
-      if (value === "select") {
-        const subResult = inquire<{
-          userId: Snowflake;
-        }>(subPromptSelect, {
-          screen: subScreen,
-          log,
-          adaptor,
-        });
-        closeOldSubPrompt = subResult.close;
-        subResult.resultEvent.on(({ value }) => {
-          userId = value;
-        });
-      }
-    };
-
-    resultEvent.on(async ({ value, all }) => {
-      await openSubPrompt(value);
+    const subResult = inquire<{
+      count: number;
+      userId: Snowflake;
+    }>(subPrompt(mainResult.resultEvent), {
+      screen: subScreen,
+      log,
+      adaptor,
     });
 
-    await openSubPrompt("button");
+    // Close subPrompt when mainPrompt is closed
+    mainResult.resultEvent
+      .filter(({ key }) => key === "close")
+      .on(() => {
+        subResult.close();
+      });
+
+    subResult.resultEvent.on(({ key, value, all }) => {
+      console.log("key", key);
+      console.log("value", value);
+      console.log("all", all);
+    });
   });
 });
 
