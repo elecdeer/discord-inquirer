@@ -23,6 +23,8 @@ type InquireResult<T extends Record<string, unknown>> = {
   >;
 
   result: () => Partial<T>;
+
+  close: () => Promise<void>;
 };
 
 export type Inquire<T extends Record<string, unknown>> = (
@@ -228,6 +230,7 @@ export const inquire = <T extends Record<string, unknown>>(
   return {
     resultEvent: answerEvent,
     result: () => result,
+    close,
   };
 };
 

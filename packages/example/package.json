@@ -9,6 +9,7 @@
     "register-command": "tsup src/registerCommand.ts && node --enable-source-maps --trace-uncaught ./dist/registerCommand.mjs",
     "node-example": "tsup src/nodeAdaptorExample.ts && node --enable-source-maps --trace-uncaught ./dist/nodeAdaptorExample.mjs",
     "discordjs-example": "tsup src/discordjsAdaptorExample.ts && node --enable-source-maps --trace-uncaught ./dist/discordjsAdaptorExample.mjs",
+    "multi-message-example": "tsup src/multiMessageExample.ts && node --enable-source-maps --trace-uncaught ./dist/multiMessageExample.mjs",
     "lint": "eslint --cache 'src/**/*.ts' 'src/*.ts' --max-warnings 0",
     "format": "prettier --cache --write 'src/**/*.ts' 'src/*.ts'"
   },

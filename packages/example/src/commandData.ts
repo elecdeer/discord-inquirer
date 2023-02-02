@@ -29,6 +29,12 @@ export const modalSubCommandData = {
   description: "modal example",
 } as const;
 
+export const multiMessageSubCommandData = {
+  type: ApplicationCommandOptionType.Subcommand,
+  name: "multi",
+  description: "multi message example",
+} as const;
+
 export const commandData = {
   type: ApplicationCommandType.ChatInput,
   name: "example",
@@ -38,5 +44,6 @@ export const commandData = {
     selectsSubCommandData,
     pagedSelectSubCommandData,
     modalSubCommandData,
+    multiMessageSubCommandData,
   ],
 } satisfies RESTPostAPIChatInputApplicationCommandsJSONBody;
