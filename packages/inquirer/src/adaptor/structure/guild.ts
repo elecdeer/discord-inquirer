@@ -35,6 +35,12 @@ export interface AdaptorPartialMember {
   premiumSince: Date | null;
 
   /**
+   * guild member flags represented as a bit set
+   * @see https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-flags
+   */
+  flag: AdaptorMemberFlag;
+
+  /**
    * whether the user has not yet passed the guild's Membership Screening requirements
    * @see https://discord.com/developers/docs/resources/guild#guild-membership-screening-object
    *
@@ -52,4 +58,36 @@ export interface AdaptorPartialMember {
    * @see https://support.discord.com/hc/en-us/articles/4413305239191-Time-Out-FAQ
    */
   communicationDisabledUntil: Date | null;
+}
+
+export const adaptorMemberFlagsMap = {
+  didRejoin: 1 << 0,
+  completedOnboarding: 1 << 1,
+  bypassesVerification: 1 << 2,
+  startedVerification: 1 << 3,
+} satisfies Record<keyof AdaptorMemberFlag, number>;
+
+/**
+ * https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-flags
+ */
+export interface AdaptorMemberFlag {
+  /**
+   * Member has left and rejoined the guild
+   */
+  didRejoin: boolean;
+
+  /**
+   * Member has completed onboarding
+   */
+  completedOnboarding: boolean;
+
+  /**
+   * Member is exempt from guild verification requirements
+   */
+  bypassesVerification: boolean;
+
+  /**
+   * Member has started onboarding
+   */
+  startedVerification: boolean;
 }
