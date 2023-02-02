@@ -11,8 +11,8 @@ import type { Logger } from "../util/logger";
 import type { IEventFlowHandler } from "@elecdeer/event-flow";
 import type { UnionToIntersection } from "type-fest";
 
-type InquireResult<T extends Record<string, unknown>> = {
-  resultEvent: IEventFlowHandler<
+export type InquireResultEvent<T extends Record<string, unknown>> =
+  IEventFlowHandler<
     {
       [K in keyof T]: {
         key: K;
@@ -22,7 +22,12 @@ type InquireResult<T extends Record<string, unknown>> = {
     }[keyof T]
   >;
 
+export type InquireResult<T extends Record<string, unknown>> = {
+  resultEvent: InquireResultEvent<T>;
+
   result: () => Partial<T>;
+
+  close: () => Promise<void>;
 };
 
 export type Inquire<T extends Record<string, unknown>> = (
@@ -228,6 +233,7 @@ export const inquire = <T extends Record<string, unknown>>(
   return {
     resultEvent: answerEvent,
     result: () => result,
+    close,
   };
 };
 
