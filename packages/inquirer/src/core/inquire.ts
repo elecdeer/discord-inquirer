@@ -9,6 +9,7 @@ import type { Screen } from "./screen";
 import type { DiscordAdaptor, MessageMutualPayload } from "../adaptor";
 import type { Logger } from "../util/logger";
 import type { IEventFlowHandler } from "@elecdeer/event-flow";
+import type { UnionToIntersection } from "type-fest";
 
 type InquireResult<T extends Record<string, unknown>> = {
   resultEvent: IEventFlowHandler<
@@ -52,13 +53,18 @@ interface InquireConfig<T extends Record<string, unknown>> {
 }
 
 export type Prompt<T extends Record<string, unknown>> = (
-  answer: AnswerPrompt<T>,
+  answer: UnionToIntersection<AnswerPrompt<T>>,
   close: () => void
 ) => MessageMutualPayload;
 
 export type AnswerPrompt<T extends Record<string, unknown>> = {
-  [K in keyof T]: (key: K, value: T[K]) => void;
+  [K in keyof T]: AnswerFunc<T, K>;
 }[keyof T];
+
+export type AnswerFunc<T extends Record<string, unknown>, K extends keyof T> = (
+  key: K,
+  value: T[K]
+) => void;
 
 const completeConfig = <T extends Record<string, unknown>>(
   config: InquireConfig<T>
@@ -118,7 +124,10 @@ export const inquire = <T extends Record<string, unknown>>(
 
     let promptResult: MessageMutualPayload;
     const dispatched = deferDispatch(ctx, () => {
-      promptResult = prompt(answer, close);
+      promptResult = prompt(
+        answer as UnionToIntersection<AnswerPrompt<T>>,
+        close
+      );
     });
 
     log("debug", `render #${renderIndex} dispatch override end`);

@@ -6,14 +6,16 @@ import { transformNullishDateString } from "./shared";
 import { adaptorChannelTypesMap } from "../structure";
 
 import type {
+  AdaptorAttachment,
   AdaptorPartialChannel,
   AdaptorPartialChannelBase,
   AdaptorPartialThreadChannel,
   AdaptorThreadMetadata,
 } from "../structure";
 import type {
-  APIThreadMetadata,
+  APIAttachment,
   APIInteractionDataResolvedChannel,
+  APIThreadMetadata,
 } from "discord-api-types/v10";
 
 const transformThreadMetadata = (
@@ -59,7 +61,23 @@ const transformChannel = (
   }
 };
 
+const transformAttachment = (attachment: APIAttachment): AdaptorAttachment => {
+  return {
+    id: attachment.id,
+    filename: attachment.filename,
+    description: attachment.description ?? null,
+    contentType: attachment.content_type ?? null,
+    size: attachment.size,
+    url: attachment.url,
+    proxyUrl: attachment.proxy_url,
+    height: attachment.height ?? null,
+    width: attachment.width ?? null,
+    ephemeral: attachment.ephemeral ?? false,
+  };
+};
+
 export const transformersChannel = {
   channel: transformChannel,
   threadMetadata: transformThreadMetadata,
+  attachment: transformAttachment,
 };

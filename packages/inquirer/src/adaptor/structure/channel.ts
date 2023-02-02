@@ -24,7 +24,7 @@ export const channelTypesMap = reverseRecord(adaptorChannelTypesMap);
  * @see https://discord.com/developers/docs/resources/channel#channel-object-channel-types
  */
 export type AdaptorChannelTypes =
-  typeof adaptorChannelTypesMap[keyof typeof adaptorChannelTypesMap];
+  (typeof adaptorChannelTypesMap)[keyof typeof adaptorChannelTypesMap];
 
 /**
  * Partial Channel objects only have id, name, type and permissions fields.
@@ -111,4 +111,62 @@ export interface AdaptorThreadMetadata {
    * timestamp when the thread was created; only populated for threads created after 2022-01-09
    */
   createdTimestamp: Date | null;
+}
+
+/**
+ * @see https://discord.com/developers/docs/resources/channel#attachment-object-attachment-structure
+ */
+export interface AdaptorAttachment {
+  /**
+   * attachment id
+   */
+  id: Snowflake;
+
+  /**
+   * name of file attached
+   */
+  filename: string;
+
+  /**
+   * description for the file (max 1024 characters)
+   */
+  description: string | null;
+
+  /**
+   * the attachment's media type
+   * @see https://en.wikipedia.org/wiki/Media_type
+   */
+  contentType: string | null;
+
+  /**
+   * size of file in bytes
+   */
+  size: number;
+
+  /**
+   * source url of file
+   */
+  url: string;
+
+  /**
+   * a proxied url of file
+   */
+  proxyUrl: string;
+
+  /**
+   * height of file (if image)
+   */
+  height: number | null;
+
+  /**
+   * width of file (if image)
+   */
+  width: number | null;
+
+  /**
+   * whether this attachment is ephemeral
+   *
+   * @default false (if not present)
+   */
+  ephemeral: boolean;
 }

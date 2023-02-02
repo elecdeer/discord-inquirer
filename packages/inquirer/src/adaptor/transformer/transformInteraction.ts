@@ -1,4 +1,9 @@
-import { ComponentType, InteractionType } from "discord-api-types/v10";
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+  ComponentType,
+  InteractionType,
+} from "discord-api-types/v10";
 import assert from "node:assert";
 
 import { transformers } from "./index";
@@ -7,6 +12,9 @@ import { nullishThrough, transformRecordValue } from "./shared";
 import type {
   AdaptorApplicationCommandAutoCompleteInteraction,
   AdaptorApplicationCommandInteraction,
+  AdaptorApplicationCommandInteractionOption,
+  AdaptorApplicationCommandInteractionOptionSubCommand,
+  AdaptorApplicationCommandInteractionOptionSubCommandGroup,
   AdaptorInteraction,
   AdaptorInteractionBase,
   AdaptorModalSubmitInteraction,
@@ -15,16 +23,19 @@ import type {
   Snowflake,
 } from "../structure";
 import type {
+  APIApplicationCommandInteractionDataBasicOption,
   APIApplicationCommandAutocompleteInteraction,
   APIApplicationCommandInteraction,
+  APIApplicationCommandInteractionDataOption,
+  APIAttachment,
   APIInteraction,
   APIInteractionDataResolvedChannel,
+  APIInteractionDataResolvedGuildMember,
   APIMessageComponentInteraction,
   APIModalSubmitInteraction,
   APIPingInteraction,
   APIRole,
   APIUser,
-  APIInteractionDataResolvedGuildMember,
 } from "discord-api-types/v10";
 
 const transformInteraction = (
@@ -97,11 +108,194 @@ const transformPingInteraction = (
 const transformApplicationCommandInteraction = (
   interaction: APIApplicationCommandInteraction
 ): AdaptorApplicationCommandInteraction => {
-  return {
-    type: "applicationCommand",
-    ...transformers.userInvokedInteractionBase(interaction),
-    data: interaction.data,
-  };
+  if (interaction.data.type === ApplicationCommandType.ChatInput) {
+    return {
+      type: "applicationCommand",
+      ...transformers.userInvokedInteractionBase(interaction),
+      data: {
+        type: "chatInput",
+        id: interaction.data.id,
+        name: interaction.data.name,
+        options:
+          interaction.data.options?.map(
+            transformers.applicationCommandInteractionOption
+          ) ?? [],
+        resolved: {
+          users:
+            nullishThrough(transformResolvedUsers)(
+              interaction.data.resolved?.users
+            ) ?? {},
+          members:
+            nullishThrough(transformResolvedMembers)(
+              interaction.data.resolved?.members
+            ) ?? {},
+          roles:
+            nullishThrough(transformResolvedRoles)(
+              interaction.data.resolved?.roles
+            ) ?? {},
+          channels:
+            nullishThrough(transformResolvedChannels)(
+              interaction.data.resolved?.channels
+            ) ?? {},
+          attachments:
+            nullishThrough(transformResolvedAttachments)(
+              interaction.data.resolved?.attachments
+            ) ?? {},
+        },
+        guildId: interaction.guild_id ?? null,
+        targetId: null,
+      },
+    };
+  }
+
+  if (interaction.data.type === ApplicationCommandType.User) {
+    return {
+      type: "applicationCommand",
+      ...transformers.userInvokedInteractionBase(interaction),
+      data: {
+        type: "user",
+        id: interaction.data.id,
+        name: interaction.data.name,
+        options: [],
+        resolved: {
+          users:
+            nullishThrough(transformResolvedUsers)(
+              interaction.data.resolved?.users
+            ) ?? {},
+          members:
+            nullishThrough(transformResolvedMembers)(
+              interaction.data.resolved?.members
+            ) ?? {},
+          roles: {},
+          channels: {},
+          attachments: {},
+        },
+        guildId: interaction.guild_id ?? null,
+        targetId: interaction.data.target_id,
+      },
+    };
+  }
+
+  if (interaction.data.type === ApplicationCommandType.Message) {
+    return {
+      type: "applicationCommand",
+      ...transformers.userInvokedInteractionBase(interaction),
+      data: {
+        type: "message",
+        id: interaction.data.id,
+        name: interaction.data.name,
+        options: [],
+        resolved: {
+          users: {},
+          members: {},
+          roles: {},
+          channels: {},
+          attachments: {},
+        },
+        guildId: interaction.guild_id ?? null,
+        targetId: interaction.data.target_id,
+      },
+    };
+  }
+
+  throw new Error("Unknown application command type");
+};
+
+const transformApplicationCommandInteractionOptionWithoutSub = (
+  option: APIApplicationCommandInteractionDataBasicOption
+): Exclude<
+  AdaptorApplicationCommandInteractionOption,
+  | AdaptorApplicationCommandInteractionOptionSubCommand
+  | AdaptorApplicationCommandInteractionOptionSubCommandGroup
+> => {
+  if (option.type === ApplicationCommandOptionType.Number) {
+    return {
+      type: "number",
+      value: option.value,
+    };
+  }
+  if (option.type === ApplicationCommandOptionType.String) {
+    return {
+      type: "string",
+      value: option.value,
+    };
+  }
+  if (option.type === ApplicationCommandOptionType.Boolean) {
+    return {
+      type: "boolean",
+      value: option.value,
+    };
+  }
+  if (option.type === ApplicationCommandOptionType.User) {
+    return {
+      type: "user",
+      value: option.value,
+    };
+  }
+  if (option.type === ApplicationCommandOptionType.Channel) {
+    return {
+      type: "channel",
+      value: option.value,
+    };
+  }
+  if (option.type === ApplicationCommandOptionType.Role) {
+    return {
+      type: "role",
+      value: option.value,
+    };
+  }
+  if (option.type === ApplicationCommandOptionType.Mentionable) {
+    return {
+      type: "mentionable",
+      value: option.value,
+    };
+  }
+  if (option.type === ApplicationCommandOptionType.Integer) {
+    return {
+      type: "integer",
+      value: option.value,
+    };
+  }
+  if (option.type === ApplicationCommandOptionType.Attachment) {
+    return {
+      type: "attachment",
+      value: option.value,
+    };
+  }
+  throw new Error("Unknown option type");
+};
+
+const transformApplicationCommandInteractionOption = (
+  option: APIApplicationCommandInteractionDataOption
+): AdaptorApplicationCommandInteractionOption => {
+  if (option.type === ApplicationCommandOptionType.Subcommand) {
+    return {
+      type: "subCommand",
+      name: option.name,
+      options:
+        option.options?.map(
+          transformApplicationCommandInteractionOptionWithoutSub
+        ) ?? [],
+    };
+  }
+
+  if (option.type === ApplicationCommandOptionType.SubcommandGroup) {
+    return {
+      type: "subCommandGroup",
+      name: option.name,
+      options:
+        option.options?.map((item) => ({
+          type: "subCommand",
+          name: item.name,
+          options:
+            item.options?.map(
+              transformApplicationCommandInteractionOptionWithoutSub
+            ) ?? [],
+        })) ?? [],
+    };
+  }
+
+  return transformApplicationCommandInteractionOptionWithoutSub(option);
 };
 
 const transformMessageComponentInteraction = (
@@ -271,12 +465,20 @@ const transformResolvedChannels = (
   return transformRecordValue(transformers.channel)(record);
 };
 
+const transformResolvedAttachments = (
+  record: Record<Snowflake, APIAttachment>
+) => {
+  return transformRecordValue(transformers.attachment)(record);
+};
+
 export const transformersInteraction = {
   interaction: transformInteraction,
   interactionBase: transformInteractionBase,
   userInvokedInteractionBase: transformUserInvokedInteractionBase,
   pingInteraction: transformPingInteraction,
   applicationCommandInteraction: transformApplicationCommandInteraction,
+  applicationCommandInteractionOption:
+    transformApplicationCommandInteractionOption,
   messageComponentInteraction: transformMessageComponentInteraction,
   applicationCommandAutocompleteInteraction:
     transformApplicationCommandAutocompleteInteraction,

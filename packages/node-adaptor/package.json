@@ -1,14 +1,18 @@
 {
-  "name": "discord-inquirer-example",
-  "private": true,
+  "name": "discord-inquirer-adaptor-node",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "description": "node.js adaptor for discord-inquirer",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "register-command": "tsup src/registerCommand.ts && node --enable-source-maps --trace-uncaught ./dist/registerCommand.mjs",
-    "node-example": "tsup src/nodeAdaptorExample.ts && node --enable-source-maps --trace-uncaught ./dist/nodeAdaptorExample.mjs",
-    "discordjs-example": "tsup src/discordjsAdaptorExample.ts && node --enable-source-maps --trace-uncaught ./dist/discordjsAdaptorExample.mjs",
+    "build": "tsup",
+    "test": "# vitest run -r ./",
+    "test:watch": "# vitest watch -r ./",
+    "type-check": "tsc --noEmit",
     "lint": "eslint --cache 'src/**/*.ts' 'src/*.ts' --max-warnings 0",
     "format": "prettier --cache --write 'src/**/*.ts' 'src/*.ts'"
   },
@@ -23,14 +27,11 @@
   },
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
   "dependencies": {
-    "discord-inquirer": "*",
-    "discord-inquirer-adaptor-discordjs": "*",
-    "discord-inquirer-adaptor-node": "*",
-    "discord.js": "^14.7.1",
-    "dotenv": "^16.0.3"
+    "@noble/ed25519": "^1.7.1",
+    "discord-api-types": "^0.37.29",
+    "discord-inquirer": "^0.0.0"
   },
   "devDependencies": {
-    "@types/node": "^18.11.18",
     "@monorepo/eslint-config": "*",
     "@monorepo/tsconfig": "*"
   }
