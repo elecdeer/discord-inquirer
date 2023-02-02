@@ -13,6 +13,8 @@ export type UseMentionableSelectComponentResult = [
   selected: MentionableSelectValue[],
   MentionableSelect: MentionableSelectComponentBuilder<{
     customId: string;
+    minValues: number | undefined;
+    maxValues: number | undefined;
   }>
 ];
 
@@ -20,14 +22,24 @@ export type UseMentionableSingleSelectComponentResult = [
   selected: MentionableSelectValue | null,
   MentionableSelect: MentionableSelectComponentBuilder<{
     customId: string;
+    minValues: 1 | undefined;
     maxValues: 1;
   }>
 ];
 
+export type UseMentionableSelectComponentParams = {
+  onSelected?: (selected: MentionableSelectValue[]) => void;
+  minValues?: number;
+  maxValues?: number;
+};
+
+export type UseMentionableSingleSelectComponentParams = {
+  onSelected?: (selected: MentionableSelectValue | null) => void;
+  minValues?: 1;
+};
+
 export const useMentionableSelectComponent = (
-  params: {
-    onSelected?: (selected: MentionableSelectValue[]) => void;
-  } = {}
+  params: UseMentionableSelectComponentParams = {}
 ): UseMentionableSelectComponentResult => {
   const customId = useCustomId("mentionableSelect");
 
@@ -45,26 +57,23 @@ export const useMentionableSelectComponent = (
     selected,
     MentionableSelect({
       customId,
+      minValues: params.minValues,
+      maxValues: params.maxValues,
     }),
   ];
 };
 
 export const useMentionableSingleSelectComponent = (
-  params: {
-    onSelected?: (selected: MentionableSelectValue | null) => void;
-  } = {}
+  param: UseMentionableSingleSelectComponentParams = {}
 ): UseMentionableSingleSelectComponentResult => {
   const [selected, MentionableSelect] = useMentionableSelectComponent({
     onSelected: (selected) => {
       assert(selected.length <= 1);
-      params.onSelected?.(selected[0] ?? null);
+      param.onSelected?.(selected[0] ?? null);
     },
+    minValues: param.minValues,
+    maxValues: 1,
   });
 
-  return [
-    selected[0] ?? null,
-    MentionableSelect({
-      maxValues: 1,
-    }),
-  ];
+  return [selected[0] ?? null, MentionableSelect];
 };

@@ -5,7 +5,6 @@ import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
 import type {
-  AdaptorPartialChannel,
   AdaptorChannelTypes,
   ChannelSelectComponentBuilder,
   AdaptorPartialNonThreadChannel,
@@ -55,14 +54,35 @@ export type TypeSpecifiedChannel<T extends AdaptorChannelTypes> = {
   };
 }[T];
 
+export type UseChannelSelectComponentParams<
+  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
+> = {
+  channelTypes?: ChannelTypes[];
+  onSelected?: (selected: ChannelSelectResultValue<ChannelTypes>[]) => void;
+  minValues?: number;
+  maxValues?: number;
+};
+
 export type UseChannelSelectComponentResult<
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
 > = [
   selectResult: ChannelSelectResultValue<ChannelTypes>[],
   ChannelSelect: ChannelSelectComponentBuilder<{
     customId: string;
+    minValues: number | undefined;
+    maxValues: number | undefined;
   }>
 ];
+
+export type UseChannelSingleSelectComponentParams<
+  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
+> = {
+  channelTypes?: ChannelTypes[];
+  onSelected?: (
+    selected: ChannelSelectResultValue<ChannelTypes> | null
+  ) => void;
+  minValues?: 1;
+};
 
 export type UseChannelSingleSelectComponentResult<
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
@@ -70,6 +90,7 @@ export type UseChannelSingleSelectComponentResult<
   selectResult: ChannelSelectResultValue<ChannelTypes> | null,
   ChannelSelect: ChannelSelectComponentBuilder<{
     customId: string;
+    minValues: 1 | undefined;
     maxValues: 1;
   }>
 ];
@@ -77,10 +98,7 @@ export type UseChannelSingleSelectComponentResult<
 export const useChannelSelectComponent = <
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
 >(
-  params: {
-    channelTypes?: ChannelTypes[];
-    onSelected?: (selected: ChannelSelectResultValue<ChannelTypes>[]) => void;
-  } = {}
+  params: UseChannelSelectComponentParams<ChannelTypes> = {}
 ): UseChannelSelectComponentResult<ChannelTypes> => {
   const customId = useCustomId("channelSelect");
 
@@ -111,6 +129,8 @@ export const useChannelSelectComponent = <
     ChannelSelect({
       customId,
       channelTypes: params.channelTypes,
+      minValues: params.minValues,
+      maxValues: params.maxValues,
     }),
   ];
 };
@@ -118,24 +138,16 @@ export const useChannelSelectComponent = <
 export const useChannelSingleSelectComponent = <
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
 >(
-  params: {
-    channelTypes?: ChannelTypes[];
-    onSelected?: (
-      selected: ChannelSelectResultValue<ChannelTypes> | null
-    ) => void;
-  } = {}
+  param: UseChannelSingleSelectComponentParams<ChannelTypes> = {}
 ): UseChannelSingleSelectComponentResult<ChannelTypes> => {
   const [selected, select] = useChannelSelectComponent({
-    channelTypes: params.channelTypes,
+    channelTypes: param.channelTypes,
     onSelected: (selected) => {
-      params.onSelected?.(selected[0] ?? null);
+      param.onSelected?.(selected[0] ?? null);
     },
+    minValues: param.minValues,
+    maxValues: 1,
   });
 
-  return [
-    selected[0] ?? null,
-    select({
-      maxValues: 1,
-    }),
-  ];
+  return [selected[0] ?? null, select];
 };

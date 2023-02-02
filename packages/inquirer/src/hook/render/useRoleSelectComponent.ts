@@ -12,6 +12,8 @@ export type UseRoleSelectComponentResult = [
   selectedResult: AdaptorRole[],
   RoleSelect: RoleSelectComponentBuilder<{
     customId: string;
+    minValues: number | undefined;
+    maxValues: number | undefined;
   }>
 ];
 
@@ -19,14 +21,24 @@ export type UseRoleSingleSelectComponentResult = [
   selectedResult: AdaptorRole | null,
   RoleSelect: RoleSelectComponentBuilder<{
     customId: string;
+    minValues: 1 | undefined;
     maxValues: 1;
   }>
 ];
 
+export type UseRoleSelectComponentParams = {
+  onSelected?: (selected: AdaptorRole[]) => void;
+  minValues?: number;
+  maxValues?: number;
+};
+
+export type UseRoleSingleSelectComponentParams = {
+  onSelected?: (selected: AdaptorRole | null) => void;
+  minValues?: 1;
+};
+
 export const useRoleSelectComponent = (
-  params: {
-    onSelected?: (selected: AdaptorRole[]) => void;
-  } = {}
+  params: UseRoleSelectComponentParams = {}
 ): UseRoleSelectComponentResult => {
   const customId = useCustomId("roleSelect");
 
@@ -45,26 +57,23 @@ export const useRoleSelectComponent = (
     selected,
     RoleSelect({
       customId,
+      minValues: params.minValues,
+      maxValues: params.maxValues,
     }),
   ];
 };
 
 export const useRoleSingleSelectComponent = (
-  params: {
-    onSelected?: (selected: AdaptorRole | null) => void;
-  } = {}
+  param: UseRoleSingleSelectComponentParams = {}
 ): UseRoleSingleSelectComponentResult => {
   const [selected, Select] = useRoleSelectComponent({
     onSelected: (selected) => {
       assert(selected.length <= 1);
-      params.onSelected?.(selected[0] ?? null);
+      param.onSelected?.(selected[0] ?? null);
     },
+    minValues: param.minValues,
+    maxValues: 1,
   });
 
-  return [
-    selected[0] ?? null,
-    Select({
-      maxValues: 1,
-    }),
-  ];
+  return [selected[0] ?? null, Select];
 };
