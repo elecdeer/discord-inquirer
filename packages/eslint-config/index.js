@@ -26,6 +26,12 @@ module.exports = {
         allowNullableBoolean: true,
       },
     ],
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: ["*/src"],
+      },
+    ],
     "import/order": [
       "error",
       {
