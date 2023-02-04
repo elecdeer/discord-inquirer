@@ -1,4 +1,4 @@
-import { Button } from "../../adaptor";
+import { NonLinkButton } from "../../adaptor";
 import { useButtonEvent } from "../effect/useButtonEvent";
 import { useCustomId } from "../state/useCustomId";
 
@@ -16,5 +16,5 @@ export const useButtonComponent = (param: {
     param.onClick?.();
   });
 
-  return Button({ customId });
+  return NonLinkButton({ customId });
 };

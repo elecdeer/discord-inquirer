@@ -1,5 +1,6 @@
 import { createCurriedBuilder } from "../util/curriedBuilder";
 
+import type { AdaptorNonLinkButtonComponent } from "./structure";
 import type {
   AdaptorButtonComponent,
   AdaptorChannelSelectComponent,
@@ -24,6 +25,11 @@ export type ButtonComponentBuilder<T extends Partial<AdaptorButtonComponent>> =
 export const Button = createCurriedBuilder<AdaptorButtonComponent>()({
   type: "button",
 });
+
+export const NonLinkButton =
+  createCurriedBuilder<AdaptorNonLinkButtonComponent>()({
+    type: "button",
+  });
 
 export const Row = (
   ...components: AdaptorMessageActionRowComponent["components"]
