@@ -5,6 +5,7 @@ import { createDiscordAdaptorMock } from "./discordAdaptorMock";
 import { createEmitInteractionTestUtil } from "./emitInteractionUtil";
 import { createHookCycle, deferDispatch } from "../core/hookContext";
 import { createRandomSource } from "../util/randomSource";
+import { createTimer2 } from "../util/timer";
 
 import type { AdaptorMock } from "./discordAdaptorMock";
 import type { HookCycle } from "../core/hookContext";
@@ -29,6 +30,7 @@ type Result<V, E> =
 
 const resultContainer = <T>() => {
   const results: Result<T, Error>[] = [];
+  const resolvers: (() => void)[] = [];
 
   const result = {
     get all() {
@@ -49,10 +51,15 @@ const resultContainer = <T>() => {
 
   const updateResult = (result: Result<T, Error>) => {
     results.push(result);
+
+    resolvers.splice(0, resolvers.length).forEach((resolve) => resolve());
   };
 
   return {
     result,
+    addResolver: (resolver: () => void) => {
+      resolvers.push(resolver);
+    },
     setValue: (value: T) => updateResult({ value }),
     setError: (error: Error) => updateResult({ error }),
   };
@@ -68,7 +75,7 @@ export const renderHook = <TResult, TArgs>(
     randomSource = createRandomSource(23),
   } = options ?? {};
 
-  const { result, setValue, setError } = resultContainer();
+  const { result, setValue, setError, addResolver } = resultContainer();
   let args = initialArgs;
 
   const hookCycle = createHookCycle(
@@ -131,6 +138,73 @@ export const renderHook = <TResult, TArgs>(
     },
     adaptorMock: adaptor,
     interactionHelper: interactionHelper,
+    ...asyncUtil(addResolver),
+  };
+};
+
+export const asyncUtil = (addResolver: (resolver: () => void) => void) => {
+  const waitFor = async (
+    cb: () => boolean | void,
+    { timeout = 1000, interval = 5 } = {}
+  ) => {
+    const safeCb = () => {
+      try {
+        return cb();
+      } catch (e) {
+        return false;
+      }
+    };
+
+    const timeoutTimer = createTimer2(timeout);
+
+    const waitDispatchOrIntervalOrTimeout = (interval: number) => {
+      return new Promise<void>((resolve) => {
+        addResolver(() => {
+          intervalTimer.dispose();
+          resolve();
+        });
+
+        const intervalTimer = createTimer2(interval);
+        intervalTimer.onTimeout(() => {
+          resolve();
+        });
+
+        timeoutTimer.onTimeout(() => {
+          intervalTimer.dispose();
+          resolve();
+        });
+      });
+    };
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      if (safeCb() !== false) {
+        timeoutTimer.dispose();
+        return;
+      }
+
+      await waitDispatchOrIntervalOrTimeout(interval);
+      if (timeoutTimer.isTimeout()) throw new Error("timeout");
+    }
+  };
+
+  const waitForNextUpdate = async ({ timeout = 1000 } = {}) => {
+    const timeoutPromise = new Promise<void>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error("timeout"));
+      }, timeout);
+    });
+
+    const updatePromise = new Promise<void>((resolve) => {
+      addResolver(resolve);
+    });
+
+    return Promise.race([timeoutPromise, updatePromise]);
+  };
+
+  return {
+    waitFor,
+    waitForNextUpdate,
   };
 };
 
