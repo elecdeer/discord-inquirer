@@ -1,4 +1,4 @@
-import { Button } from "../../adaptor";
+import { NonLinkButton } from "../../adaptor";
 import { useButtonEvent } from "../effect/useButtonEvent";
 import { useModal } from "../effect/useModal";
 import { useCustomId } from "../state/useCustomId";
@@ -25,7 +25,7 @@ export const useModalComponent = <TKey extends string>(
 
   return [
     result,
-    Button({
+    NonLinkButton({
       customId: customId,
     }),
   ];
