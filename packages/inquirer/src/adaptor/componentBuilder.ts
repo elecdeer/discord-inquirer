@@ -1,22 +1,22 @@
 import { createCurriedBuilder } from "../util/curriedBuilder";
 
-import type { AdaptorNonLinkButtonComponent } from "./structure";
 import type {
   AdaptorButtonComponent,
   AdaptorChannelSelectComponent,
   AdaptorMentionableSelectComponent,
   AdaptorMessageActionRowComponent,
+  AdaptorNonLinkButtonComponent,
   AdaptorRoleSelectComponent,
   AdaptorStringSelectComponent,
   AdaptorUserSelectComponent,
 } from "./structure";
 import type {
-  UnfulfilledCurriedBuilder,
+  ConditionalCurriedBuilder,
   FulfilledCurriedBuilder,
 } from "../util/curriedBuilder";
 
 export type ButtonComponentBuilder<T extends Partial<AdaptorButtonComponent>> =
-  UnfulfilledCurriedBuilder<
+  ConditionalCurriedBuilder<
     AdaptorButtonComponent,
     T & { type: "button" },
     AdaptorButtonComponent
@@ -25,6 +25,14 @@ export type ButtonComponentBuilder<T extends Partial<AdaptorButtonComponent>> =
 export const Button = createCurriedBuilder<AdaptorButtonComponent>()({
   type: "button",
 });
+
+export type NonLinkButtonComponentBuilder<
+  T extends Partial<AdaptorNonLinkButtonComponent>
+> = ConditionalCurriedBuilder<
+  AdaptorNonLinkButtonComponent,
+  T & { type: "button" },
+  AdaptorNonLinkButtonComponent
+>;
 
 export const NonLinkButton =
   createCurriedBuilder<AdaptorNonLinkButtonComponent>()({
