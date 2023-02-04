@@ -5,7 +5,7 @@ import { createDiscordAdaptorMock } from "./discordAdaptorMock";
 import { createEmitInteractionTestUtil } from "./emitInteractionUtil";
 import { createHookCycle, deferDispatch } from "../core/hookContext";
 import { createRandomSource } from "../util/randomSource";
-import { createTimer2 } from "../util/timer";
+import { createTimer } from "../util/timer";
 
 import type { AdaptorMock } from "./discordAdaptorMock";
 import type { HookCycle } from "../core/hookContext";
@@ -155,7 +155,7 @@ export const asyncUtil = (addResolver: (resolver: () => void) => void) => {
       }
     };
 
-    const timeoutTimer = createTimer2(timeout);
+    const timeoutTimer = createTimer(timeout);
 
     const waitDispatchOrIntervalOrTimeout = (interval: number) => {
       return new Promise<void>((resolve) => {
@@ -164,7 +164,7 @@ export const asyncUtil = (addResolver: (resolver: () => void) => void) => {
           resolve();
         });
 
-        const intervalTimer = createTimer2(interval);
+        const intervalTimer = createTimer(interval);
         intervalTimer.onTimeout(() => {
           resolve();
         });

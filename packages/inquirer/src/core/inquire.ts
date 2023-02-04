@@ -245,14 +245,12 @@ const createInquireTimer = (
   }: Pick<Required<InquireConfig<never>>, "idle" | "time" | "log">,
   close: () => void
 ) => {
-  const timeoutTimer = createTimer(time);
-  timeoutTimer.start(() => {
+  const timeoutTimer = createTimer(time).onTimeout(() => {
     log("debug", "inquirer timeout");
     close();
   });
 
-  const idleTimer = createTimer(idle);
-  idleTimer.start(() => {
+  const idleTimer = createTimer(idle).onTimeout(() => {
     log("debug", "inquirer idle timeout");
     close();
   });
