@@ -113,8 +113,15 @@ export const renderHook = <TResult, TArgs>(
     randomSource
   );
 
-  //TODO async関係のUtilを作る
-  // waitForとwaitForNextUpdateは必要そう
+  const actAsync = async (cb: () => Promise<void>, messageId?: string) => {
+    latestMessageId = messageId ?? latestMessageId;
+    await renderer.actAsync(cb, latestMessageId);
+  };
+
+  const act = (cb: () => void, messageId?: string) => {
+    latestMessageId = messageId ?? latestMessageId;
+    renderer.act(cb, latestMessageId);
+  };
 
   return {
     result: result as {
@@ -128,21 +135,18 @@ export const renderHook = <TResult, TArgs>(
     unmount: () => {
       renderer.unmount();
     },
-    act: (cb: () => void, messageId?: string) => {
-      latestMessageId = messageId ?? latestMessageId;
-      renderer.act(cb, latestMessageId);
-    },
-    actAsync: async (cb: () => Promise<void>, messageId?: string) => {
-      latestMessageId = messageId ?? latestMessageId;
-      await renderer.actAsync(cb, latestMessageId);
-    },
+    act: act,
+    actAsync: actAsync,
     adaptorMock: adaptor,
     interactionHelper: interactionHelper,
-    ...asyncUtil(addResolver),
+    ...asyncUtil(actAsync, addResolver),
   };
 };
 
-export const asyncUtil = (addResolver: (resolver: () => void) => void) => {
+export const asyncUtil = (
+  actAsync: (cb: () => Promise<void>, messageId?: string) => Promise<void>,
+  addResolver: (resolver: () => void) => void
+) => {
   const waitFor = async (
     cb: () => boolean | void,
     { timeout = 1000, interval = 5 } = {}
@@ -183,7 +187,11 @@ export const asyncUtil = (addResolver: (resolver: () => void) => void) => {
         return;
       }
 
-      await waitDispatchOrIntervalOrTimeout(interval);
+      //waitForで待っている間にdispatchが呼ばれる可能性があるのでactで囲う
+      await actAsync(async () => {
+        await waitDispatchOrIntervalOrTimeout(interval);
+      });
+
       if (timeoutTimer.isTimeout()) throw new Error("timeout");
     }
   };
@@ -199,7 +207,9 @@ export const asyncUtil = (addResolver: (resolver: () => void) => void) => {
       addResolver(resolve);
     });
 
-    return Promise.race([timeoutPromise, updatePromise]);
+    await actAsync(async () => {
+      await Promise.race([timeoutPromise, updatePromise]);
+    });
   };
 
   return {
