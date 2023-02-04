@@ -16,7 +16,6 @@ export type UseButtonComponentParams = {
 
 /**
  * クリック時に何らかのアクションを起こすButtonComponentを作成する
- * @param param
  */
 export const useButtonComponent = (
   param: UseButtonComponentParams
