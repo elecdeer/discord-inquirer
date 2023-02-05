@@ -4,6 +4,12 @@
   "description": "discord.js adaptor for discord-inquirer",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "typings": "./dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && rollup -c",
