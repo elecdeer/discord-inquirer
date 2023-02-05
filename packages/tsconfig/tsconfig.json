@@ -3,6 +3,10 @@
   "compilerOptions": {
     "module": "ESNext",
     "noImplicitOverride": true,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "declaration": true,
+    "sourceMap": true,
+    "inlineSourceMap": true,
+    "declarationMap": true,
   }
 }

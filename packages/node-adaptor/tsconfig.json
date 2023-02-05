@@ -1,3 +1,7 @@
 {
-    "extends": "@monorepo/tsconfig/tsconfig.json"
+  "extends": "@monorepo/tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "declarationDir": "dist",
+  }
 }

@@ -1,4 +1,4 @@
-import { createEventFlow } from "@elecdeer/event-flow/src";
+import { createEventFlow } from "@elecdeer/event-flow";
 import { verify } from "@noble/ed25519";
 import * as http from "http";
 

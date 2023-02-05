@@ -9,7 +9,7 @@
   "module": "./dist/index.mjs",
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup",
+    "build": "rimraf dist && rollup -c",
     "test": "# vitest run -r ./",
     "test:watch": "# vitest watch -r ./",
     "type-check": "tsc --noEmit",

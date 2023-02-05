@@ -6,7 +6,7 @@
   "module": "./dist/index.mjs",
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup",
+    "build": "rimraf dist && rollup -c",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "type-check": "tsc --noEmit",
