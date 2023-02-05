@@ -5,7 +5,6 @@
     "noImplicitOverride": true,
     "noUnusedParameters": false,
     "declaration": true,
-    "sourceMap": true,
     "inlineSourceMap": true,
     "declarationMap": true,
   }
