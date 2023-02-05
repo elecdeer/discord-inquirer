@@ -4,9 +4,15 @@
   "description": "event emitter that can be filtered, mapped, etc.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup",
+    "build": "rimraf dist && rollup -c",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "type-check": "tsc --noEmit",
