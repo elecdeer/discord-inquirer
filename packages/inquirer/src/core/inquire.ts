@@ -217,7 +217,7 @@ export const inquire = <T extends Record<string, unknown>>(
     disposeTimers();
   };
 
-  const hookContext = createHookCycle(adaptor, update);
+  const hookContext = createHookCycle(adaptor, log, update);
   const { resetIdleTimer, disposeTimers } = createInquireTimer(
     {
       time,

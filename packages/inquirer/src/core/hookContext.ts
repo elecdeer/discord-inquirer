@@ -1,6 +1,7 @@
 import assert from "node:assert";
 
 import type { DiscordAdaptor, Snowflake } from "../adaptor";
+import type { Logger } from "../util/logger";
 import type { Awaitable } from "../util/types";
 
 export type HookContext = {
@@ -15,6 +16,7 @@ export type HookContext = {
   unmountHooks: (() => void)[][];
   adaptor: DiscordAdaptor;
   dispatch: () => void;
+  logger: Logger;
 };
 
 let hookContext: HookContext | undefined;
@@ -51,6 +53,7 @@ export type HookCycle = {
 
 export const createHookCycle = (
   adaptor: DiscordAdaptor,
+  logger: Logger,
   dispatch: () => void
 ): HookCycle => {
   const context: HookContext = {
@@ -61,6 +64,7 @@ export const createHookCycle = (
     unmountHooks: [],
     adaptor: adaptor,
     dispatch: dispatch,
+    logger: logger,
   };
 
   const startRender = () => {
