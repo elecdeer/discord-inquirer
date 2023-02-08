@@ -9,7 +9,7 @@ export const useAdaptor = () => {
   return ctx.adaptor;
 };
 
-// export const useLogger = () => {
-//   const ctx = useHookContext();
-//   return ctx.logger;
-// };
+export const useLogger = () => {
+  const ctx = useHookContext();
+  return ctx.logger;
+};

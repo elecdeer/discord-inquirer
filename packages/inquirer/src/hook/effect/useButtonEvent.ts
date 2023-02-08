@@ -1,6 +1,7 @@
 import { useEffect } from "./useEffect";
 import { isAdaptorButtonInteraction, messageFacade } from "../../adaptor";
-import { batchDispatchAsync, getHookContext } from "../../core/hookContext";
+import { batchDispatchAsync } from "../../core/hookContext";
+import { useAdaptor, useHookContext } from "../core/useHookContext";
 
 import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
@@ -12,12 +13,13 @@ export const useButtonEvent = (
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const ctx = getHookContext();
-  const adapter = ctx.adaptor;
-  useEffect(() => {
-    const facade = messageFacade(adapter);
+  const ctx = useHookContext();
+  const adaptor = useAdaptor();
 
-    const clear = adapter.subscribeInteraction((interaction) => {
+  useEffect(() => {
+    const facade = messageFacade(adaptor);
+
+    const clear = adaptor.subscribeInteraction((interaction) => {
       if (!isAdaptorButtonInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 

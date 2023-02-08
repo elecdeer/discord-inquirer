@@ -32,7 +32,9 @@ export const createDiscordAdaptorMock = (): AdaptorMock => {
     ),
 
     emitInteraction: async (interaction) => {
+      handlerFlow.emit(interaction);
       return new Promise((resolve) => {
+        //TODO FIXME
         handlerFlow.once(() => {
           resolve();
         });
