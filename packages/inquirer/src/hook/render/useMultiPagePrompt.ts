@@ -5,27 +5,33 @@ import type { Prompt } from "../../core/inquire";
 
 //渡すrenderPagesの順番を変えてはいけない
 
+export type UseMultiPagePromptResult<
+  TPagesKeys extends string | number | symbol,
+  TAnswer extends Record<string, unknown>
+> = {
+  setPage: (page: TPagesKeys) => void;
+  result: ReturnType<Prompt<TAnswer>>;
+};
+
+/**
+ * 複数のページを持つPromptを作りやすくするためのhook
+ * 各ページの状態は常に保持される
+ * @param renderPages 各ページのPromptをRenderする関数のEntries 毎renderごとで順序が変わってはいけない
+ * @param defaultPage 初期表示するページのキー
+ * @returns {setPage, result}
+ */
 export const useMultiPagePrompt = <
-  TPages extends Record<
-    string | number | symbol,
-    () => ReturnType<Prompt<TAnswer>>
-  >,
+  TPagesKeys extends string | number | symbol,
   TAnswer extends Record<string, unknown>
 >(
-  renderPages: TPages,
-  defaultPage: keyof TPages
-): {
-  setPage: (page: keyof TPages) => void;
-  result: ReturnType<Prompt<TAnswer>>;
-} => {
-  const [page, setPage] = useState<keyof TPages>(defaultPage);
+  renderPages: [TPagesKeys, () => ReturnType<Prompt<TAnswer>>][],
+  defaultPage: TPagesKeys
+): UseMultiPagePromptResult<TPagesKeys, TAnswer> => {
+  const [page, setPage] = useState<TPagesKeys>(defaultPage);
 
   //表示されていないページも含めて全てのページをレンダリングする
-  const resultMap = new Map<keyof TPages, MessageMutualPayload>(
-    Object.entries(renderPages).map(([key, renderPrompt]) => [
-      key,
-      renderPrompt(),
-    ])
+  const resultMap = new Map<TPagesKeys, MessageMutualPayload>(
+    renderPages.map(([key, render]) => [key, render()])
   );
 
   if (!resultMap.has(page)) throw new Error("Invalid page");
