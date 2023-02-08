@@ -37,7 +37,7 @@ export type UseSelectComponentResult<T> = [
     minValues: number | undefined;
     maxValues: number | undefined;
   }>,
-  stateAccessor: UseSelectResult<SelectItem<T>>[1]
+  stateAccessor: UseSelectResult
 ];
 
 export type UseSingleSelectComponentResult<T> = [
@@ -48,7 +48,7 @@ export type UseSingleSelectComponentResult<T> = [
     minValues: number | undefined;
     maxValues: 1;
   }>,
-  stateAccessor: UseSelectResult<SelectItem<T>>[1]
+  stateAccessor: UseSelectResult
 ];
 
 export type UseSelectComponentParams<T> = {
@@ -66,9 +66,9 @@ export const useSelectComponent = <T>({
 }: UseSelectComponentParams<T>): UseSelectComponentResult<T> => {
   const customId = useCustomId("stringSelect");
 
-  const completedOptions = completeOptions(options);
+  const completedOptions = completePartialOptions(options);
 
-  const [optionsWithSelected, stateAccessor] = useSelectState({
+  const stateAccessor = useSelectState({
     customId,
     options: completedOptions,
     selectedUpdateHook: (key, prev, next) => {
@@ -77,6 +77,11 @@ export const useSelectComponent = <T>({
       return true;
     },
   });
+
+  const optionsWithSelected = completedOptions.map((item) => ({
+    ...item,
+    selected: stateAccessor.get(item.key),
+  }));
 
   const markUpdate = useObserveValue(optionsWithSelected, onSelected);
 
@@ -102,9 +107,12 @@ export const useSelectComponent = <T>({
   return [optionsWithSelected, renderComponent, stateAccessor];
 };
 
-export type UseSelectStateParam<T extends SelectItem<unknown>> = {
+export type UseSelectStateParam = {
   customId: string;
-  options: readonly T[];
+  options: readonly {
+    key: string;
+    default?: boolean;
+  }[];
   selectedUpdateHook?: (
     key: string,
     prev: boolean,
@@ -113,23 +121,19 @@ export type UseSelectStateParam<T extends SelectItem<unknown>> = {
   ) => boolean;
 };
 
-export type UseSelectResult<T extends SelectItem<unknown>> = [
-  optionsWithSelected: (T & {
-    selected: boolean;
-  })[],
-  stateAccessor: {
-    get: (key: string) => boolean;
-    set: (key: string, updater: Lazy<boolean, boolean>) => void;
-    setEach: (updater: (prev: boolean, key: string) => boolean) => void;
-  }
-];
+export type UseSelectResult = UseSelectResultStateAccessor;
 
-export const useSelectState = <T extends SelectItem<unknown>>({
+export type UseSelectResultStateAccessor = {
+  get: (key: string) => boolean;
+  set: (key: string, updater: Lazy<boolean, boolean>) => void;
+  setEach: (updater: (prev: boolean, key: string) => boolean) => void;
+};
+
+export const useSelectState = ({
   customId,
   options,
   selectedUpdateHook,
-}: UseSelectStateParam<T>): UseSelectResult<T> => {
-  //optionsが変わったら、collectionをリセットする
+}: UseSelectStateParam): UseSelectResult => {
   const { setEach, get, set } = useCollection<string, boolean>(
     options.map((item) => [item.key, item.default ?? false])
   );
@@ -141,11 +145,6 @@ export const useSelectState = <T extends SelectItem<unknown>>({
     },
     setEach: setEach,
   };
-
-  const optionsWithSelected = options.map((option) => ({
-    ...option,
-    selected: accessor.get(option.key),
-  }));
 
   useStringSelectEvent(customId, async (_, selectedKeys, deferUpdate) => {
     //選択状態が何も変化しないinteractionはそもそもAPIから送られないことを前提としている
@@ -168,10 +167,10 @@ export const useSelectState = <T extends SelectItem<unknown>>({
     }
   });
 
-  return [optionsWithSelected, accessor];
+  return accessor;
 };
 
-const completeOptions = <T>(
+const completePartialOptions = <T>(
   items: readonly PartialSelectItem<T>[]
 ): SelectItemResult<T>[] => {
   return items.map((item, index) => {
