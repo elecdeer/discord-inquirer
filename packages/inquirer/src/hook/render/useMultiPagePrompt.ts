@@ -3,8 +3,6 @@ import { useState } from "../state/useState";
 import type { MessageMutualPayload } from "../../adaptor";
 import type { Prompt } from "../../core/inquire";
 
-//渡すrenderPagesの順番を変えてはいけない
-
 export type UseMultiPagePromptResult<
   TPagesKeys extends string | number | symbol,
   TAnswer extends Record<string, unknown>
