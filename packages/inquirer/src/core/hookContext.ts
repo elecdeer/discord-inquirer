@@ -154,18 +154,41 @@ export const takeValue = <T>(ctx: HookContext, index: number): T => {
   return ctx.hookValues[index]?.value as T;
 };
 
-export const deferDispatch = (ctx: HookContext, cb: () => void) => {
+export const deferDispatch = <T>(ctx: HookContext, cb: () => T) => {
   const prevDispatch = ctx.dispatch;
   let dispatched = false;
 
   ctx.dispatch = () => {
     dispatched = true;
   };
-  cb();
+  const result = cb();
 
   ctx.dispatch = prevDispatch;
 
-  return dispatched;
+  return {
+    dispatched,
+    result,
+  };
+};
+
+export const deferDispatchAsync = async <T>(
+  ctx: HookContext,
+  cb: () => Awaitable<T>
+) => {
+  const prevDispatch = ctx.dispatch;
+  let dispatched = false;
+
+  ctx.dispatch = () => {
+    dispatched = true;
+  };
+  const result = await cb();
+
+  ctx.dispatch = prevDispatch;
+
+  return {
+    dispatched,
+    result,
+  };
 };
 
 export const batchDispatch = <T>(ctx: HookContext, cb: () => T): T => {

@@ -100,10 +100,10 @@ export const subPrompt =
   (answer, close) => {
     //promptの順番を変えてはいけない
     const { setPage, result } = useMultiPagePrompt(
-      {
-        button: () => subPromptButton(answer, close),
-        select: () => subPromptSelect(answer, close),
-      },
+      [
+        ["button", () => subPromptButton(answer, close)],
+        ["select", () => subPromptSelect(answer, close)],
+      ],
       "button"
     );
 

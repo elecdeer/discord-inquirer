@@ -5,13 +5,13 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
   describe("useUserSelectEvent()", () => {
-    test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
+    test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
       const { interactionHelper } = renderHook(() =>
         useUserSelectEvent("customId", handle)
       );
 
-      const interaction = interactionHelper.emitUserSelectInteraction(
+      const interaction = await interactionHelper.emitUserSelectInteraction(
         "customId",
         2
       );

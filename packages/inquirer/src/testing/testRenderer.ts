@@ -3,8 +3,14 @@ import { vi } from "vitest";
 
 import { createDiscordAdaptorMock } from "./discordAdaptorMock";
 import { createEmitInteractionTestUtil } from "./emitInteractionUtil";
-import { createHookCycle, deferDispatch } from "../core/hookContext";
+import {
+  createHookCycle,
+  deferDispatch,
+  deferDispatchAsync,
+} from "../core/hookContext";
+import { TimeoutError } from "../util/errors";
 import { createRandomSource } from "../util/randomSource";
+import { createTimer } from "../util/timer";
 
 import type { AdaptorMock } from "./discordAdaptorMock";
 import type { HookCycle } from "../core/hookContext";
@@ -29,6 +35,7 @@ type Result<V, E> =
 
 const resultContainer = <T>() => {
   const results: Result<T, Error>[] = [];
+  const resolvers: (() => void)[] = [];
 
   const result = {
     get all() {
@@ -49,10 +56,15 @@ const resultContainer = <T>() => {
 
   const updateResult = (result: Result<T, Error>) => {
     results.push(result);
+
+    resolvers.splice(0, resolvers.length).forEach((resolve) => resolve());
   };
 
   return {
     result,
+    addResolver: (resolver: () => void) => {
+      resolvers.push(resolver);
+    },
     setValue: (value: T) => updateResult({ value }),
     setError: (error: Error) => updateResult({ error }),
   };
@@ -68,7 +80,7 @@ export const renderHook = <TResult, TArgs>(
     randomSource = createRandomSource(23),
   } = options ?? {};
 
-  const { result, setValue, setError } = resultContainer();
+  const { result, setValue, setError, addResolver } = resultContainer();
   let args = initialArgs;
 
   const hookCycle = createHookCycle(
@@ -101,13 +113,24 @@ export const renderHook = <TResult, TArgs>(
   let latestMessageId = getRandomMessageId();
   renderer.render(latestMessageId);
 
+  const actAsync = async <T = void>(
+    cb: () => Promise<T>,
+    messageId?: string
+  ): Promise<T> => {
+    latestMessageId = messageId ?? latestMessageId;
+    return await renderer.actAsync(cb, latestMessageId);
+  };
+
+  const act = <T>(cb: () => T, messageId?: string): T => {
+    latestMessageId = messageId ?? latestMessageId;
+    return renderer.act(cb, latestMessageId);
+  };
+
   const interactionHelper = createEmitInteractionTestUtil(
     adaptor.emitInteraction,
+    actAsync,
     randomSource
   );
-
-  //TODO async関係のUtilを作る
-  // waitForとwaitForNextUpdateは必要そう
 
   return {
     result: result as {
@@ -121,16 +144,86 @@ export const renderHook = <TResult, TArgs>(
     unmount: () => {
       renderer.unmount();
     },
-    act: (cb: () => void, messageId?: string) => {
-      latestMessageId = messageId ?? latestMessageId;
-      renderer.act(cb, latestMessageId);
-    },
-    actAsync: async (cb: () => Promise<void>, messageId?: string) => {
-      latestMessageId = messageId ?? latestMessageId;
-      await renderer.actAsync(cb, latestMessageId);
-    },
+    act: act,
+    actAsync: actAsync,
     adaptorMock: adaptor,
     interactionHelper: interactionHelper,
+    ...asyncUtil(actAsync, addResolver),
+  };
+};
+
+export const asyncUtil = (
+  actAsync: (cb: () => Promise<void>, messageId?: string) => Promise<void>,
+  addResolver: (resolver: () => void) => void
+) => {
+  const waitFor = async (
+    cb: () => boolean | void,
+    { timeout = 1000, interval = 5 } = {}
+  ) => {
+    const safeCb = () => {
+      try {
+        return cb();
+      } catch (e) {
+        return false;
+      }
+    };
+
+    const timeoutTimer = createTimer(timeout);
+
+    const waitDispatchOrIntervalOrTimeout = (interval: number) => {
+      return new Promise<void>((resolve) => {
+        addResolver(() => {
+          intervalTimer.dispose();
+          resolve();
+        });
+
+        const intervalTimer = createTimer(interval);
+        intervalTimer.onTimeout(() => {
+          resolve();
+        });
+
+        timeoutTimer.onTimeout(() => {
+          intervalTimer.dispose();
+          resolve();
+        });
+      });
+    };
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      if (safeCb() !== false) {
+        timeoutTimer.dispose();
+        return;
+      }
+
+      //waitForで待っている間にdispatchが呼ばれる可能性があるのでactで囲う
+      await actAsync(async () => {
+        await waitDispatchOrIntervalOrTimeout(interval);
+      });
+
+      if (timeoutTimer.isTimeout()) throw new TimeoutError("waitFor timeout");
+    }
+  };
+
+  const waitForNextUpdate = async ({ timeout = 1000 } = {}) => {
+    const timeoutPromise = new Promise<void>((_, reject) => {
+      setTimeout(() => {
+        reject(new TimeoutError("waitForNextUpdate timeout"));
+      }, timeout);
+    });
+
+    const updatePromise = new Promise<void>((resolve) => {
+      addResolver(resolve);
+    });
+
+    await actAsync(async () => {
+      await Promise.race([timeoutPromise, updatePromise]);
+    });
+  };
+
+  return {
+    waitFor,
+    waitForNextUpdate,
   };
 };
 
@@ -151,7 +244,7 @@ const testRenderer = (cb: () => void, hookCycle: HookCycle) => {
     const renderIndex = hookCycle.startRender();
 
     const context = hookCycle.context;
-    const dispatched = deferDispatch(context, () => {
+    const { dispatched } = deferDispatch(context, () => {
       cb();
     });
 
@@ -187,31 +280,34 @@ const testRenderer = (cb: () => void, hookCycle: HookCycle) => {
     hookCycle.unmount(renderIndexRecord.current);
   };
 
-  const act = (cb: () => void, messageId: string) => {
+  const act = <T = void>(cb: () => T, messageId: string) => {
     const context = hookCycle.context;
-    const dispatched = deferDispatch(context, () => {
-      cb();
-    });
+    const { dispatched, result } = deferDispatch(context, () => cb());
+
     if (dispatched) {
       rerender(messageId);
     }
+
+    return result;
   };
 
-  const actAsync = async (cb: () => Promise<void>, messageId: string) => {
+  const actAsync = async <T = void>(
+    cb: () => Promise<T>,
+    messageId: string
+  ): Promise<T> => {
     const context = hookCycle.context;
-    const prevDispatch = context.dispatch;
-    let dispatched = false;
 
-    context.dispatch = () => {
-      dispatched = true;
-    };
-    //ここで更になにか割り込まれるとまずいかも
-    await cb();
-    context.dispatch = prevDispatch;
+    //cbの間で更になにか割り込まれるとまずいかも
+    const { dispatched, result } = await deferDispatchAsync(
+      context,
+      async () => await cb()
+    );
 
     if (dispatched) {
       rerender(messageId);
     }
+
+    return result;
   };
 
   return {

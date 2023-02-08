@@ -5,16 +5,17 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
   describe("useMentionableSelectEvent()", () => {
-    test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
+    test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
       const { interactionHelper } = renderHook(() =>
         useMentionableSelectEvent("customId", handle)
       );
 
-      const interaction = interactionHelper.emitMentionableSelectInteraction(
-        "customId",
-        [{ type: "user" }, { type: "role" }]
-      );
+      const interaction =
+        await interactionHelper.emitMentionableSelectInteraction("customId", [
+          { type: "user" },
+          { type: "role" },
+        ]);
 
       expect(handle).toBeCalledWith(
         interaction,

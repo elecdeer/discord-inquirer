@@ -128,7 +128,7 @@ export const inquire = <T extends Record<string, unknown>>(
     log("debug", `render #${renderIndex} dispatch override`);
 
     let promptResult: MessageMutualPayload;
-    const dispatched = deferDispatch(ctx, () => {
+    const { dispatched } = deferDispatch(ctx, () => {
       promptResult = prompt(
         answer as UnionToIntersection<AnswerPrompt<T>>,
         close
@@ -245,14 +245,12 @@ const createInquireTimer = (
   }: Pick<Required<InquireConfig<never>>, "idle" | "time" | "log">,
   close: () => void
 ) => {
-  const timeoutTimer = createTimer(time);
-  timeoutTimer.start(() => {
+  const timeoutTimer = createTimer(time).onTimeout(() => {
     log("debug", "inquirer timeout");
     close();
   });
 
-  const idleTimer = createTimer(idle);
-  idleTimer.start(() => {
+  const idleTimer = createTimer(idle).onTimeout(() => {
     log("debug", "inquirer idle timeout");
     close();
   });

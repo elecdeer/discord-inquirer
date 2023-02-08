@@ -6,11 +6,10 @@ import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
 import type {
+  PartialSelectItem,
   SelectItemResult,
-  SelectItem,
-  UseSelectResult,
+  UseSelectResultStateAccessor,
 } from "./useSelectComponent";
-import type { PartialSelectItem } from "./useSelectComponent";
 import type {
   AdaptorSelectOption,
   StringSelectComponentBuilder,
@@ -33,6 +32,14 @@ export type UsePagedSelectComponentParams<T> = {
     }
 );
 
+/**
+ * @param result 選択状態が追加されたSelectItemの配列
+ * @param Select Selectコンポーネントのビルダー
+ * @param page 現在のページ
+ * @param pageNum 全ページ数
+ * @param setPage ページを変更する関数
+ * @param stateAccessor 選択状態を外部から操作するための関数群
+ */
 export type UsePagedSelectComponentResult<T> = {
   result: (SelectItemResult<T> & { page: number })[];
   Select: StringSelectComponentBuilder<{
@@ -45,12 +52,22 @@ export type UsePagedSelectComponentResult<T> = {
   pageNum: number;
   setPage: (dispatch: Lazy<number, number>) => void;
 
-  stateAccessor: UseSelectResult<SelectItem<T>>[1];
+  stateAccessor: UseSelectResultStateAccessor;
 };
 
 //DiscordAPIの制限
 const maximumOptionNum = 25;
 
+/**
+ * ページ分割されたSelectコンポーネントと選択状態を提供するRenderHook
+ * @param optionsResolver ページ分割されたオプションを返す関数
+ * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
+ * @param maxValues 選択可能なオプションの最大数 ページごとではなく全てのページを合わせた選択数 showSelectedAlwaysがtrueの場合、1~24の値を指定する必要がある (デフォルト: 制限無し)
+ * @param minValues 選択可能なオプションの最小数 ページごとではなく全てのページの合わせた選択数 (デフォルト: 0)
+ * @param showSelectedAlways 選択済みのオプションを常に表示するかどうか trueの場合、maxValuesの値だけ1ページごとに表示されるオプションの数が減る
+ * @param pageTorus ページの最大値を超えた場合に最小値に戻るかどうか (デフォルト: false)
+ * @returns { result, Select, page, pageNum, setPage, stateAccessor}
+ */
 export const usePagedSelectComponent = <T>({
   optionsResolver,
   onSelected,
@@ -59,12 +76,16 @@ export const usePagedSelectComponent = <T>({
   showSelectedAlways,
   pageTorus = false,
 }: UsePagedSelectComponentParams<T>): UsePagedSelectComponentResult<T> => {
-  const splitOptions = optionsResolver(
+  //showSelectedAlwaysの場合は選択されうるオプションの数だけ、表示できる枠が減る
+  const maxOptionNumPerPage =
     showSelectedAlways === true
       ? maximumOptionNum - maxValues
-      : maximumOptionNum
-  );
+      : maximumOptionNum;
+
+  const splitOptions = optionsResolver(maxOptionNumPerPage);
   const pageNum = splitOptions.length;
+
+  const customId = useCustomId("stringSelect");
 
   const [page, setPage] = useRangedNumberState({
     initial: 0,
@@ -73,114 +94,115 @@ export const usePagedSelectComponent = <T>({
     torus: pageTorus,
   });
 
-  const resolveOptions = () => {
-    const splitOptions = optionsResolver(
-      showSelectedAlways === true
-        ? maximumOptionNum - maxValues
-        : maximumOptionNum
-    );
-    const options: (SelectItemResult<T> & {
-      page: number;
-    })[] = [];
-    splitOptions.forEach((pageOptions, pageIndex) => {
-      pageOptions.forEach((option) => {
-        const index = options.length;
-        const key = option.key ?? `paged-select-item-${index}`;
-        const active = page === pageIndex;
-        options.push({
-          ...option,
-          key: key,
-          inactive: !active,
-          selected: option.default ?? false,
-          page: pageIndex,
-        });
-      });
-    });
+  const allOptions = flatAndCompleteOptions(splitOptions);
 
-    //showSelectedAlwaysがtrueの場合、selectedならinactiveを強制的にfalseにする
-    return options;
-  };
-  const allOptions = resolveOptions();
-  console.log("allOptions", allOptions);
-
-  const pageOnSelected = (result: SelectItemResult<T>[]) => {
-    //minValuesとmaxValuesを満たしていない場合はイベントを発火しない
-    const selectedItems = result.filter((item) => item.selected);
-    if (minValues !== undefined && selectedItems.length < minValues) return;
-    if (maxValues !== undefined && maxValues < selectedItems.length) return;
-    onSelected?.(result);
-  };
-
-  const customId = useCustomId("stringSelect");
-  const [optionsWithSelected, stateAccessor] = useSelectState({
+  const stateAccessor = useSelectState({
     customId,
     options: allOptions,
     selectedUpdateHook: (key, prev, next, selectedKeys) => {
       //他ページでの選択数 + 今回の選択数がmaxValuesを超える場合は無視
       if (
         maxValues !== undefined &&
-        inactiveSelectedOptions.length + selectedKeys.length > maxValues
-      )
+        hideSelectedOptions.length + selectedKeys.length > maxValues
+      ) {
         return false;
+      }
+
       //表示されていないなら無視
       if (!showOptions.some((option) => option.key === key)) return false;
       if (prev === next) return false;
+      console.log("update");
+
       markUpdate();
       return true;
     },
   });
-  const markUpdate = useObserveValue(optionsWithSelected, pageOnSelected);
 
-  const selectedOptions = optionsWithSelected.filter((item) => item.selected);
-  const inactiveSelectedOptions = selectedOptions.filter(
-    (item) => item.inactive
-  );
-  const activeOptions = optionsWithSelected.filter((item) => !item.inactive);
+  const allOptionsWithState = allOptions.map((option) => {
+    const isCurrentPage = option.page === page;
+    const selected = stateAccessor.get(option.key);
+    return {
+      ...option,
+      selected: selected,
+      inactive: !(isCurrentPage || (showSelectedAlways && selected)),
+    };
+  });
 
-  const showOptions = [
-    ...(showSelectedAlways === true ? inactiveSelectedOptions : []),
-    ...activeOptions,
+  const pageOnSelected = (result: SelectItemResult<T>[]) => {
+    //minValuesとmaxValuesを満たしていない場合はイベントを発火しない
+    const selectedItemNum = result.filter((item) => item.selected).length;
+    if (minValues !== undefined && selectedItemNum < minValues) return;
+    if (maxValues !== undefined && maxValues < selectedItemNum) return;
+    onSelected?.(result);
+  };
+
+  const markUpdate = useObserveValue(allOptionsWithState, pageOnSelected);
+
+  const hideOptions = allOptionsWithState.filter((option) => option.inactive);
+  const hideSelectedOptions = hideOptions.filter((option) => option.selected);
+
+  const showOptions = allOptionsWithState.filter((option) => !option.inactive);
+
+  //他ページの選択済みのオプションを先頭に持ってくる
+  const sortedShowOptions = [
+    ...showOptions.filter((option) => option.page !== page),
+    ...showOptions.filter((option) => option.page === page),
   ];
-  const pageOptions = showOptions.map(
-    (item) =>
-      ({
-        value: item.key,
-        label: item.label,
-        default: stateAccessor.get(item.key),
-        description: item.description,
-        emoji: item.emoji,
-      } satisfies AdaptorSelectOption<unknown>)
-  );
 
   const pageMinValues = 0;
 
-  //showSelectedAlwaysがtrueのときは選択済みが全て表示されるのでそのまま
-  //falseのときは選択済みは表示されないので、別ページで選択済みの数を引く
-  //0を指定することはできず、オプション数を超えてはいけない
-  const pageMaxValues =
-    showSelectedAlways === true || maxValues === undefined
-      ? maxValues
-      : Math.max(
-          1,
-          Math.min(
-            maxValues - inactiveSelectedOptions.length,
-            pageOptions.length
-          )
-        );
+  //非表示の選択済みのオプションの数を引く
+  //0を指定することはできず、表示オプション数を超えてはいけない
+  const pageMaxValues = () => {
+    if (maxValues === undefined) return maxValues;
+
+    const restSelectableNum = maxValues - hideSelectedOptions.length;
+
+    if (restSelectableNum < 1) return 1;
+    if (showOptions.length < restSelectableNum) return showOptions.length;
+    return restSelectableNum;
+  };
 
   return {
-    result: optionsWithSelected,
     page: page,
     pageNum: pageNum,
     setPage: setPage,
+    stateAccessor: stateAccessor,
     Select: StringSelect({
       customId: customId,
-      options: pageOptions,
+      options: sortedShowOptions.map(
+        (opt) =>
+          ({
+            value: opt.key,
+            label: opt.label,
+            default: opt.selected,
+            description: opt.description,
+            emoji: opt.emoji,
+          } satisfies AdaptorSelectOption<unknown>)
+      ),
       minValues: pageMinValues,
-      maxValues: pageMaxValues ?? pageOptions.length,
+      maxValues: pageMaxValues(),
     }),
-    stateAccessor: stateAccessor,
+    result: allOptionsWithState,
   };
+};
+
+const flatAndCompleteOptions = <T>(splitOptions: PartialSelectItem<T>[][]) => {
+  const options: (Omit<SelectItemResult<T>, "inactive" | "selected"> & {
+    page: number;
+  })[] = [];
+  splitOptions.forEach((pageOptions, pageIndex) => {
+    pageOptions.forEach((option) => {
+      const allIndex = options.length;
+      options.push({
+        ...option,
+        key: option.key ?? `paged-select-item-${allIndex}`,
+        page: pageIndex,
+      });
+    });
+  });
+
+  return options;
 };
 
 export const useRangedNumberState = ({
@@ -214,22 +236,34 @@ export const useRangedNumberState = ({
   return [value, setValue];
 };
 
+/**
+ * オプションをページごとに分割する関数
+ * 1ページごとのオプション数が多くなるように前詰めで分割する
+ * @param option
+ */
 export const closeSplitter =
   <T>(option: readonly T[]) =>
-  (numPerPage: number): T[][] => {
+  (maxOptionNumPerPage: number): T[][] => {
     const result: T[][] = [];
-    const pageNum = Math.ceil(option.length / numPerPage);
+    const pageNum = Math.ceil(option.length / maxOptionNumPerPage);
     for (let i = 0; i < pageNum; i++) {
-      result.push(option.slice(i * numPerPage, (i + 1) * numPerPage));
+      result.push(
+        option.slice(i * maxOptionNumPerPage, (i + 1) * maxOptionNumPerPage)
+      );
     }
     return result;
   };
 
+/**
+ * オプションをページごとに分割する関数
+ * 1ページごとのオプション数が均等になるように分割する
+ * @param options
+ */
 export const equalitySplitter =
   <T>(options: readonly T[]) =>
-  (numPerPage: number): T[][] => {
+  (maxOptionNumPerPage: number): T[][] => {
     const result: T[][] = [];
-    const pageNum = Math.ceil(options.length / numPerPage);
+    const pageNum = Math.ceil(options.length / maxOptionNumPerPage);
     let splitIndex = 0;
     for (let i = 0; i < pageNum; i++) {
       //残りのアイテム数 / 残りのページ数

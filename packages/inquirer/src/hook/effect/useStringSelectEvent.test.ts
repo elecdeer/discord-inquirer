@@ -5,13 +5,13 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
   describe("useStringSelectEvent()", () => {
-    test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
+    test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
       const { interactionHelper } = renderHook(() =>
         useStringSelectEvent("customId", handle)
       );
 
-      const interaction = interactionHelper.emitStringSelectInteraction(
+      const interaction = await interactionHelper.emitStringSelectInteraction(
         "customId",
         ["value1", "value2"]
       );

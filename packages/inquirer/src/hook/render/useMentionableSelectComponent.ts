@@ -38,13 +38,21 @@ export type UseMentionableSingleSelectComponentParams = {
   minValues?: 1;
 };
 
-export const useMentionableSelectComponent = (
-  params: UseMentionableSelectComponentParams = {}
-): UseMentionableSelectComponentResult => {
+/**
+ * MentionableSelectコンポーネントと選択状態を提供するRenderHook
+ * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
+ * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ * @param maxValues 選択可能なオプションの最大数 (デフォルト: 制限無し)
+ */
+export const useMentionableSelectComponent = ({
+  onSelected,
+  minValues,
+  maxValues,
+}: UseMentionableSelectComponentParams = {}): UseMentionableSelectComponentResult => {
   const customId = useCustomId("mentionableSelect");
 
   const [selected, setSelected] = useState<MentionableSelectValue[]>([]);
-  const markChanged = useObserveValue(selected, params.onSelected);
+  const markChanged = useObserveValue(selected, onSelected);
 
   useMentionableSelectEvent(customId, async (_, userOrRoles, deferUpdate) => {
     await deferUpdate();
@@ -57,21 +65,28 @@ export const useMentionableSelectComponent = (
     selected,
     MentionableSelect({
       customId,
-      minValues: params.minValues,
-      maxValues: params.maxValues,
+      minValues: minValues,
+      maxValues: maxValues,
     }),
   ];
 };
 
-export const useMentionableSingleSelectComponent = (
-  param: UseMentionableSingleSelectComponentParams = {}
-): UseMentionableSingleSelectComponentResult => {
+/**
+ * MentionableSelectコンポーネントと選択状態を提供するRenderHook
+ * useMentionableSelectComponentの単数選択版
+ * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
+ * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ */
+export const useMentionableSingleSelectComponent = ({
+  onSelected,
+  minValues,
+}: UseMentionableSingleSelectComponentParams = {}): UseMentionableSingleSelectComponentResult => {
   const [selected, MentionableSelect] = useMentionableSelectComponent({
     onSelected: (selected) => {
       assert(selected.length <= 1);
-      param.onSelected?.(selected[0] ?? null);
+      onSelected?.(selected[0] ?? null);
     },
-    minValues: param.minValues,
+    minValues: minValues,
     maxValues: 1,
   });
 

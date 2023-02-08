@@ -5,7 +5,7 @@ import type { DiscordAdaptor } from "../adaptor";
 import type { AdaptorInteraction } from "../adaptor";
 
 export type AdaptorMock = DiscordAdaptor & {
-  emitInteraction: (interaction: AdaptorInteraction) => void;
+  emitInteraction: (interaction: AdaptorInteraction) => Promise<void>;
 };
 
 export const createDiscordAdaptorMock = (): AdaptorMock => {
@@ -31,8 +31,13 @@ export const createDiscordAdaptorMock = (): AdaptorMock => {
       }
     ),
 
-    emitInteraction: (interaction) => {
-      handlerFlow.emit(interaction);
+    emitInteraction: async (interaction) => {
+      return new Promise((resolve) => {
+        handlerFlow.once(() => {
+          resolve();
+        });
+        handlerFlow.emit(interaction);
+      });
     },
   };
 };

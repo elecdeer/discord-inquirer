@@ -1,10 +1,10 @@
-import { Button } from "../../adaptor";
+import { NonLinkButton } from "../../adaptor";
 import { useButtonEvent } from "../effect/useButtonEvent";
 import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
-import type { ButtonComponentBuilder } from "../../adaptor";
+import type { NonLinkButtonComponentBuilder } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
 export type ValidateResult<T> = ValidateOkResult | ValidateErrorResult<T>;
@@ -29,16 +29,29 @@ export type ValidateResultState<T> =
 
 export type UseConfirmButtonResult<T> = [
   result: ValidateResultState<T>,
-  ConfirmButton: ButtonComponentBuilder<{
+  ConfirmButton: NonLinkButtonComponentBuilder<{
     customId: string;
   }>
 ];
 
-export const useConfirmButtonComponent = <T = undefined>(
-  validate: () => Awaitable<ValidateResult<T>>,
-  onConfirm?: () => Awaitable<void>,
-  deferInteractionAlways = true
-): UseConfirmButtonResult<T> => {
+export type UseConfirmButtonParams<T> = {
+  validate: () => Awaitable<ValidateResult<T>>;
+  onConfirm?: () => Awaitable<void>;
+  deferInteractionAlways?: boolean;
+};
+
+/**
+ * ボタンを押したときに検証を行い、検証が成功した場合のみonConfirmを実行する
+ * @param validate ボタンが押されたときに実行される検証関数
+ * @param onConfirm validateが成功したときに実行される関数
+ * @param deferInteractionAlways validateの結果に関わらずinteractionをdeferUpdateするかどうか (デフォルトはtrue)
+ * @returns [validateResult, ConfirmButton]
+ */
+export const useConfirmButtonComponent = <T = undefined>({
+  validate,
+  onConfirm,
+  deferInteractionAlways = true,
+}: UseConfirmButtonParams<T>): UseConfirmButtonResult<T> => {
   const customId = useCustomId("confirmButton");
   const [validateResult, setValidateResult] = useState<ValidateResultState<T>>({
     checked: false,
@@ -68,7 +81,7 @@ export const useConfirmButtonComponent = <T = undefined>(
     markChanged();
   });
 
-  const renderComponent = Button({
+  const renderComponent = NonLinkButton({
     customId,
   });
 

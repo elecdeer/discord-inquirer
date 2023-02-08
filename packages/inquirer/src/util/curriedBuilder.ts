@@ -23,12 +23,14 @@ type Build<_, __, Terminal> = {
 export type UnfulfilledCurriedBuilder<Props, Applied, Terminal> = {
   <P extends Partial<Omit<Props, keyof Applied>>>(
     props: StrictPropertyCheck<P, Partial<Omit<Props, keyof Applied>>>
-  ): If<
-    IsAllPartial<Omit<Props, keyof (Applied & P)>>,
-    FulfilledCurriedBuilder<Props, Applied & P, Terminal>,
-    UnfulfilledCurriedBuilder<Props, Applied & P, Terminal>
-  >;
+  ): ConditionalCurriedBuilder<Props, Applied & P, Terminal>;
 };
+
+export type ConditionalCurriedBuilder<Props, Applied, Terminal> = If<
+  IsAllPartial<Omit<Props, keyof Applied>>,
+  FulfilledCurriedBuilder<Props, Applied, Terminal>,
+  UnfulfilledCurriedBuilder<Props, Applied, Terminal>
+>;
 
 const builderImpl = <T extends object, U>(terminalOp: (props: T) => U) => {
   const set = (obj: Partial<T>, props: Partial<T>) => {
