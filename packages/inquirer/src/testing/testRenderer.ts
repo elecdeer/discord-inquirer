@@ -8,6 +8,7 @@ import {
   deferDispatch,
   deferDispatchAsync,
 } from "../core/hookContext";
+import { TimeoutError } from "../util/errors";
 import { createRandomSource } from "../util/randomSource";
 import { createTimer } from "../util/timer";
 
@@ -200,14 +201,14 @@ export const asyncUtil = (
         await waitDispatchOrIntervalOrTimeout(interval);
       });
 
-      if (timeoutTimer.isTimeout()) throw new Error("timeout");
+      if (timeoutTimer.isTimeout()) throw new TimeoutError("waitFor timeout");
     }
   };
 
   const waitForNextUpdate = async ({ timeout = 1000 } = {}) => {
     const timeoutPromise = new Promise<void>((_, reject) => {
       setTimeout(() => {
-        reject(new Error("timeout"));
+        reject(new TimeoutError("waitForNextUpdate timeout"));
       }, timeout);
     });
 

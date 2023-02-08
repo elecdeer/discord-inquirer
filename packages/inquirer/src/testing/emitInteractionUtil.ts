@@ -1,4 +1,5 @@
 import { adaptorFaker } from "./adaptorFaker";
+import { InvalidInteractionError } from "../util/errors";
 
 import type {
   AdaptorButtonInteraction,
@@ -254,13 +255,13 @@ export const createEmitInteractionTestUtil = (
     selectNum: number
   ) => {
     if (component.disabled) {
-      throw new InvalidInteractionError("role select is disabled");
+      throw new InvalidInteractionError("select component is disabled");
     }
     if (component.maxValues !== undefined && component.maxValues < selectNum) {
-      throw new InvalidInteractionError("too many roles");
+      throw new InvalidInteractionError("too many items");
     }
     if (component.minValues !== undefined && component.minValues > selectNum) {
-      throw new InvalidInteractionError("too few roles");
+      throw new InvalidInteractionError("too few items");
     }
   };
 
@@ -425,10 +426,3 @@ export const createEmitInteractionTestUtil = (
     confirmModal,
   };
 };
-
-export class InvalidInteractionError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "InvalidInteractionError";
-  }
-}
