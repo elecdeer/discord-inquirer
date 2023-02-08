@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
   "dependencies": {
-    "@noble/ed25519": "^1.7.1",
+    "@noble/ed25519": "^1.7.2",
     "discord-api-types": "^0.37.29",
     "discord-inquirer": "^0.0.0"
   },
