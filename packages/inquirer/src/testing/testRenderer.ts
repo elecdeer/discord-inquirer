@@ -3,7 +3,11 @@ import { vi } from "vitest";
 
 import { createDiscordAdaptorMock } from "./discordAdaptorMock";
 import { createEmitInteractionTestUtil } from "./emitInteractionUtil";
-import { createHookCycle, deferDispatch } from "../core/hookContext";
+import {
+  createHookCycle,
+  deferDispatch,
+  deferDispatchAsync,
+} from "../core/hookContext";
 import { createRandomSource } from "../util/randomSource";
 import { createTimer } from "../util/timer";
 
@@ -108,20 +112,24 @@ export const renderHook = <TResult, TArgs>(
   let latestMessageId = getRandomMessageId();
   renderer.render(latestMessageId);
 
+  const actAsync = async <T = void>(
+    cb: () => Promise<T>,
+    messageId?: string
+  ): Promise<T> => {
+    latestMessageId = messageId ?? latestMessageId;
+    return await renderer.actAsync(cb, latestMessageId);
+  };
+
+  const act = <T>(cb: () => T, messageId?: string): T => {
+    latestMessageId = messageId ?? latestMessageId;
+    return renderer.act(cb, latestMessageId);
+  };
+
   const interactionHelper = createEmitInteractionTestUtil(
     adaptor.emitInteraction,
+    actAsync,
     randomSource
   );
-
-  const actAsync = async (cb: () => Promise<void>, messageId?: string) => {
-    latestMessageId = messageId ?? latestMessageId;
-    await renderer.actAsync(cb, latestMessageId);
-  };
-
-  const act = (cb: () => void, messageId?: string) => {
-    latestMessageId = messageId ?? latestMessageId;
-    renderer.act(cb, latestMessageId);
-  };
 
   return {
     result: result as {
@@ -235,7 +243,7 @@ const testRenderer = (cb: () => void, hookCycle: HookCycle) => {
     const renderIndex = hookCycle.startRender();
 
     const context = hookCycle.context;
-    const dispatched = deferDispatch(context, () => {
+    const { dispatched } = deferDispatch(context, () => {
       cb();
     });
 
@@ -271,31 +279,34 @@ const testRenderer = (cb: () => void, hookCycle: HookCycle) => {
     hookCycle.unmount(renderIndexRecord.current);
   };
 
-  const act = (cb: () => void, messageId: string) => {
+  const act = <T = void>(cb: () => T, messageId: string) => {
     const context = hookCycle.context;
-    const dispatched = deferDispatch(context, () => {
-      cb();
-    });
+    const { dispatched, result } = deferDispatch(context, () => cb());
+
     if (dispatched) {
       rerender(messageId);
     }
+
+    return result;
   };
 
-  const actAsync = async (cb: () => Promise<void>, messageId: string) => {
+  const actAsync = async <T = void>(
+    cb: () => Promise<T>,
+    messageId: string
+  ): Promise<T> => {
     const context = hookCycle.context;
-    const prevDispatch = context.dispatch;
-    let dispatched = false;
 
-    context.dispatch = () => {
-      dispatched = true;
-    };
-    //ここで更になにか割り込まれるとまずいかも
-    await cb();
-    context.dispatch = prevDispatch;
+    //cbの間で更になにか割り込まれるとまずいかも
+    const { dispatched, result } = await deferDispatchAsync(
+      context,
+      async () => await cb()
+    );
 
     if (dispatched) {
       rerender(messageId);
     }
+
+    return result;
   };
 
   return {

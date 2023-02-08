@@ -128,7 +128,7 @@ export const inquire = <T extends Record<string, unknown>>(
     log("debug", `render #${renderIndex} dispatch override`);
 
     let promptResult: MessageMutualPayload;
-    const dispatched = deferDispatch(ctx, () => {
+    const { dispatched } = deferDispatch(ctx, () => {
       promptResult = prompt(
         answer as UnionToIntersection<AnswerPrompt<T>>,
         close

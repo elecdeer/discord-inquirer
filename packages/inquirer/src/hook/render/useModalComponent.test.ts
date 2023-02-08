@@ -7,7 +7,7 @@ import type { AdaptorInteractionResponse } from "../../adaptor";
 
 describe("packages/inquirer/src/hook/render/useModalComponent", () => {
   describe("useModalComponent()", () => {
-    test("ボタンをクリックするとmodalが開く", () => {
+    test("ボタンをクリックするとmodalが開く", async () => {
       const { result, interactionHelper, waitFor, adaptorMock } = renderHook(
         () =>
           useModalComponent({
@@ -25,9 +25,11 @@ describe("packages/inquirer/src/hook/render/useModalComponent", () => {
       const component = result.current[1]({
         style: "primary",
       })();
-      const interaction = interactionHelper.clickButtonComponent(component);
+      const interaction = await interactionHelper.clickButtonComponent(
+        component
+      );
 
-      waitFor(() =>
+      await waitFor(() =>
         expect(adaptorMock.sendInteractionResponse).toBeCalledWith(
           interaction.id,
           interaction.token,

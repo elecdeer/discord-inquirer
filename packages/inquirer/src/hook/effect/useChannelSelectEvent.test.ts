@@ -5,13 +5,13 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
   describe("useChannelSelectEvent()", () => {
-    test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
+    test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
       const { interactionHelper } = renderHook(() =>
         useChannelSelectEvent("customId", handle)
       );
 
-      const interaction = interactionHelper.emitChannelSelectInteraction(
+      const interaction = await interactionHelper.emitChannelSelectInteraction(
         "customId",
         [{ type: "guildText" }, { type: "publicThread" }]
       );

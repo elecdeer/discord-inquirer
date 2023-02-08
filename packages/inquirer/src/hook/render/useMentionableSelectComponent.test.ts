@@ -16,14 +16,15 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
 
     test("オプションが選択されるとonSelectが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, interactionHelper, waitFor } = renderHook(() =>
+      const { result, interactionHelper, waitFor, act } = renderHook(() =>
         useMentionableSelectComponent({
           onSelected: handle,
         })
       );
 
       const component = result.current[1]();
-      interactionHelper.selectMentionableSelectComponent(component, [
+
+      await interactionHelper.selectMentionableSelectComponent(component, [
         {
           type: "user",
           username: "foo",
@@ -33,7 +34,6 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
           name: "bar",
         },
       ]);
-
       await waitFor(() => expect(handle).toBeCalledTimes(1));
 
       expect(handle).toBeCalledWith([

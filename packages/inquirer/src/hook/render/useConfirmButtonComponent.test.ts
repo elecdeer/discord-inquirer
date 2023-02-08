@@ -44,7 +44,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
       });
     });
 
-    test("validate結果がvalidateResultに反映される", () => {
+    test("validate結果がvalidateResultに反映される", async () => {
       const { result, rerender, interactionHelper, waitFor } = renderHook(
         (ok: boolean) =>
           useConfirmButtonComponent({
@@ -63,7 +63,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
         })()
       );
 
-      waitFor(() =>
+      await waitFor(() =>
         expect(result.current[0]).toEqual({
           checked: true,
           ok: false,

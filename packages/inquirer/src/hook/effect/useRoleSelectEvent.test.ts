@@ -5,13 +5,13 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
   describe("useRoleSelectEvent()", () => {
-    test("customIdやtypeが一致した際にhandlerが呼ばれる", () => {
+    test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
       const { interactionHelper } = renderHook(() =>
         useRoleSelectEvent("customId", handle)
       );
 
-      const interaction = interactionHelper.emitRoleSelectInteraction(
+      const interaction = await interactionHelper.emitRoleSelectInteraction(
         "customId",
         2
       );
