@@ -14,7 +14,9 @@ describe("packages/inquirer/src/hook/render/useButtonComponent", () => {
           })
       );
 
-      const component = result.current();
+      const component = result.current({
+        style: "primary",
+      })();
       interactionHelper.clickButtonComponent(component);
 
       await waitFor(() => {

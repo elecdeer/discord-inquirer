@@ -2,10 +2,7 @@ import { NonLinkButton } from "../../adaptor";
 import { useButtonEvent } from "../effect/useButtonEvent";
 import { useCustomId } from "../state/useCustomId";
 
-import type {
-  AdaptorNonLinkButtonComponent,
-  NonLinkButtonComponentBuilder,
-} from "../../adaptor";
+import type { NonLinkButtonComponentBuilder } from "../../adaptor";
 
 export type UseButtonComponentParams = {
   /**
@@ -21,7 +18,6 @@ export const useButtonComponent = (
   param: UseButtonComponentParams
 ): NonLinkButtonComponentBuilder<{
   customId: string;
-  style: AdaptorNonLinkButtonComponent["style"];
 }> => {
   const customId = useCustomId("button");
 
@@ -30,5 +26,5 @@ export const useButtonComponent = (
     param.onClick?.();
   });
 
-  return NonLinkButton({ customId, style: "primary" });
+  return NonLinkButton({ customId });
 };
