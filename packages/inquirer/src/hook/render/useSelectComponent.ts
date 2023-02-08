@@ -58,6 +58,14 @@ export type UseSelectComponentParams<T> = {
   maxValues?: number;
 };
 
+/**
+ * StringSelectコンポーネントと選択状態を提供するrenderHook
+ * @param options 選択肢 payloadにはstringだけでなく任意のオブジェクトを指定でき、結果として受け取ることができる
+ * @param onSelected 選択状態が変更されたときに呼び出される
+ * @param maxValues 選択可能なオプションの最大数 (デフォルト: 制限無し)
+ * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ * @returns [selectResult, StringSelect, stateAccessor]
+ */
 export const useSelectComponent = <T>({
   options,
   onSelected,
@@ -183,17 +191,32 @@ const completePartialOptions = <T>(
   });
 };
 
-export const useSingleSelectComponent = <T>(
-  param: Omit<UseSelectComponentParams<T>, "onSelected" | "maxValues"> & {
-    onSelected?: (selected: SelectItemResult<T> | null) => void;
-  }
-): UseSingleSelectComponentResult<T> => {
+export type UseSingleSelectComponentParam<T> = Omit<
+  UseSelectComponentParams<T>,
+  "onSelected" | "maxValues"
+> & {
+  onSelected?: (selected: SelectItemResult<T> | null) => void;
+};
+
+/**
+ * StringSelectコンポーネントと選択状態を提供するrenderHook
+ * useSelectComponentの単一選択版
+ * @param options 選択肢 payloadにはstringだけでなく任意のオブジェクトを指定でき、結果として受け取ることができる
+ * @param onSelected 選択状態が変更されたときに呼び出される
+ * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ * @returns [selectResult, StringSelect, stateAccessor]
+ */
+export const useSingleSelectComponent = <T>({
+  options,
+  onSelected,
+  minValues,
+}: UseSingleSelectComponentParam<T>): UseSingleSelectComponentResult<T> => {
   const [result, Select, stateAccessor] = useSelectComponent({
-    options: param.options,
+    options: options,
     onSelected: (selected) => {
-      param.onSelected?.(singleResult(selected));
+      onSelected?.(singleResult(selected));
     },
-    minValues: param.minValues,
+    minValues: minValues,
     maxValues: 1,
   });
 
