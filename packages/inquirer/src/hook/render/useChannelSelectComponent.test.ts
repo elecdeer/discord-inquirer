@@ -13,7 +13,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
 
     test("チャンネルが選択されるとonSelectが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, interactionHelper, act, waitFor } = renderHook(() =>
+      const { result, interactionHelper, waitFor } = renderHook(() =>
         useChannelSelectComponent({
           onSelected: handle,
         })
@@ -92,6 +92,5 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
         })
       );
     });
-
   });
 });
