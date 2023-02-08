@@ -6,11 +6,11 @@ import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
 import type {
-  SelectItemResult,
+  PartialSelectItem,
   SelectItem,
+  SelectItemResult,
   UseSelectResult,
 } from "./useSelectComponent";
-import type { PartialSelectItem } from "./useSelectComponent";
 import type {
   AdaptorSelectOption,
   StringSelectComponentBuilder,
@@ -33,6 +33,14 @@ export type UsePagedSelectComponentParams<T> = {
     }
 );
 
+/**
+ * @param result 選択状態が追加されたSelectItemの配列
+ * @param Select Selectコンポーネントのビルダー
+ * @param page 現在のページ
+ * @param pageNum 全ページ数
+ * @param setPage ページを変更する関数
+ * @param stateAccessor 選択状態を外部から操作するための関数群
+ */
 export type UsePagedSelectComponentResult<T> = {
   result: (SelectItemResult<T> & { page: number })[];
   Select: StringSelectComponentBuilder<{
@@ -51,6 +59,16 @@ export type UsePagedSelectComponentResult<T> = {
 //DiscordAPIの制限
 const maximumOptionNum = 25;
 
+/**
+ * ページ分割されたSelectコンポーネントと選択状態を提供するRenderHook
+ * @param optionsResolver ページ分割されたオプションを返す関数
+ * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
+ * @param maxValues 選択可能なオプションの最大数 ページごとではなく全てのページを合わせた選択数 showSelectedAlwaysがtrueの場合、1~24の値を指定する必要がある (デフォルト: 制限無し)
+ * @param minValues 選択可能なオプションの最小数 ページごとではなく全てのページの合わせた選択数 (デフォルト: 0)
+ * @param showSelectedAlways 選択済みのオプションを常に表示するかどうか trueの場合、maxValuesの値だけ1ページごとに表示されるオプションの数が減る
+ * @param pageTorus ページの最大値を超えた場合に最小値に戻るかどうか (デフォルト: false)
+ * @returns { result, Select, page, pageNum, setPage, stateAccessor}
+ */
 export const usePagedSelectComponent = <T>({
   optionsResolver,
   onSelected,
@@ -101,13 +119,12 @@ export const usePagedSelectComponent = <T>({
     return options;
   };
   const allOptions = resolveOptions();
-  console.log("allOptions", allOptions);
 
   const pageOnSelected = (result: SelectItemResult<T>[]) => {
     //minValuesとmaxValuesを満たしていない場合はイベントを発火しない
-    const selectedItems = result.filter((item) => item.selected);
-    if (minValues !== undefined && selectedItems.length < minValues) return;
-    if (maxValues !== undefined && maxValues < selectedItems.length) return;
+    const selectedItemNum = result.filter((item) => item.selected).length;
+    if (minValues !== undefined && selectedItemNum < minValues) return;
+    if (maxValues !== undefined && maxValues < selectedItemNum) return;
     onSelected?.(result);
   };
 
@@ -116,15 +133,22 @@ export const usePagedSelectComponent = <T>({
     customId,
     options: allOptions,
     selectedUpdateHook: (key, prev, next, selectedKeys) => {
+      console.log("selectedUpdateHook", key, prev, next, selectedKeys);
       //他ページでの選択数 + 今回の選択数がmaxValuesを超える場合は無視
-      if (
-        maxValues !== undefined &&
-        inactiveSelectedOptions.length + selectedKeys.length > maxValues
-      )
-        return false;
+      if (maxValues !== undefined) {
+        if (showSelectedAlways && selectedKeys.length > maxValues) return false;
+        if (
+          !showSelectedAlways &&
+          inactiveSelectedOptions.length + selectedKeys.length > maxValues
+        )
+          return false;
+      }
+
       //表示されていないなら無視
       if (!showOptions.some((option) => option.key === key)) return false;
       if (prev === next) return false;
+      console.log("update");
+
       markUpdate();
       return true;
     },
@@ -141,6 +165,7 @@ export const usePagedSelectComponent = <T>({
     ...(showSelectedAlways === true ? inactiveSelectedOptions : []),
     ...activeOptions,
   ];
+
   const pageOptions = showOptions.map(
     (item) =>
       ({
@@ -214,6 +239,11 @@ export const useRangedNumberState = ({
   return [value, setValue];
 };
 
+/**
+ * オプションをページごとに分割する関数
+ * 1ページごとのオプション数が多くなるように前詰めで分割する
+ * @param option
+ */
 export const closeSplitter =
   <T>(option: readonly T[]) =>
   (numPerPage: number): T[][] => {
@@ -225,6 +255,11 @@ export const closeSplitter =
     return result;
   };
 
+/**
+ * オプションをページごとに分割する関数
+ * 1ページごとのオプション数が均等になるように分割する
+ * @param options
+ */
 export const equalitySplitter =
   <T>(options: readonly T[]) =>
   (numPerPage: number): T[][] => {
