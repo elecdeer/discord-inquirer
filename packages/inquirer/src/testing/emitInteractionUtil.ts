@@ -299,7 +299,7 @@ export const createEmitInteractionTestUtil = (
     assertSelectEmit(component, dummyUserNum);
 
     return actAsync(() =>
-      emitUserSelectInteraction(customId, dummyUserNum, overrideParam)
+      emitUserSelectInteraction(customId, dummyUsers, overrideParam)
     );
   };
 
@@ -315,7 +315,7 @@ export const createEmitInteractionTestUtil = (
     assertSelectEmit(component, dummyRoleNum);
 
     return actAsync(() =>
-      emitRoleSelectInteraction(customId, dummyRoleNum, overrideParam)
+      emitRoleSelectInteraction(customId, dummyRoles, overrideParam)
     );
   };
 
