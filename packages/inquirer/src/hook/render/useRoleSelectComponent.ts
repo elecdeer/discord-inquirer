@@ -37,14 +37,22 @@ export type UseRoleSingleSelectComponentParams = {
   minValues?: 1;
 };
 
-export const useRoleSelectComponent = (
-  params: UseRoleSelectComponentParams = {}
-): UseRoleSelectComponentResult => {
+/**
+ * RoleSelectコンポーネントと選択状態を提供するRenderHook
+ * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
+ * @param maxValues 選択可能なオプションの最大数 (デフォルト: 制限無し)
+ * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ */
+export const useRoleSelectComponent = ({
+  onSelected,
+  maxValues,
+  minValues,
+}: UseRoleSelectComponentParams = {}): UseRoleSelectComponentResult => {
   const customId = useCustomId("roleSelect");
 
   const [selected, setSelected] = useState<AdaptorRole[]>([]);
 
-  const markChanged = useObserveValue(selected, params.onSelected);
+  const markChanged = useObserveValue(selected, onSelected);
 
   useRoleSelectEvent(customId, async (_, roles, deferUpdate) => {
     await deferUpdate();
@@ -57,21 +65,28 @@ export const useRoleSelectComponent = (
     selected,
     RoleSelect({
       customId,
-      minValues: params.minValues,
-      maxValues: params.maxValues,
+      minValues: minValues,
+      maxValues: maxValues,
     }),
   ];
 };
 
-export const useRoleSingleSelectComponent = (
-  param: UseRoleSingleSelectComponentParams = {}
-): UseRoleSingleSelectComponentResult => {
+/**
+ * RoleSelectコンポーネントと選択状態を提供するRenderHook
+ * useRoleSelectComponentの単一選択版
+ * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
+ * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ */
+export const useRoleSingleSelectComponent = ({
+  onSelected,
+  minValues,
+}: UseRoleSingleSelectComponentParams = {}): UseRoleSingleSelectComponentResult => {
   const [selected, Select] = useRoleSelectComponent({
     onSelected: (selected) => {
       assert(selected.length <= 1);
-      param.onSelected?.(selected[0] ?? null);
+      onSelected?.(selected[0] ?? null);
     },
-    minValues: param.minValues,
+    minValues: minValues,
     maxValues: 1,
   });
 

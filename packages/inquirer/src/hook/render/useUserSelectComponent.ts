@@ -38,14 +38,22 @@ export type UseUserSingleSelectComponentParams = {
   minValues?: 1;
 };
 
-export const useUserSelectComponent = (
-  param: UseUserSelectComponentParams = {}
-): UseUserSelectComponentResult => {
+/**
+ * UserSelectコンポーネントと選択状態を提供するRenderHook
+ * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
+ * @param maxValues 選択可能なオプションの最大数 (デフォルト: 制限無し)
+ * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ */
+export const useUserSelectComponent = ({
+  onSelected,
+  maxValues,
+  minValues,
+}: UseUserSelectComponentParams = {}): UseUserSelectComponentResult => {
   const customId = useCustomId("userSelect");
 
   const [selected, setSelected] = useState<UserSelectResultValue[]>([]);
 
-  const markChanged = useObserveValue(selected, param.onSelected);
+  const markChanged = useObserveValue(selected, onSelected);
 
   useUserSelectEvent(customId, async (_, users, deferUpdate) => {
     await deferUpdate();
@@ -58,21 +66,28 @@ export const useUserSelectComponent = (
     selected,
     UserSelect({
       customId,
-      minValues: param.minValues,
-      maxValues: param.maxValues,
+      minValues: minValues,
+      maxValues: maxValues,
     }),
   ];
 };
 
-export const useUserSingleSelectComponent = (
-  param: UseUserSingleSelectComponentParams = {}
-): UseUserSingleSelectComponentResult => {
+/**
+ * UserSelectコンポーネントと選択状態を提供するRenderHook
+ * useUserSelectComponentの単数選択版
+ * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
+ * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ */
+export const useUserSingleSelectComponent = ({
+  onSelected,
+  minValues,
+}: UseUserSingleSelectComponentParams = {}): UseUserSingleSelectComponentResult => {
   const [selected, Select] = useUserSelectComponent({
     onSelected: (selected) => {
       assert(selected.length <= 1);
-      param.onSelected?.(selected[0] ?? null);
+      onSelected?.(selected[0] ?? null);
     },
-    minValues: param.minValues,
+    minValues: minValues,
     maxValues: 1,
   });
 
