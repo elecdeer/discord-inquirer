@@ -1,11 +1,12 @@
 import { useEffect } from "./useEffect";
 import { isAdaptorRoleSelectInteraction, messageFacade } from "../../adaptor";
-import { batchDispatchAsync, getHookContext } from "../../core/hookContext";
+import { batchDispatchAsync } from "../../core/hookContext";
+import { useAdaptor, useHookContext } from "../core/useHookContext";
 
 import type {
   AdaptorRole,
-  Snowflake,
   AdaptorRoleSelectInteraction,
+  Snowflake,
 } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
@@ -17,13 +18,13 @@ export const useRoleSelectEvent = (
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const ctx = getHookContext();
-  const adapter = ctx.adaptor;
+  const ctx = useHookContext();
+  const adaptor = useAdaptor();
 
   useEffect(() => {
-    const facade = messageFacade(adapter);
+    const facade = messageFacade(adaptor);
 
-    const clear = adapter.subscribeInteraction((interaction) => {
+    const clear = adaptor.subscribeInteraction((interaction) => {
       if (!isAdaptorRoleSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 

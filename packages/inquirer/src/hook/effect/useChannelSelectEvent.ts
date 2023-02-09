@@ -3,7 +3,8 @@ import {
   isAdaptorChannelSelectInteraction,
   messageFacade,
 } from "../../adaptor";
-import { batchDispatchAsync, getHookContext } from "../../core/hookContext";
+import { batchDispatchAsync } from "../../core/hookContext";
+import { useAdaptor, useHookContext } from "../core/useHookContext";
 
 import type {
   AdaptorChannelSelectInteraction,
@@ -19,13 +20,13 @@ export const useChannelSelectEvent = (
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const ctx = getHookContext();
-  const adapter = ctx.adaptor;
+  const ctx = useHookContext();
+  const adaptor = useAdaptor();
 
   useEffect(() => {
-    const facade = messageFacade(adapter);
+    const facade = messageFacade(adaptor);
 
-    const clear = adapter.subscribeInteraction((interaction) => {
+    const clear = adaptor.subscribeInteraction((interaction) => {
       if (!isAdaptorChannelSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 

@@ -1,5 +1,6 @@
 import { useEffect } from "./useEffect";
-import { batchDispatchAsync, getHookContext } from "../../core/hookContext";
+import { batchDispatchAsync } from "../../core/hookContext";
+import { useHookContext } from "../core/useHookContext";
 import { useRef } from "../state/useRef";
 
 import type { Awaitable } from "../../util/types";
@@ -8,7 +9,7 @@ export const useObserveValue = <T>(
   value: T,
   onChanged: ((value: T) => Awaitable<void>) | undefined
 ) => {
-  const ctx = getHookContext();
+  const ctx = useHookContext();
 
   const valueChanged = useRef(false);
   useEffect(() => {

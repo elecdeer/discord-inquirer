@@ -1,6 +1,7 @@
 import { useEffect } from "./useEffect";
 import { isAdaptorStringSelectInteraction, messageFacade } from "../../adaptor";
-import { batchDispatchAsync, getHookContext } from "../../core/hookContext";
+import { batchDispatchAsync } from "../../core/hookContext";
+import { useAdaptor, useHookContext } from "../core/useHookContext";
 
 import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
@@ -13,13 +14,13 @@ export const useStringSelectEvent = (
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const ctx = getHookContext();
-  const adapter = ctx.adaptor;
+  const ctx = useHookContext();
+  const adaptor = useAdaptor();
 
   useEffect(() => {
-    const facade = messageFacade(adapter);
+    const facade = messageFacade(adaptor);
 
-    const clear = adapter.subscribeInteraction((interaction) => {
+    const clear = adaptor.subscribeInteraction((interaction) => {
       if (!isAdaptorStringSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 

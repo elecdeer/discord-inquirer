@@ -1,7 +1,7 @@
 import { useEffect } from "./useEffect";
 import { useObserveValue } from "./useObserveValue";
 import { isAdaptorModalSubmitInteraction, messageFacade } from "../../adaptor";
-import { getHookContext } from "../../core/hookContext";
+import { useAdaptor } from "../core/useHookContext";
 import { generateCustomId } from "../state/useCustomId";
 import { useRef } from "../state/useRef";
 import { useState } from "../state/useState";
@@ -50,7 +50,7 @@ export type UseModalParam<TKey extends string> = {
 export const useModal = <TKey extends string>(
   param: UseModalParam<TKey>
 ): UseModalResult<TKey> => {
-  const adaptor = getHookContext().adaptor;
+  const adaptor = useAdaptor();
   const [result, setResult] = useState<Record<TKey, string> | null>(null);
 
   //モーダル内部のコンポーネントのcustomIdは固定

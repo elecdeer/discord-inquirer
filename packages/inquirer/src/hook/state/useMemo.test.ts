@@ -1,21 +1,10 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { useMemo } from "./useMemo";
-import { createHookCycle } from "../../core/hookContext";
-import { createDiscordAdaptorMock, renderHook } from "../../testing";
+import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useMemo", () => {
   describe("useMemo()", () => {
-    let controller: ReturnType<typeof createHookCycle> | undefined;
-
-    afterEach(() => {
-      try {
-        controller?.endRender();
-      } catch (e) {
-        // skip
-      }
-    });
-
     test("値が保持される", () => {
       const { rerender, result } = renderHook(
         (args) => useMemo(() => args, []),
@@ -53,8 +42,6 @@ describe("packages/inquirer/src/hook/useMemo", () => {
     });
 
     test("depsが変化した際にfactory()が呼ばれ新しい値が保持される", () => {
-      controller = createHookCycle(createDiscordAdaptorMock(), vi.fn());
-
       const factory = vi.fn(() => 10);
       const { rerender, result } = renderHook(
         (deps) => useMemo(factory, deps),

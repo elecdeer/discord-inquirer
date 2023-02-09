@@ -9,11 +9,13 @@ import {
   deferDispatchAsync,
 } from "../core/hookContext";
 import { TimeoutError } from "../util/errors";
+import { defaultLogger } from "../util/logger";
 import { createRandomSource } from "../util/randomSource";
 import { createTimer } from "../util/timer";
 
 import type { AdaptorMock } from "./discordAdaptorMock";
 import type { HookCycle } from "../core/hookContext";
+import type { Logger } from "../util/logger";
 
 // implements reference: https://github.com/testing-library/react-hooks-testing-library/blob/c7a2e979fb8a51271d0d3032c7a03b6fb6ebd3e6/src/core/index.ts
 
@@ -21,6 +23,7 @@ export type RenderHookOptions<TArgs> = {
   initialArgs?: TArgs;
   adaptor?: AdaptorMock;
   randomSource?: () => number;
+  logger?: Logger;
 };
 
 type Result<V, E> =
@@ -78,6 +81,7 @@ export const renderHook = <TResult, TArgs>(
     initialArgs = undefined,
     adaptor = createDiscordAdaptorMock(),
     randomSource = createRandomSource(23),
+    logger = defaultLogger,
   } = options ?? {};
 
   const { result, setValue, setError, addResolver } = resultContainer();
@@ -85,6 +89,7 @@ export const renderHook = <TResult, TArgs>(
 
   const hookCycle = createHookCycle(
     adaptor,
+    logger,
     vi.fn(() => {
       //dispatchを呼ぶ可能性のある操作をする場合はactで囲う必要がある
       console.warn(
