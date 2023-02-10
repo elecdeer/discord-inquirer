@@ -28,12 +28,11 @@ export const useEffect = (
 
   //前回のrender時とdepsが変わっていたらcb実行を予約
   if (changed) {
-    const renderIndex = ctx.renderIndex;
-    ctx.mountHooks[renderIndex].push((message) => {
+    ctx.mountHooks.push((message) => {
       const clean = callback(message);
 
       if (clean !== undefined) {
-        ctx.unmountHooks[renderIndex].push(clean);
+        ctx.unmountHooks.push(clean);
       }
     });
   }

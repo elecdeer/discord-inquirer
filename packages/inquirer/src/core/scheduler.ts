@@ -21,7 +21,7 @@ export const createScheduler = (
   const scheduleDispatch = (dispatch: () => void) => {
     console.log(`scheduleDispatch: ${dispatchCount}`);
     dispatchQueue.push({
-      index: dispatchCount++,
+      index: ++dispatchCount,
       dispatch,
     });
     if (dispatchQueue.length > maxQueueSize) {
@@ -33,7 +33,7 @@ export const createScheduler = (
   const scheduleCommit = (commit: () => Promise<void>) => {
     console.log(`scheduleCommit: ${commitCount}`);
     commitQueue.push({
-      index: commitCount++,
+      index: ++commitCount,
       commit,
     });
     if (commitQueue.length > maxQueueSize) {
@@ -54,6 +54,18 @@ export const createScheduler = (
       return;
     }
     //両方空なら次のworkは予約されない
+  };
+
+  //同期的にキューを全て処理する
+  const flushWork = () => {
+    while (dispatchQueue.length > 0 || commitQueue.length > 0) {
+      if (dispatchQueue.length > 0) {
+        workDispatch();
+      }
+      if (commitQueue.length > 0) {
+        void workCommit();
+      }
+    }
   };
 
   const scheduleWork = workScheduler(work);
@@ -86,6 +98,7 @@ export const createScheduler = (
   return {
     scheduleDispatch,
     scheduleCommit,
+    flushWork,
     scheduleWork,
   };
 };

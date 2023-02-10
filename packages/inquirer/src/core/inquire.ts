@@ -1,6 +1,6 @@
 import { createEventFlow } from "@elecdeer/event-flow";
 
-import { createHookCycle, deferDispatch, getHookContext } from "./hookContext";
+import { createRenderer } from "./renderer";
 import { isMatchHash } from "../util/hash";
 import { defaultLogger } from "../util/logger";
 import { createTimer } from "../util/timer";
@@ -116,124 +116,46 @@ export const inquire = <T extends Record<string, unknown>>(
     });
   };
 
-  const renderPrompt = (): {
-    renderIndex: number;
-    renderResult: MessageMutualPayload;
-  } => {
-    //render中にdispatchが発生した場合は、再度renderを行う
-    const renderIndex = hookContext.startRender();
-    log("debug", `render #${renderIndex} start`);
-    const ctx = getHookContext();
+  let lastSendMessageId: string | undefined;
 
-    log("debug", `render #${renderIndex} dispatch override`);
+  const renderer = createRenderer(
+    () => {
+      return prompt(answer as UnionToIntersection<AnswerPrompt<T>>, () => {
+        //noop
+      });
+    },
+    async (value) => {
+      const { messageId, updated } = await screen.commit(value);
+      lastSendMessageId = messageId ?? lastSendMessageId;
+      if (lastSendMessageId === undefined) {
+        throw new Error("lastSendMessageId is undefined");
+      }
+      return lastSendMessageId;
+    },
+    adaptor,
+    log
+  );
 
-    let promptResult: MessageMutualPayload;
-    const { dispatched } = deferDispatch(ctx, () => {
-      promptResult = prompt(
-        answer as UnionToIntersection<AnswerPrompt<T>>,
-        close
-      );
-    });
-
-    log("debug", `render #${renderIndex} dispatch override end`);
-
-    hookContext.endRender();
-    log("debug", `render #${renderIndex} end`);
-
-    if (dispatched) {
-      log("debug", `render #${renderIndex} rerender`);
-      return renderPrompt();
-    } else {
-      log("debug", `render #${renderIndex} complete`);
-      return {
-        renderIndex,
-        renderResult: promptResult!,
-      };
-    }
-  };
-
-  const open = async () => {
-    log("debug", "inquirer open");
-
-    const { renderIndex, renderResult } = renderPrompt();
-
-    log("debug", {
-      renderResult: renderResult,
-    });
-
-    const commitResult = await screen.commit(renderResult);
-    if (commitResult.updated) {
-      hookContext.mount(renderIndex, commitResult.messageId);
-      log("debug", `payload mounted messageId: ${commitResult.messageId}`);
-      resetIdleTimer();
-    } else {
-      log("error", "failed to initial commit");
-      await close();
-    }
-  };
-
-  const update = async () => {
-    log("debug", "inquirer update");
-
-    const { renderIndex, renderResult } = renderPrompt();
-
-    log("debug", {
-      renderResult: renderResult,
-    });
-
-    const commitResult = await screen.commit(renderResult);
-    if (commitResult.messageId !== null) {
-      hookContext.update(
-        renderIndex,
-        commitResult.messageId,
-        commitResult.updated
-      );
-    } else {
-      log("warn", "messageId is null");
-    }
-
-    if (commitResult.updated) {
-      log("debug", `payload updated messageId: ${commitResult.messageId}`);
-      resetIdleTimer();
-    }
-  };
-
-  const close = async () => {
-    log("debug", "inquirer close");
-    answerEvent.offAll();
-
-    const { renderIndex, renderResult } = renderPrompt();
-
-    log("debug", {
-      renderResult: renderResult,
-    });
-
-    await screen.commit(renderResult);
-    await screen.close();
-
-    hookContext.unmount(renderIndex);
-    log("debug", "payload unmounted");
-
-    disposeTimers();
-  };
-
-  const hookContext = createHookCycle(adaptor, log, update);
   const { resetIdleTimer, disposeTimers } = createInquireTimer(
     {
       time,
       idle,
       log,
     },
-    close
+    () => {
+      // とりあえずnoop
+    }
   );
 
   //初回送信
-  setImmediate(open);
+  renderer.mount();
 
   return {
     resultEvent: answerEvent,
     result: () => result,
-    close,
+    close: async () => {
+      // とりあえずnoop
+    },
   };
 };
 

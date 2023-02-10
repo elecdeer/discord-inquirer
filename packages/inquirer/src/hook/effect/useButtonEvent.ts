@@ -27,9 +27,9 @@ export const useButtonEvent = (
         await facade.deferUpdate(interaction.id, interaction.token);
       };
 
-      void batchDispatchAsync(ctx, async () => {
-        await handle(interaction, deferUpdate);
-      });
+      // void batchDispatchAsync(ctx, async () => {
+      void handle(interaction, deferUpdate);
+      // });
     });
 
     return () => {
