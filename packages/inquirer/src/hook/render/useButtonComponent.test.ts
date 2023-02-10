@@ -7,12 +7,12 @@ describe("packages/inquirer/src/hook/render/useButtonComponent", () => {
   describe("useButtonComponent()", () => {
     test("クリック時にonClickとdeferUpdateが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, adaptorMock, interactionHelper, waitFor } = renderHook(
-        () =>
+      const { result, adaptorMock, interactionHelper, waitFor } =
+        await renderHook(() =>
           useButtonComponent({
             onClick: handle,
           })
-      );
+        );
 
       const component = result.current({
         style: "primary",

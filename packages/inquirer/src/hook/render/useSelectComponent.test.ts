@@ -8,8 +8,8 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
   describe("useSelectComponent()", () => {
-    test("引数で与えたオプションのdefaultフィールドによって初期状態が決まる", () => {
-      const { result } = renderHook(() =>
+    test("引数で与えたオプションのdefaultフィールドによって初期状態が決まる", async () => {
+      const { result } = await renderHook(() =>
         useSelectComponent({
           options: [
             {
@@ -40,7 +40,7 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
 
     test("オプションが選択されるとonSelectが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, interactionHelper, waitFor } = renderHook(() =>
+      const { result, interactionHelper, waitFor } = await renderHook(() =>
         useSelectComponent({
           options: [
             {
@@ -56,12 +56,15 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
         })
       );
 
+      console.log("current", result.current);
+
       await interactionHelper.selectStringSelectComponent(
         result.current[1](),
         result.current[1]()
           .options.filter((option) => option.label === "bar")
           .map((option) => option.value)
       );
+      console.log("B");
 
       await waitFor(() => expect(handle).toBeCalledTimes(1));
 
@@ -80,7 +83,7 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
     });
 
     test("オプションが選択されると選択状態が更新される", async () => {
-      const { result, interactionHelper, waitFor } = renderHook(() =>
+      const { result, interactionHelper, waitFor } = await renderHook(() =>
         useSelectComponent({
           options: [
             {
@@ -119,7 +122,7 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
     });
 
     test("inactiveなオプションはコンポーネントに含まれない", async () => {
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useSelectComponent({
           options: [
             {
@@ -144,8 +147,8 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
   });
 
   describe("useSingleSelectComponent()", () => {
-    test("最大選択数が1のコンポーネントが生成される", () => {
-      const { result } = renderHook(() =>
+    test("最大選択数が1のコンポーネントが生成される", async () => {
+      const { result } = await renderHook(() =>
         useSingleSelectComponent({
           options: [
             {

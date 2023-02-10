@@ -12,8 +12,8 @@ import type {
 
 describe("packages/inquirer/src/hook/effect/useModal", () => {
   describe("useModal()", () => {
-    test("openを呼んだときにinteractionが返信される", () => {
-      const { result, adaptorMock } = renderHook(() =>
+    test("openを呼んだときにinteractionが返信される", async () => {
+      const { result, adaptorMock } = await renderHook(() =>
         useModal({
           title: "title",
           components: [
@@ -68,7 +68,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
 
       const onSubmit = vi.fn();
 
-      const { result, interactionHelper, rerender, actAsync } = renderHook(
+      const { result, interactionHelper, rerender, act } = await renderHook(
         () =>
           useModal({
             title: "title",
@@ -95,7 +95,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
       //sendInteractionResponseは非同期なのでそれが完了するまで待つ必要がある
       await new Promise((resolve) => setTimeout(resolve, 1));
 
-      await actAsync(async () => {
+      await act(async () => {
         //開かれたモーダルの回答が送信された
         const interaction = await interactionHelper.confirmModal(
           sentInteractionResponse!.data,

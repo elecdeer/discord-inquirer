@@ -5,8 +5,8 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useRef", () => {
   describe("useRef()", () => {
-    test("値を保持する", () => {
-      const { rerender, result } = renderHook((args) => useRef(args), {
+    test("値を保持する", async () => {
+      const { rerender, result } = await renderHook((args) => useRef(args), {
         initialArgs: 3,
       });
 
@@ -22,9 +22,9 @@ describe("packages/inquirer/src/hook/useRef", () => {
       expect(result.current.current).toBe(20);
     });
 
-    test("値を変更してもdispatchは呼ばれない", () => {
+    test("値を変更してもdispatchは呼ばれない", async () => {
       let renderNum = 0;
-      const { result, act } = renderHook(() => {
+      const { result, act } = await renderHook(() => {
         renderNum++;
         return useRef(3);
       });

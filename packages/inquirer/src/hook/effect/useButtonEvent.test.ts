@@ -7,7 +7,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
   describe("useButtonEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
-      const { interactionHelper } = renderHook(() =>
+      const { interactionHelper } = await renderHook(() =>
         useButtonEvent("customId", handle)
       );
 
@@ -21,7 +21,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
 
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", async () => {
       const handle = vi.fn();
-      const { interactionHelper } = renderHook(() =>
+      const { interactionHelper } = await renderHook(() =>
         useButtonEvent("customId", handle)
       );
 

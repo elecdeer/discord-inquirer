@@ -5,8 +5,8 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
   describe("useConfirmButtonComponent()", () => {
-    test("初期状態ではcheckedとokはfalse", () => {
-      const { result } = renderHook(() =>
+    test("初期状態ではcheckedとokはfalse", async () => {
+      const { result } = await renderHook(() =>
         useConfirmButtonComponent({
           validate: () => ({
             ok: true,
@@ -25,7 +25,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
         ok: true,
       }));
 
-      const { result, interactionHelper, waitFor } = renderHook(() =>
+      const { result, interactionHelper, waitFor } = await renderHook(() =>
         useConfirmButtonComponent({
           validate: handle,
         })
@@ -45,7 +45,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
     });
 
     test("validate結果がvalidateResultに反映される", async () => {
-      const { result, rerender, interactionHelper, waitFor } = renderHook(
+      const { result, rerender, interactionHelper, waitFor } = await renderHook(
         (ok: boolean) =>
           useConfirmButtonComponent({
             validate: () => ({

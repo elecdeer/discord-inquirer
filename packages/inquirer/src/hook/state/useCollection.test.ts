@@ -6,24 +6,24 @@ import { renderHook } from "../../testing";
 describe("packages/inquirer/src/hook/useCollection", () => {
   describe("useCollection()", () => {
     describe("set()", () => {
-      test("setした値が保持される", () => {
-        const { act, result } = renderHook(() =>
+      test("setした値が保持される", async () => {
+        const { act, result } = await renderHook(() =>
           useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
           ])
         );
 
-        act(() => {
+        await act(() => {
           result.current.set(3, { value: "3" });
         });
 
         expect(result.current.get(3)).toEqual({ value: "3" });
       });
 
-      test("前回と異なる値をsetするとdispatchされる", () => {
+      test("前回と異なる値をsetするとdispatchされる", async () => {
         let renderNum = 0;
-        const { act, result } = renderHook(() => {
+        const { act, result } = await renderHook(() => {
           renderNum++;
           return useCollection([
             [1, { value: "1" }],
@@ -33,17 +33,17 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
         expect(renderNum).toBe(1);
 
-        act(() => {
+        await act(() => {
           result.current.set(3, { value: "3" });
         });
 
         expect(renderNum).toBe(2);
       });
 
-      test("前回と同じ値をsetするとdispatchされない", () => {
+      test("前回と同じ値をsetするとdispatchされない", async () => {
         let renderNum = 0;
         const value2 = { value: "2" };
-        const { act, result } = renderHook(() => {
+        const { act, result } = await renderHook(() => {
           renderNum++;
           return useCollection([
             [1, { value: "1" }],
@@ -53,7 +53,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
         expect(renderNum).toBe(1);
 
-        act(() => {
+        await act(() => {
           result.current.set(2, value2);
         });
 
@@ -62,9 +62,9 @@ describe("packages/inquirer/src/hook/useCollection", () => {
     });
 
     describe("setEach()", () => {
-      test("保持している各エントリに対してsetできる", () => {
+      test("保持している各エントリに対してsetできる", async () => {
         let renderNum = 0;
-        const { act, result } = renderHook(() => {
+        const { act, result } = await renderHook(() => {
           renderNum++;
           return useCollection([
             [1, { value: "1" }],
@@ -74,7 +74,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
         expect(renderNum).toBe(1);
 
-        act(() => {
+        await act(() => {
           result.current.setEach((value) => ({ value: value.value + "!" }));
         });
 
@@ -83,9 +83,9 @@ describe("packages/inquirer/src/hook/useCollection", () => {
         expect(renderNum).toBe(2);
       });
 
-      test("全てのエントリに変化が無い場合はdispatchされない", () => {
+      test("全てのエントリに変化が無い場合はdispatchされない", async () => {
         let renderNum = 0;
-        const { act, result } = renderHook(() => {
+        const { act, result } = await renderHook(() => {
           renderNum++;
           return useCollection([
             [1, { value: "1" }],
@@ -95,7 +95,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
         expect(renderNum).toBe(1);
 
-        act(() => {
+        await act(() => {
           result.current.setEach((prev) => prev);
         });
 
@@ -104,9 +104,9 @@ describe("packages/inquirer/src/hook/useCollection", () => {
     });
 
     describe("delete()", () => {
-      test("値をdeleteできる", () => {
+      test("値をdeleteできる", async () => {
         let renderNum = 0;
-        const { act, result } = renderHook(() => {
+        const { act, result } = await renderHook(() => {
           renderNum++;
           return useCollection([
             [1, { value: "1" }],
@@ -118,7 +118,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
         expect(renderNum).toBe(1);
 
-        act(() => {
+        await act(() => {
           result.current.remove(1);
         });
 
@@ -129,9 +129,9 @@ describe("packages/inquirer/src/hook/useCollection", () => {
     });
 
     describe("reset()", () => {
-      test("reset()を呼び出すとinitialStateの値にリセットされる", () => {
+      test("reset()を呼び出すとinitialStateの値にリセットされる", async () => {
         let renderNum = 0;
-        const { act, result } = renderHook(() => {
+        const { act, result } = await renderHook(() => {
           renderNum++;
           return useCollection([
             [1, { value: "1" }],
@@ -139,7 +139,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
           ]);
         });
 
-        act(() => {
+        await act(() => {
           result.current.set(3, { value: "3" });
         });
 
@@ -147,7 +147,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
         expect(renderNum).toBe(2);
 
-        act(() => {
+        await act(() => {
           result.current.reset();
         });
 

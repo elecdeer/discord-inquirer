@@ -175,7 +175,7 @@ export const deferDispatchAsync = async <T>(
 };
 
 export const batchDispatch = <T>(ctx: HookContext, cb: () => T): T => {
-  // console.log("batchDispatch");
+  console.log("batchDispatch");
   // const prevDispatch = ctx.dispatch;
   // console.log(`  #${ctx.renderIndex} patch dispatch`);
   //
@@ -200,7 +200,7 @@ export const batchDispatchAsync = async <T>(
   ctx: HookContext,
   cb: () => Awaitable<T>
 ): Promise<T> => {
-  // console.log("batchDispatchAsync");
+  console.log("batchDispatchAsync");
   // const prevDispatch = ctx.dispatch;
   // console.log(`  #${ctx.renderIndex} patch dispatch async`);
   //

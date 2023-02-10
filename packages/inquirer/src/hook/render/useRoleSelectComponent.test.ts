@@ -8,15 +8,15 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
   describe("useRoleSelectComponent()", () => {
-    test("初期状態ではどのオプションも選択されていない", () => {
-      const { result } = renderHook(() => useRoleSelectComponent());
+    test("初期状態ではどのオプションも選択されていない", async () => {
+      const { result } = await renderHook(() => useRoleSelectComponent());
 
       expect(result.current[0]).toEqual([]);
     });
 
     test("オプションが選択されるとonSelectが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, interactionHelper, waitFor } = renderHook(() =>
+      const { result, interactionHelper, waitFor } = await renderHook(() =>
         useRoleSelectComponent({
           onSelected: handle,
         })
@@ -45,7 +45,7 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
     });
 
     test("オプションが選択されると選択状態が更新される", async () => {
-      const { result, interactionHelper, waitFor } = renderHook(() =>
+      const { result, interactionHelper, waitFor } = await renderHook(() =>
         useRoleSelectComponent()
       );
 
@@ -72,7 +72,7 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
     });
 
     test("最小選択数と最大選択数の指定がコンポーネントデータに含まれる", async () => {
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useRoleSelectComponent({
           minValues: 1,
           maxValues: 2,
@@ -90,8 +90,8 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
   });
 
   describe("useMentionableSingleSelectComponent()", () => {
-    test("最大選択数が1のコンポーネントが生成される", () => {
-      const { result } = renderHook(() => useRoleSingleSelectComponent());
+    test("最大選択数が1のコンポーネントが生成される", async () => {
+      const { result } = await renderHook(() => useRoleSingleSelectComponent());
 
       const component = result.current[1]();
       expect(component).toEqual(

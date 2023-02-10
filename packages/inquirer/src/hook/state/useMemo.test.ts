@@ -5,8 +5,8 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useMemo", () => {
   describe("useMemo()", () => {
-    test("値が保持される", () => {
-      const { rerender, result } = renderHook(
+    test("値が保持される", async () => {
+      const { rerender, result } = await renderHook(
         (args) => useMemo(() => args, []),
         {
           initialArgs: 3,
@@ -15,17 +15,17 @@ describe("packages/inquirer/src/hook/useMemo", () => {
 
       expect(result.current).toBe(3);
 
-      rerender({
+      await rerender({
         newArgs: 10,
       });
 
       expect(result.current).toBe(3);
     });
 
-    test("depsが変更されなかった場合はfactory()が呼ばれない", () => {
+    test("depsが変更されなかった場合はfactory()が呼ばれない", async () => {
       const deps = [1, "bar"];
 
-      const { rerender, result } = renderHook(
+      const { rerender, result } = await renderHook(
         (args) => useMemo(() => args, deps),
         {
           initialArgs: 3,
@@ -34,16 +34,16 @@ describe("packages/inquirer/src/hook/useMemo", () => {
 
       expect(result.current).toBe(3);
 
-      rerender({
+      await rerender({
         newArgs: 10,
       });
 
       expect(result.current).toBe(3);
     });
 
-    test("depsが変化した際にfactory()が呼ばれ新しい値が保持される", () => {
+    test("depsが変化した際にfactory()が呼ばれ新しい値が保持される", async () => {
       const factory = vi.fn(() => 10);
-      const { rerender, result } = renderHook(
+      const { rerender, result } = await renderHook(
         (deps) => useMemo(factory, deps),
         {
           initialArgs: [1, "bar"],
@@ -54,7 +54,7 @@ describe("packages/inquirer/src/hook/useMemo", () => {
 
       expect(result.current).toBe(10);
 
-      rerender({
+      await rerender({
         newArgs: [1, "changed"],
       });
 

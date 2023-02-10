@@ -121,6 +121,7 @@ export const inquire = <T extends Record<string, unknown>>(
   const renderer = createRenderer(
     () => {
       return prompt(answer as UnionToIntersection<AnswerPrompt<T>>, () => {
+        // TODO
         //noop
       });
     },
@@ -143,6 +144,7 @@ export const inquire = <T extends Record<string, unknown>>(
       log,
     },
     () => {
+      // TODO
       // とりあえずnoop
     }
   );
@@ -154,6 +156,7 @@ export const inquire = <T extends Record<string, unknown>>(
     resultEvent: answerEvent,
     result: () => result,
     close: async () => {
+      // TODO
       // とりあえずnoop
     },
   };

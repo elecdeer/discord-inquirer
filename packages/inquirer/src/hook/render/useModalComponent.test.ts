@@ -8,8 +8,8 @@ import type { AdaptorInteractionResponse } from "../../adaptor";
 describe("packages/inquirer/src/hook/render/useModalComponent", () => {
   describe("useModalComponent()", () => {
     test("ボタンをクリックするとmodalが開く", async () => {
-      const { result, interactionHelper, waitFor, adaptorMock } = renderHook(
-        () =>
+      const { result, interactionHelper, waitFor, adaptorMock } =
+        await renderHook(() =>
           useModalComponent({
             title: "title",
             components: [
@@ -20,7 +20,7 @@ describe("packages/inquirer/src/hook/render/useModalComponent", () => {
               },
             ],
           })
-      );
+        );
 
       const component = result.current[1]({
         style: "primary",

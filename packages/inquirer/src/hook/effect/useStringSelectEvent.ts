@@ -20,6 +20,8 @@ export const useStringSelectEvent = (
   useEffect(() => {
     const facade = messageFacade(adaptor);
 
+    console.log("subscribeInteraction");
+
     const clear = adaptor.subscribeInteraction((interaction) => {
       if (!isAdaptorStringSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
@@ -28,12 +30,14 @@ export const useStringSelectEvent = (
         await facade.deferUpdate(interaction.id, interaction.token);
       };
 
+      console.log("callHandle");
       void batchDispatchAsync(ctx, async () => {
         await handle(interaction, interaction.data.values, deferUpdate);
       });
     });
 
     return () => {
+      console.log("unsubscribeInteraction");
       clear();
     };
   }, [customId, handle]);

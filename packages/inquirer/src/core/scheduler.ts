@@ -57,13 +57,13 @@ export const createScheduler = (
   };
 
   //同期的にキューを全て処理する
-  const flushWork = () => {
+  const flushWork = async () => {
     while (dispatchQueue.length > 0 || commitQueue.length > 0) {
       if (dispatchQueue.length > 0) {
         workDispatch();
       }
       if (commitQueue.length > 0) {
-        void workCommit();
+        await workCommit();
       }
     }
   };
@@ -79,6 +79,7 @@ export const createScheduler = (
       } else {
         console.log("dispatch");
         dispatchTask.dispatch();
+        console.log("dispatch end");
       }
     }
   };
@@ -92,6 +93,7 @@ export const createScheduler = (
     } else {
       console.log("commit");
       await commitTask.commit();
+      console.log("commit end");
     }
   };
 

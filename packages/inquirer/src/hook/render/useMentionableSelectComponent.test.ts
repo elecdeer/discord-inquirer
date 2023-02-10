@@ -8,15 +8,17 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () => {
   describe("useMentionableSelectComponent()", () => {
-    test("初期状態ではどのオプションも選択されていない", () => {
-      const { result } = renderHook(() => useMentionableSelectComponent());
+    test("初期状態ではどのオプションも選択されていない", async () => {
+      const { result } = await renderHook(() =>
+        useMentionableSelectComponent()
+      );
 
       expect(result.current[0]).toEqual([]);
     });
 
     test("オプションが選択されるとonSelectが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, interactionHelper, waitFor, act } = renderHook(() =>
+      const { result, interactionHelper, waitFor, act } = await renderHook(() =>
         useMentionableSelectComponent({
           onSelected: handle,
         })
@@ -49,7 +51,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
     });
 
     test("オプションが選択されると選択状態が更新される", async () => {
-      const { result, interactionHelper, waitFor } = renderHook(() =>
+      const { result, interactionHelper, waitFor } = await renderHook(() =>
         useMentionableSelectComponent()
       );
 
@@ -80,7 +82,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
     });
 
     test("最小選択数と最大選択数の指定がコンポーネントデータに含まれる", async () => {
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useMentionableSelectComponent({
           minValues: 1,
           maxValues: 2,
@@ -98,8 +100,8 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
   });
 
   describe("useMentionableSingleSelectComponent()", () => {
-    test("最大選択数が1のコンポーネントが生成される", () => {
-      const { result } = renderHook(() =>
+    test("最大選択数が1のコンポーネントが生成される", async () => {
+      const { result } = await renderHook(() =>
         useMentionableSingleSelectComponent()
       );
 

@@ -24,12 +24,12 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       return options;
     };
 
-    test("引数で与えたオプションのdefaultフィールドによって初期状態が決まる", () => {
+    test("引数で与えたオプションのdefaultフィールドによって初期状態が決まる", async () => {
       const options = createDummyOptions([1, 2, 3]);
       options[0][0].default = true;
       options[2][1].default = true;
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
         })
@@ -39,7 +39,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       expect(result.current.result).toEqual(
         expect.arrayContaining([
           // prettier-ignore
-          expect.objectContaining({ key: "0-0", selected: true }),
+          expect.objectContaining({key: "0-0", selected: true}),
           expect.objectContaining({ key: "1-0", selected: false }),
           expect.objectContaining({ key: "1-1", selected: false }),
           expect.objectContaining({ key: "2-0", selected: false }),
@@ -49,12 +49,12 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       );
     });
 
-    test("ページが切り替わるとコンポーネントが更新される", () => {
+    test("ページが切り替わるとコンポーネントが更新される", async () => {
       const options = createDummyOptions([1, 2, 3]);
       options[0][0].default = true;
       options[2][1].default = true;
 
-      const { result, act } = renderHook(() =>
+      const { result, act } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
         })
@@ -68,7 +68,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         },
       ] satisfies AdaptorStringSelectComponent<unknown>["options"]);
 
-      act(() => {
+      await act(() => {
         result.current.setPage(1);
       });
 
@@ -85,7 +85,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         },
       ] satisfies AdaptorStringSelectComponent<unknown>["options"]);
 
-      act(() => {
+      await act(() => {
         result.current.setPage((prev) => prev + 1);
       });
 
@@ -113,12 +113,12 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       options[0][0].default = true;
       options[2][1].default = true;
 
-      const { result, act, interactionHelper, waitFor } = renderHook(() =>
+      const { result, act, interactionHelper, waitFor } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
         })
       );
-      act(() => {
+      await act(() => {
         result.current.setPage(2);
       });
 
@@ -164,7 +164,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       const onSelected = vi.fn();
       const options = createDummyOptions([1, 2, 3]);
 
-      const { result, act, interactionHelper, waitFor } = renderHook(() =>
+      const { result, act, interactionHelper, waitFor } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
           onSelected: onSelected,
@@ -184,7 +184,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
 
       //まだ選択数が足りないのでonSelectedは呼ばれない
 
-      act(() => {
+      await act(() => {
         result.current.setPage(1);
       });
 
@@ -212,7 +212,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
 
       onSelected.mockClear();
 
-      act(() => {
+      await act(() => {
         result.current.setPage(2);
       });
 
@@ -244,7 +244,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
     test("showSelectedAlwaysがtrueの場合、選択されたオプションは常に表示される", async () => {
       const options = createDummyOptions([2, 2, 3]);
 
-      const { result, act, interactionHelper, waitFor } = renderHook(() =>
+      const { result, act, interactionHelper, waitFor } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
           maxValues: 3,
@@ -263,7 +263,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           .map((option) => option.value)
       );
 
-      act(() => {
+      await act(() => {
         result.current.setPage(1);
       });
 
@@ -274,7 +274,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         expect.objectContaining({ value: "1-1", default: false }),
       ]);
 
-      act(() => {
+      await act(() => {
         result.current.setPage(2);
       });
 
@@ -311,7 +311,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         ])
       );
 
-      act(() => {
+      await act(() => {
         result.current.setPage(1);
       });
 
@@ -323,58 +323,58 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       ]);
     });
 
-    test("pageTorusがfalseの場合、最初のページと最後のページを超える値は閾値に揃えられる", () => {
+    test("pageTorusがfalseの場合、最初のページと最後のページを超える値は閾値に揃えられる", async () => {
       const options = createDummyOptions([1, 1, 1]);
 
-      const { result, act } = renderHook(() =>
+      const { result, act } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
           pageTorus: false,
         })
       );
 
-      act(() => {
+      await act(() => {
         result.current.setPage(2);
       });
 
       expect(result.current.page).toBe(2);
 
-      act(() => {
+      await act(() => {
         result.current.setPage((prev) => prev + 1);
       });
 
       expect(result.current.page).toBe(2);
 
-      act(() => {
+      await act(() => {
         result.current.setPage((prev) => prev - 3);
       });
 
       expect(result.current.page).toBe(0);
     });
 
-    test("pageTorusがtrueの場合、最初のページと最後のページが繋がる", () => {
+    test("pageTorusがtrueの場合、最初のページと最後のページが繋がる", async () => {
       const options = createDummyOptions([1, 1, 1]);
 
-      const { result, act } = renderHook(() =>
+      const { result, act } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
           pageTorus: true,
         })
       );
 
-      act(() => {
+      await act(() => {
         result.current.setPage(2);
       });
 
       expect(result.current.page).toBe(2);
 
-      act(() => {
+      await act(() => {
         result.current.setPage((prev) => prev + 1);
       });
 
       expect(result.current.page).toBe(0);
 
-      act(() => {
+      await act(() => {
         result.current.setPage((prev) => prev - 1);
       });
 

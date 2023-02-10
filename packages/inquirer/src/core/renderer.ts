@@ -3,6 +3,7 @@ import { createScheduler } from "./scheduler";
 
 import type { DiscordAdaptor, Snowflake } from "../adaptor";
 import type { Logger } from "../util/logger";
+import type { Awaitable } from "../util/types";
 
 export const createRenderer = <T>(
   prompt: () => T,
@@ -14,6 +15,7 @@ export const createRenderer = <T>(
     setTimeout(() => {
       work();
     }, 10);
+    // work();
   });
 
   const hookCycle = createHookCycle(adaptor, logger, () => {
@@ -56,14 +58,10 @@ export const createRenderer = <T>(
     });
   };
 
-  const act = (cb: () => void) => {
-    cb();
-    scheduler.flushWork();
-  };
-
-  const actAsync = async (cb: () => Promise<void>) => {
-    await cb();
-    scheduler.flushWork();
+  const act = async <T>(cb: () => Awaitable<T>) => {
+    const result = await cb();
+    await scheduler.flushWork();
+    return result;
   };
 
   return {
@@ -71,6 +69,5 @@ export const createRenderer = <T>(
     update,
     unmount,
     act,
-    actAsync,
   };
 };

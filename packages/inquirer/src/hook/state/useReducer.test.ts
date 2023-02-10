@@ -5,7 +5,7 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useReducer", () => {
   describe("useReducer()", () => {
-    test("actionによって状態が遷移する", () => {
+    test("actionによって状態が遷移する", async () => {
       const reducer = (
         state: number,
         action: { type: "increment" | "decrement" }
@@ -18,7 +18,7 @@ describe("packages/inquirer/src/hook/useReducer", () => {
         }
       };
 
-      const { result, act } = renderHook(() => {
+      const { result, act } = await renderHook(() => {
         const [value, dispatch] = useReducer(reducer, 0);
         return {
           value,
@@ -28,13 +28,13 @@ describe("packages/inquirer/src/hook/useReducer", () => {
 
       expect(result.current.value).toBe(0);
 
-      act(() => {
+      await act(() => {
         result.current.dispatch({ type: "increment" });
       });
 
       expect(result.current.value).toBe(1);
 
-      act(() => {
+      await act(() => {
         result.current.dispatch({ type: "decrement" });
         result.current.dispatch({ type: "decrement" });
       });

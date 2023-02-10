@@ -1,21 +1,14 @@
-import assert from "node:assert";
-import { vi } from "vitest";
-
 import { createDiscordAdaptorMock } from "./discordAdaptorMock";
 import { createEmitInteractionTestUtil } from "./emitInteractionUtil";
-import {
-  createHookCycle,
-  deferDispatch,
-  deferDispatchAsync,
-} from "../core/hookContext";
+import { createRenderer } from "../core/renderer";
 import { TimeoutError } from "../util/errors";
 import { defaultLogger } from "../util/logger";
-import { createRandomSource } from "../util/randomSource";
+import { createRandomHelper, createRandomSource } from "../util/randomSource";
 import { createTimer } from "../util/timer";
 
 import type { AdaptorMock } from "./discordAdaptorMock";
-import type { HookCycle } from "../core/hookContext";
 import type { Logger } from "../util/logger";
+import type { Awaitable } from "../util/types";
 
 // implements reference: https://github.com/testing-library/react-hooks-testing-library/blob/c7a2e979fb8a51271d0d3032c7a03b6fb6ebd3e6/src/core/index.ts
 
@@ -73,7 +66,7 @@ const resultContainer = <T>() => {
   };
 };
 
-export const renderHook = <TResult, TArgs>(
+export const renderHook = async <TResult, TArgs>(
   runHook: (args: TArgs) => TResult,
   options?: RenderHookOptions<TArgs>
 ) => {
@@ -87,73 +80,70 @@ export const renderHook = <TResult, TArgs>(
   const { result, setValue, setError, addResolver } = resultContainer();
   let args = initialArgs;
 
-  const hookCycle = createHookCycle(
+  const random = createRandomHelper(randomSource);
+  let latestMessageId = random.nextSnowflake();
+
+  const renderer = createRenderer(
+    () => {
+      try {
+        setValue(runHook(args as TArgs));
+      } catch (e) {
+        if (e instanceof Error) {
+          setError(e);
+        } else {
+          setError(
+            new Error("unexpected throw", {
+              cause: e,
+            })
+          );
+        }
+      }
+    },
+    async () => {
+      return latestMessageId;
+    },
     adaptor,
-    logger,
-    vi.fn(() => {
-      //dispatchを呼ぶ可能性のある操作をする場合はactで囲う必要がある
-      console.warn(
-        "any function call that may call dispatch must be enclosed in act"
-      );
-      console.trace("");
-    })
+    logger
   );
 
-  const renderer = testRenderer(() => {
-    try {
-      setValue(runHook(args as TArgs));
-    } catch (e) {
-      if (e instanceof Error) {
-        setError(e);
-      } else {
-        setError(
-          new Error("unexpected throw", {
-            cause: e,
-          })
-        );
-      }
-    }
-  }, hookCycle);
-
-  let latestMessageId = getRandomMessageId();
-  renderer.render(latestMessageId);
-
-  const actAsync = async <T = void>(
-    cb: () => Promise<T>,
+  const act = async <T>(
+    cb: () => Awaitable<T>,
     messageId?: string
   ): Promise<T> => {
     latestMessageId = messageId ?? latestMessageId;
-    return await renderer.actAsync(cb, latestMessageId);
-  };
-
-  const act = <T>(cb: () => T, messageId?: string): T => {
-    latestMessageId = messageId ?? latestMessageId;
-    return renderer.act(cb, latestMessageId);
+    return await renderer.act(cb);
   };
 
   const interactionHelper = createEmitInteractionTestUtil(
     adaptor.emitInteraction,
-    actAsync,
+    act,
     randomSource
   );
+
+  await renderer.act(() => {
+    renderer.mount();
+  });
 
   return {
     result: result as {
       current: TResult;
     },
-    rerender: (param?: { messageId?: string; newArgs?: TArgs }) => {
+    rerender: async (param?: { messageId?: string; newArgs?: TArgs }) => {
       args = param?.newArgs ?? args;
       latestMessageId = param?.messageId ?? latestMessageId;
-      renderer.rerender(latestMessageId);
+      await renderer.act(() => {
+        renderer.update();
+      });
     },
-    unmount: () => {
-      renderer.unmount();
+    unmount: async () => {
+      await renderer.act(() => {
+        renderer.unmount();
+      });
     },
     act: act,
-    actAsync: actAsync,
     adaptorMock: adaptor,
     interactionHelper: interactionHelper,
-    ...asyncUtil(actAsync, addResolver),
+    ...asyncUtil(act, addResolver),
   };
 };
 
@@ -230,101 +220,4 @@ export const asyncUtil = (
     waitFor,
     waitForNextUpdate,
   };
-};
-
-const testRenderer = (cb: () => void, hookCycle: HookCycle) => {
-  const renderIndexRecord: {
-    current: number | undefined;
-    history: number[];
-  } = {
-    current: undefined,
-    history: [],
-  };
-  const pushRenderIndex = (renderIndex: number) => {
-    renderIndexRecord.history.push(renderIndex);
-    renderIndexRecord.current = renderIndex;
-  };
-
-  const renderCb = (): number => {
-    const renderIndex = hookCycle.startRender();
-
-    const context = hookCycle.context;
-    const { dispatched } = deferDispatch(context, () => {
-      cb();
-    });
-
-    hookCycle.endRender();
-
-    if (dispatched) {
-      return renderCb();
-    } else {
-      return renderIndex;
-    }
-  };
-
-  const render = (messageId: string) => {
-    const renderIndex = renderCb();
-    pushRenderIndex(renderIndex);
-
-    hookCycle.mount(renderIndex, messageId);
-  };
-
-  const rerender = (messageId: string) => {
-    const renderIndex = renderCb();
-
-    assert(renderIndexRecord.current !== undefined);
-    hookCycle.unmount(renderIndexRecord.current);
-
-    pushRenderIndex(renderIndex);
-
-    hookCycle.mount(renderIndex, messageId);
-  };
-
-  const unmount = () => {
-    assert(renderIndexRecord.current !== undefined);
-    hookCycle.unmount(renderIndexRecord.current);
-  };
-
-  const act = <T = void>(cb: () => T, messageId: string) => {
-    const context = hookCycle.context;
-    const { dispatched, result } = deferDispatch(context, () => cb());
-
-    if (dispatched) {
-      rerender(messageId);
-    }
-
-    return result;
-  };
-
-  const actAsync = async <T = void>(
-    cb: () => Promise<T>,
-    messageId: string
-  ): Promise<T> => {
-    const context = hookCycle.context;
-
-    //cbの間で更になにか割り込まれるとまずいかも
-    const { dispatched, result } = await deferDispatchAsync(
-      context,
-      async () => await cb()
-    );
-
-    if (dispatched) {
-      rerender(messageId);
-    }
-
-    return result;
-  };
-
-  return {
-    render,
-    rerender,
-    unmount,
-    act,
-    actAsync,
-  };
-};
-
-const getRandomMessageId = () => {
-  //19桁の10進数の文字列を生成
-  return Math.floor(Math.random() * 10 ** 19).toString();
 };
