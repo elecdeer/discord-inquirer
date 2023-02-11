@@ -35,7 +35,7 @@ export type Inquire<T extends Record<string, unknown>> = (
   config: InquireConfig<T>
 ) => InquireResult<T>;
 
-interface InquireConfig<T extends Record<string, unknown>> {
+export interface InquireConfig<T extends Record<string, unknown>> {
   screen: Screen;
   adaptor: DiscordAdaptor;
 
@@ -121,12 +121,12 @@ export const inquire = <T extends Record<string, unknown>>(
   const renderer = createRenderer(
     () => {
       return prompt(answer as UnionToIntersection<AnswerPrompt<T>>, () => {
-        // TODO
-        //noop
+        void close();
       });
     },
     async (value) => {
-      const { messageId, updated } = await screen.commit(value);
+      resetIdleTimer();
+      const { messageId } = await screen.commit(value);
       lastSendMessageId = messageId ?? lastSendMessageId;
       if (lastSendMessageId === undefined) {
         throw new Error("lastSendMessageId is undefined");
@@ -137,6 +137,15 @@ export const inquire = <T extends Record<string, unknown>>(
     log
   );
 
+  const close = async () => {
+    disposeTimers();
+    await renderer.act(() => {
+      renderer.unmount();
+    });
+
+    await screen.close();
+  };
+
   const { resetIdleTimer, disposeTimers } = createInquireTimer(
     {
       time,
@@ -144,8 +153,7 @@ export const inquire = <T extends Record<string, unknown>>(
       log,
     },
     () => {
-      // TODO
-      // とりあえずnoop
+      void close();
     }
   );
 
@@ -155,10 +163,7 @@ export const inquire = <T extends Record<string, unknown>>(
   return {
     resultEvent: answerEvent,
     result: () => result,
-    close: async () => {
-      // TODO
-      // とりあえずnoop
-    },
+    close: close,
   };
 };
 
