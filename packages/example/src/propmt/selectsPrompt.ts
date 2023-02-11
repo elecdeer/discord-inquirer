@@ -1,6 +1,7 @@
 import {
   Row,
   useChannelSelectComponent,
+  useLogger,
   useMentionableSelectComponent,
   useRoleSelectComponent,
   useSelectComponent,
@@ -21,7 +22,9 @@ export const selectsPrompt: Prompt<{
   userSelected: UserSelectResultValue[];
   roleSelected: AdaptorRole[];
   mentionableSelected: MentionableSelectValue[];
-}> = (answer, close) => {
+}> = (answer) => {
+  const logger = useLogger();
+
   const [result, Select] = useSelectComponent({
     options: [
       {
@@ -42,7 +45,10 @@ export const selectsPrompt: Prompt<{
         "stringSelected",
         selected.filter((item) => item.selected).map((item) => item.payload)
       );
-      console.log("stringSelected", selected);
+      logger.log("debug", {
+        component: "string",
+        selected,
+      });
     },
   });
 
@@ -51,7 +57,10 @@ export const selectsPrompt: Prompt<{
       channelTypes: ["guildText"],
       onSelected: (selected) => {
         answer("channelSelected", selected);
-        console.log("channel selected", selected);
+        logger.log("debug", {
+          component: "chanel",
+          selected,
+        });
       },
       maxValues: 2,
     });
@@ -59,7 +68,10 @@ export const selectsPrompt: Prompt<{
   const [userResult, UserSelectComponent] = useUserSelectComponent({
     onSelected: (selected) => {
       answer("userSelected", selected);
-      console.log("user selected", selected);
+      logger.log("debug", {
+        component: "user",
+        selected,
+      });
     },
     maxValues: 2,
   });
@@ -67,7 +79,10 @@ export const selectsPrompt: Prompt<{
   const [roleResult, RoleSelectComponent] = useRoleSelectComponent({
     onSelected: (selected) => {
       answer("roleSelected", selected);
-      console.log("role selected", selected);
+      logger.log("debug", {
+        component: "role",
+        selected,
+      });
     },
     maxValues: 2,
   });
@@ -76,7 +91,10 @@ export const selectsPrompt: Prompt<{
     useMentionableSelectComponent({
       onSelected: (selected) => {
         answer("mentionableSelected", selected);
-        console.log("mentionable selected", selected);
+        logger.log("debug", {
+          component: "mentionable",
+          selected,
+        });
       },
       maxValues: 2,
     });

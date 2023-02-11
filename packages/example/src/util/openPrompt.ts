@@ -1,6 +1,6 @@
 import { createScreen, inquire } from "discord-inquirer";
 
-import { log } from "./logger";
+import { logger } from "./logger";
 import { dispatchExamplePrompt } from "../propmt/dispatchTestPrompt";
 import { modalPrompt } from "../propmt/modalPrompt";
 import { pagedSelectPrompt } from "../propmt/pagedSelectPrompt";
@@ -20,7 +20,7 @@ export const openPrompt =
       },
       {
         onClose: "deleteComponent",
-        log,
+        logger,
       }
     );
 
@@ -28,7 +28,7 @@ export const openPrompt =
     const promptOption: InquireConfig<any> = {
       screen,
       adaptor,
-      log,
+      logger,
     };
 
     let result;
@@ -50,8 +50,10 @@ export const openPrompt =
     }
 
     result.resultEvent.on(({ key, value, all }) => {
-      console.log("key", key);
-      console.log("value", value);
-      console.log("all", all);
+      logger.log("debug", {
+        key,
+        value,
+        all,
+      });
     });
   };

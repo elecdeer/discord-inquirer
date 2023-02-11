@@ -12,3 +12,7 @@ export {
 } from "./core/inquire";
 export { createScreen, Screen, ScreenConfig } from "./core/screen";
 export * from "./core/hookContext";
+export * from "./util/logger";
+export * from "./util/errors";
+export * from "./util/lazy";
+export * from "./util/timer";

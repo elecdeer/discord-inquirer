@@ -1,5 +1,11 @@
 import { randomUUID } from "crypto";
-import { Row, useButtonComponent, useEffect, useState } from "discord-inquirer";
+import {
+  Row,
+  useButtonComponent,
+  useEffect,
+  useLogger,
+  useState,
+} from "discord-inquirer";
 
 import type { Prompt } from "discord-inquirer";
 
@@ -7,17 +13,25 @@ export const dispatchExamplePrompt = ((answer, close) => {
   const [count, setCount] = useState(0);
   const [closed, setClosed] = useState(false);
 
+  const logger = useLogger();
+
   const PlusButton = useButtonComponent({
     onClick: () => {
-      setCount((page) => page + 1);
+      setCount((c) => c + 1);
+    },
+  });
+
+  const PlusTwoButton = useButtonComponent({
+    onClick: () => {
+      setCount((c) => c + 2);
     },
   });
 
   const PlusPlusButton = useButtonComponent({
     onClick: () => {
-      console.log("setCountTwice");
-      setCount((page) => page + 1);
-      setCount((page) => page + 1);
+      logger.log("debug", "setCountTwice");
+      setCount((c) => c + 1);
+      setCount((c) => c + 1);
     },
   });
 
@@ -35,9 +49,9 @@ export const dispatchExamplePrompt = ((answer, close) => {
   useEffect(() => {
     const id = randomUUID();
 
-    console.log(`mounted ${id}`);
+    logger.log("debug", `mounted ${id}`);
     return () => {
-      console.log(`unmounted ${id}`);
+      logger.log("debug", `unmounted ${id}`);
     };
   });
 
@@ -45,10 +59,11 @@ export const dispatchExamplePrompt = ((answer, close) => {
     content: closed ? "closed" : `count: ${count}`,
     components: [
       Row(
-        PlusButton({ style: "primary", label: "+" })(),
-        PlusPlusButton({ style: "primary", label: "++" })(),
-        CloseButton({ style: "danger", label: "close" })()
+        PlusButton({ style: "primary", label: "+1" })(),
+        PlusTwoButton({ style: "primary", label: "+2" })(),
+        PlusPlusButton({ style: "primary", label: "+1 +1" })()
       ),
+      Row(CloseButton({ style: "danger", label: "close" })()),
     ],
   };
 }) satisfies Prompt<{

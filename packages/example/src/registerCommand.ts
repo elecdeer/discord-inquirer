@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 
 import { commandData } from "./commandData";
+import { logger } from "./util/logger";
 
 //本来fetchの型定義は@types/nodeで定義されるべきだが、unstableだったためか入っていないため、undiciの型定義を利用する
 import type { fetch as _fetch } from "undici";
@@ -10,7 +11,8 @@ config();
 
 const registerCommand = async (applicationId: string, botToken: string) => {
   const body = JSON.stringify(commandData);
-  console.log(body);
+  logger.log("debug", "register command");
+  logger.log("debug", body);
 
   await fetch(
     `https://discord.com/api/v10/applications/${applicationId}/commands`,
@@ -25,8 +27,8 @@ const registerCommand = async (applicationId: string, botToken: string) => {
   )
     .then((res) => res.json())
     .then((res) => {
-      console.log("command registered");
-      console.log(res);
+      logger.log("debug", "command registered");
+      logger.log("debug", res);
     });
 };
 

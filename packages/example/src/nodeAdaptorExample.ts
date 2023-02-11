@@ -3,6 +3,7 @@ import { createNodeAdaptor } from "discord-inquirer-adaptor-node";
 import { config } from "dotenv";
 
 import { commandData } from "./commandData";
+import { logger } from "./util/logger";
 import { openPrompt } from "./util/openPrompt";
 
 config();
@@ -18,7 +19,11 @@ const adaptor = createNodeAdaptor({
 
 adaptor.subscribeInteraction(async (interaction) => {
   if (!isAdaptorApplicationCommandInteraction(interaction)) return;
-  console.log("interactionReceived", interaction.data);
+  logger.log(
+    "debug",
+    `interaction received type:${interaction.type} id:${interaction.id} token:${interaction.token}`
+  );
+  logger.log("trace", interaction);
 
   if (interaction.data.name !== commandData.name) return;
   const option = interaction.data.options[0];

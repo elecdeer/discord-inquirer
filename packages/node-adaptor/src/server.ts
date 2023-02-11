@@ -36,7 +36,6 @@ export const createInteractionServer = (option: InteractionServerOption) => {
     }
 
     const body = await parseBody(req);
-    console.log(`request received: ${body.toString()}`);
 
     const isValidRequest = await verifyKey(
       body,
@@ -74,7 +73,7 @@ export const createInteractionServer = (option: InteractionServerOption) => {
 };
 
 const parseBody = (req: http.IncomingMessage) =>
-  new Promise<Buffer>((resolve, reject) => {
+  new Promise<Buffer>((resolve) => {
     const chunks: Buffer[] = [];
     req.on("data", (chunk) => {
       chunks.push(chunk);
