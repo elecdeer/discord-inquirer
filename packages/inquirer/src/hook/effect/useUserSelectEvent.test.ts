@@ -41,8 +41,8 @@ describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
         useUserSelectEvent("customId", handle)
       );
 
-      interactionHelper.emitUserSelectInteraction("unmatchedCustomId", 2);
-      interactionHelper.emitButtonInteraction("customId");
+      await interactionHelper.emitUserSelectInteraction("unmatchedCustomId", 2);
+      await interactionHelper.emitButtonInteraction("customId");
 
       expect(handle).not.toHaveBeenCalled();
     });

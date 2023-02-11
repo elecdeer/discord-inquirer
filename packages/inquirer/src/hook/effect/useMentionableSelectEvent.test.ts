@@ -40,11 +40,11 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
         useMentionableSelectEvent("customId", handle)
       );
 
-      interactionHelper.emitButtonInteraction("customId");
-      interactionHelper.emitMentionableSelectInteraction("unmatchedCustomId", [
-        { type: "user" },
-        { type: "role" },
-      ]);
+      await interactionHelper.emitButtonInteraction("customId");
+      await interactionHelper.emitMentionableSelectInteraction(
+        "unmatchedCustomId",
+        [{ type: "user" }, { type: "role" }]
+      );
 
       expect(handle).not.toHaveBeenCalled();
     });

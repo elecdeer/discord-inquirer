@@ -17,7 +17,7 @@ export const useButtonEvent = (
   useEffect(() => {
     const facade = messageFacade(adaptor);
 
-    const clear = adaptor.subscribeInteraction((interaction) => {
+    const clear = adaptor.subscribeInteraction(async (interaction) => {
       if (!isAdaptorButtonInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
@@ -25,7 +25,7 @@ export const useButtonEvent = (
         await facade.deferUpdate(interaction.id, interaction.token);
       };
 
-      void handle(interaction, deferUpdate);
+      await handle(interaction, deferUpdate);
     });
 
     return () => {

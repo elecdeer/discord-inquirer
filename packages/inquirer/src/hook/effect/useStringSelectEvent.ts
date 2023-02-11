@@ -18,7 +18,7 @@ export const useStringSelectEvent = (
   useEffect(() => {
     const facade = messageFacade(adaptor);
 
-    const clear = adaptor.subscribeInteraction((interaction) => {
+    const clear = adaptor.subscribeInteraction(async (interaction) => {
       if (!isAdaptorStringSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
@@ -26,7 +26,7 @@ export const useStringSelectEvent = (
         await facade.deferUpdate(interaction.id, interaction.token);
       };
 
-      void handle(interaction, interaction.data.values, deferUpdate);
+      await handle(interaction, interaction.data.values, deferUpdate);
     });
 
     return () => {

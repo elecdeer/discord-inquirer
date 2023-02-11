@@ -28,13 +28,13 @@ import type { RandomSource } from "../util/randomSource";
 import type { Awaitable } from "../util/types";
 
 export const createEmitInteractionTestUtil = (
-  emitInteraction: (interaction: AdaptorInteraction) => void,
+  emitInteraction: (interaction: AdaptorInteraction) => Promise<void>,
   act: <T>(cb: () => Awaitable<T>, messageId?: string) => Promise<T>,
   randomSource: RandomSource
 ) => {
   const faker = adaptorFaker(randomSource);
 
-  const emitButtonInteraction = (
+  const emitButtonInteraction = async (
     customId: Snowflake,
     overrideParam?: Readonly<Partial<AdaptorButtonInteraction>>
   ) => {
@@ -47,11 +47,11 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
-    emitInteraction(interaction);
+    await emitInteraction(interaction);
     return interaction;
   };
 
-  const emitStringSelectInteraction = (
+  const emitStringSelectInteraction = async (
     customId: Snowflake,
     values: readonly string[],
     overrideParam?: Readonly<Partial<AdaptorStringSelectInteraction>>
@@ -66,11 +66,11 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
-    emitInteraction(interaction);
+    await emitInteraction(interaction);
     return interaction;
   };
 
-  const emitUserSelectInteraction = (
+  const emitUserSelectInteraction = async (
     customId: Snowflake,
     dummyUsers: number | readonly Partial<AdaptorUser>[],
     overrideParam?: Readonly<Partial<AdaptorUserSelectInteraction>>
@@ -97,11 +97,11 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
-    emitInteraction(interaction);
+    await emitInteraction(interaction);
     return interaction;
   };
 
-  const emitRoleSelectInteraction = (
+  const emitRoleSelectInteraction = async (
     customId: Snowflake,
     dummyRole: number | readonly Partial<AdaptorRole>[],
     overrideParam?: Readonly<Partial<AdaptorRoleSelectInteraction>>
@@ -124,11 +124,11 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
-    emitInteraction(interaction);
+    await emitInteraction(interaction);
     return interaction;
   };
 
-  const emitChannelSelectInteraction = (
+  const emitChannelSelectInteraction = async (
     customId: Snowflake,
     dummyChannelTypes: readonly (Partial<AdaptorPartialChannel> &
       Pick<AdaptorPartialChannel, "type">)[],
@@ -168,11 +168,11 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
-    emitInteraction(interaction);
+    await emitInteraction(interaction);
     return interaction;
   };
 
-  const emitMentionableSelectInteraction = (
+  const emitMentionableSelectInteraction = async (
     customId: Snowflake,
     dummyMentionables: (
       | ({
@@ -213,7 +213,7 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
-    emitInteraction(interaction);
+    await emitInteraction(interaction);
     return interaction;
   };
 
@@ -232,7 +232,7 @@ export const createEmitInteractionTestUtil = (
       ...overrideParam,
     };
 
-    emitInteraction(interaction);
+    await emitInteraction(interaction);
     return interaction;
   };
 

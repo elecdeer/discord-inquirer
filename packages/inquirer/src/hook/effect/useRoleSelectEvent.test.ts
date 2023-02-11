@@ -33,8 +33,8 @@ describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
         useRoleSelectEvent("customId", handle)
       );
 
-      interactionHelper.emitRoleSelectInteraction("unmatchedCustomId", 2);
-      interactionHelper.emitButtonInteraction("customId");
+      await interactionHelper.emitRoleSelectInteraction("unmatchedCustomId", 2);
+      await interactionHelper.emitButtonInteraction("customId");
 
       expect(handle).not.toHaveBeenCalled();
     });

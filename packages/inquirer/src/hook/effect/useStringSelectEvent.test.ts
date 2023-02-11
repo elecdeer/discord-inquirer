@@ -30,11 +30,11 @@ describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
         useStringSelectEvent("customId", handle)
       );
 
-      interactionHelper.emitStringSelectInteraction("unmatchedCustomId", [
+      await interactionHelper.emitStringSelectInteraction("unmatchedCustomId", [
         "value1",
         "value2",
       ]);
-      interactionHelper.emitButtonInteraction("customId");
+      await interactionHelper.emitButtonInteraction("customId");
 
       expect(handle).not.toHaveBeenCalled();
     });

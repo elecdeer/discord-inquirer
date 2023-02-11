@@ -32,11 +32,11 @@ describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
         useChannelSelectEvent("customId", handle)
       );
 
-      interactionHelper.emitChannelSelectInteraction("unmatchedCustomId", [
-        { type: "guildText" },
-        { type: "publicThread" },
-      ]);
-      interactionHelper.emitButtonInteraction("customId");
+      await interactionHelper.emitChannelSelectInteraction(
+        "unmatchedCustomId",
+        [{ type: "guildText" }, { type: "publicThread" }]
+      );
+      await interactionHelper.emitButtonInteraction("customId");
 
       expect(handle).not.toHaveBeenCalled();
     });

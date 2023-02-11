@@ -40,7 +40,7 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
 
     test("オプションが選択されるとonSelectが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, interactionHelper, waitFor } = await renderHook(() =>
+      const { result, interactionHelper } = await renderHook(() =>
         useSelectComponent({
           options: [
             {
@@ -63,8 +63,6 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
           .map((option) => option.value)
       );
 
-      await waitFor(() => expect(handle).toBeCalledTimes(1));
-
       expect(handle).toBeCalledWith([
         expect.objectContaining({
           label: "foo",
@@ -80,7 +78,7 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
     });
 
     test("オプションが選択されると選択状態が更新される", async () => {
-      const { result, interactionHelper, waitFor } = await renderHook(() =>
+      const { result, interactionHelper } = await renderHook(() =>
         useSelectComponent({
           options: [
             {
@@ -102,20 +100,18 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
           .map((option) => option.value)
       );
 
-      await waitFor(() =>
-        expect(result.current[0]).toEqual([
-          expect.objectContaining({
-            label: "foo",
-            payload: "foo",
-            selected: false,
-          }),
-          expect.objectContaining({
-            label: "bar",
-            payload: "bar",
-            selected: true,
-          }),
-        ])
-      );
+      expect(result.current[0]).toEqual([
+        expect.objectContaining({
+          label: "foo",
+          payload: "foo",
+          selected: false,
+        }),
+        expect.objectContaining({
+          label: "bar",
+          payload: "bar",
+          selected: true,
+        }),
+      ]);
     });
 
     test("inactiveなオプションはコンポーネントに含まれない", async () => {

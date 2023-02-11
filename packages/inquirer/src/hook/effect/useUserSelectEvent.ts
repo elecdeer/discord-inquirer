@@ -1,6 +1,6 @@
 import { useEffect } from "./useEffect";
 import { isAdaptorUserSelectInteraction, messageFacade } from "../../adaptor";
-import { useAdaptor, useHookContext } from "../core/useHookContext";
+import { useAdaptor } from "../core/useHookContext";
 
 import type {
   AdaptorPartialMember,
@@ -21,13 +21,12 @@ export const useUserSelectEvent = (
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const ctx = useHookContext();
   const adaptor = useAdaptor();
 
   useEffect(() => {
     const facade = messageFacade(adaptor);
 
-    const clear = adaptor.subscribeInteraction((interaction) => {
+    const clear = adaptor.subscribeInteraction(async (interaction) => {
       if (!isAdaptorUserSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
@@ -44,7 +43,7 @@ export const useUserSelectEvent = (
         };
       });
 
-      void handle(interaction, users, deferUpdate);
+      await handle(interaction, users, deferUpdate);
     });
 
     return () => {

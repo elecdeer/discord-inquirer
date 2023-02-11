@@ -16,7 +16,7 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
 
     test("オプションが選択されるとonSelectが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, interactionHelper, waitFor } = await renderHook(() =>
+      const { result, interactionHelper } = await renderHook(() =>
         useUserSelectComponent({
           onSelected: handle,
         })
@@ -32,7 +32,7 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
         },
       ]);
 
-      await waitFor(() => expect(handle).toBeCalledTimes(1));
+      expect(handle).toBeCalledTimes(1);
 
       expect(handle).toBeCalledWith([
         expect.objectContaining({
@@ -45,7 +45,7 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
     });
 
     test("オプションが選択されると選択状態が更新される", async () => {
-      const { result, interactionHelper, waitFor } = await renderHook(() =>
+      const { result, interactionHelper } = await renderHook(() =>
         useUserSelectComponent()
       );
 
@@ -59,16 +59,14 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
         },
       ]);
 
-      await waitFor(() =>
-        expect(result.current[0]).toEqual([
-          expect.objectContaining({
-            username: "foo",
-          }),
-          expect.objectContaining({
-            username: "bar",
-          }),
-        ])
-      );
+      expect(result.current[0]).toEqual([
+        expect.objectContaining({
+          username: "foo",
+        }),
+        expect.objectContaining({
+          username: "bar",
+        }),
+      ]);
     });
 
     test("最小選択数と最大選択数の指定がコンポーネントデータに含まれる", async () => {

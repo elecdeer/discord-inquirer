@@ -113,7 +113,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       options[0][0].default = true;
       options[2][1].default = true;
 
-      const { result, act, interactionHelper, waitFor } = await renderHook(() =>
+      const { result, act, interactionHelper } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
         })
@@ -145,18 +145,16 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         component.options.find((option) => option.label === "2-2")!.value,
       ]);
 
-      await waitFor(() =>
-        expect(result.current.result).toEqual(
-          expect.arrayContaining([
-            // prettier-ignore
-            expect.objectContaining({ key: "0-0", selected: true }),
-            expect.objectContaining({ key: "1-0", selected: false }),
-            expect.objectContaining({ key: "1-1", selected: false }),
-            expect.objectContaining({ key: "2-0", selected: false }),
-            expect.objectContaining({ key: "2-1", selected: false }),
-            expect.objectContaining({ key: "2-2", selected: true }),
-          ])
-        )
+      expect(result.current.result).toEqual(
+        expect.arrayContaining([
+          // prettier-ignore
+          expect.objectContaining({ key: "0-0", selected: true }),
+          expect.objectContaining({ key: "1-0", selected: false }),
+          expect.objectContaining({ key: "1-1", selected: false }),
+          expect.objectContaining({ key: "2-0", selected: false }),
+          expect.objectContaining({ key: "2-1", selected: false }),
+          expect.objectContaining({ key: "2-2", selected: true }),
+        ])
       );
     });
 
@@ -164,7 +162,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       const onSelected = vi.fn();
       const options = createDummyOptions([1, 2, 3]);
 
-      const { result, act, interactionHelper, waitFor } = await renderHook(() =>
+      const { result, act, interactionHelper } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
           onSelected: onSelected,
@@ -197,7 +195,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           .map((option) => option.value)
       );
 
-      await waitFor(() => expect(onSelected).toBeCalledTimes(1));
+      expect(onSelected).toBeCalledTimes(1);
       expect(onSelected).toBeCalledWith(
         expect.arrayContaining([
           // prettier-ignore
@@ -227,7 +225,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           .map((option) => option.value)
       );
 
-      await waitFor(() => expect(onSelected).toBeCalledTimes(1));
+      expect(onSelected).toBeCalledTimes(1);
       expect(onSelected).toBeCalledWith(
         expect.arrayContaining([
           // prettier-ignore
@@ -244,7 +242,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
     test("showSelectedAlwaysがtrueの場合、選択されたオプションは常に表示される", async () => {
       const options = createDummyOptions([2, 2, 3]);
 
-      const { result, act, interactionHelper, waitFor } = await renderHook(() =>
+      const { result, act, interactionHelper } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
           maxValues: 3,
@@ -297,14 +295,12 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         values
       );
 
-      await waitFor(() =>
-        expect(result.current.Select().options).toEqual([
-          expect.objectContaining({ value: "0-1", default: true }),
-          expect.objectContaining({ value: "2-0", default: true }),
-          expect.objectContaining({ value: "2-1", default: false }),
-          expect.objectContaining({ value: "2-2", default: false }),
-        ])
-      );
+      expect(result.current.Select().options).toEqual([
+        expect.objectContaining({ value: "0-1", default: true }),
+        expect.objectContaining({ value: "2-0", default: true }),
+        expect.objectContaining({ value: "2-1", default: false }),
+        expect.objectContaining({ value: "2-2", default: false }),
+      ]);
 
       await act(() => {
         result.current.setPage(1);

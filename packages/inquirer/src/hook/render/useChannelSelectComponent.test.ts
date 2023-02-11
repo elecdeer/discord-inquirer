@@ -13,7 +13,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
 
     test("チャンネルが選択されるとonSelectが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, interactionHelper, waitFor } = await renderHook(() =>
+      const { result, interactionHelper } = await renderHook(() =>
         useChannelSelectComponent({
           onSelected: handle,
         })
@@ -31,7 +31,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
         },
       ]);
 
-      await waitFor(() => expect(handle).toBeCalledTimes(1));
+      expect(handle).toBeCalledTimes(1);
 
       expect(handle).toBeCalledWith([
         expect.objectContaining({
@@ -46,7 +46,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
     });
 
     test("チャンネルが選択されると選択状態が更新される", async () => {
-      const { result, interactionHelper, waitFor } = await renderHook(() =>
+      const { result, interactionHelper } = await renderHook(() =>
         useChannelSelectComponent()
       );
 
@@ -62,18 +62,16 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
         },
       ]);
 
-      await waitFor(() =>
-        expect(result.current[0]).toEqual([
-          expect.objectContaining({
-            type: "guildText",
-            name: "foo",
-          }),
-          expect.objectContaining({
-            type: "guildText",
-            name: "bar",
-          }),
-        ])
-      );
+      expect(result.current[0]).toEqual([
+        expect.objectContaining({
+          type: "guildText",
+          name: "foo",
+        }),
+        expect.objectContaining({
+          type: "guildText",
+          name: "bar",
+        }),
+      ]);
     });
 
     test("最小選択数と最大選択数の指定がコンポーネントデータに含まれる", async () => {

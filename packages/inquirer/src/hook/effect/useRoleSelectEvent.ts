@@ -22,7 +22,7 @@ export const useRoleSelectEvent = (
   useEffect(() => {
     const facade = messageFacade(adaptor);
 
-    const clear = adaptor.subscribeInteraction((interaction) => {
+    const clear = adaptor.subscribeInteraction(async (interaction) => {
       if (!isAdaptorRoleSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
@@ -34,7 +34,7 @@ export const useRoleSelectEvent = (
         (id) => interaction.data.resolved.roles[id]
       );
 
-      void handle(interaction, roles, deferUpdate);
+      await handle(interaction, roles, deferUpdate);
     });
 
     return () => {

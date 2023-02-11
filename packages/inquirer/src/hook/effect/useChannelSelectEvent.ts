@@ -24,7 +24,7 @@ export const useChannelSelectEvent = (
   useEffect(() => {
     const facade = messageFacade(adaptor);
 
-    const clear = adaptor.subscribeInteraction((interaction) => {
+    const clear = adaptor.subscribeInteraction(async (interaction) => {
       if (!isAdaptorChannelSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
@@ -36,7 +36,7 @@ export const useChannelSelectEvent = (
         (id) => interaction.data.resolved.channels[id]
       );
 
-      void handle(interaction, channels, deferUpdate);
+      await handle(interaction, channels, deferUpdate);
     });
 
     return () => {
