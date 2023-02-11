@@ -12,12 +12,12 @@ describe("packages/inquirer/src/hook/useRef", () => {
 
       expect(result.current.current).toBe(3);
 
-      rerender();
+      await rerender();
 
       expect(result.current.current).toBe(3);
       result.current.current = 20;
 
-      rerender();
+      await rerender();
 
       expect(result.current.current).toBe(20);
     });
@@ -29,7 +29,7 @@ describe("packages/inquirer/src/hook/useRef", () => {
         return useRef(3);
       });
 
-      act(() => {
+      await act(() => {
         result.current.current = 10;
       });
 

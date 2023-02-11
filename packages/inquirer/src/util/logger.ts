@@ -36,19 +36,21 @@ export const createLogger = (
 
 export const defaultLogger: Logger = createLogger(
   ({ type, message, context, contextDepth }) => {
-    const contextStr = contextDepth > 0 ? `[${context}]` : "";
+    const args = contextDepth > 0 ? [`[${context}]`, message] : [message];
+
     switch (type) {
       case "trace":
         // noop
+        // console.log(...args);
         return;
       case "debug":
-        console.log(contextStr, message);
+        console.log(...args);
         return;
       case "warn":
-        console.warn(contextStr, message);
+        console.warn(...args);
         return;
       case "error":
-        console.error(contextStr, message);
+        console.error(...args);
         return;
 
       default:

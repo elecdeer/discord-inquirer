@@ -115,7 +115,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
         );
       });
 
-      rerender();
+      await rerender();
 
       expect(result.current[0]).toEqual({
         bar: "value",

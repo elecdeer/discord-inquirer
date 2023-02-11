@@ -17,7 +17,7 @@ describe("packages/inquirer/src/hook/render/useButtonComponent", () => {
       const component = result.current({
         style: "primary",
       })();
-      interactionHelper.clickButtonComponent(component);
+      await interactionHelper.clickButtonComponent(component);
 
       await waitFor(() => {
         expect(adaptorMock.sendInteractionResponse).toHaveBeenCalledOnce();

@@ -34,14 +34,19 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
       const component = result.current[1]({
         style: "success",
       })();
-      interactionHelper.clickButtonComponent(component);
 
-      await waitFor(() => expect(handle).toBeCalledTimes(1));
+      expect(handle).toBeCalledTimes(0);
 
-      expect(result.current[0]).toEqual({
-        checked: true,
-        ok: true,
-      });
+      await interactionHelper.clickButtonComponent(component);
+
+      expect(handle).toBeCalledTimes(1);
+
+      await waitFor(() =>
+        expect(result.current[0]).toEqual({
+          checked: true,
+          ok: true,
+        })
+      );
     });
 
     test("validate結果がvalidateResultに反映される", async () => {
@@ -57,7 +62,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
         }
       );
 
-      interactionHelper.clickButtonComponent(
+      await interactionHelper.clickButtonComponent(
         result.current[1]({
           style: "success",
         })()
@@ -70,17 +75,17 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
         })
       );
 
-      rerender({
+      await rerender({
         newArgs: true,
       });
 
-      interactionHelper.clickButtonComponent(
+      await interactionHelper.clickButtonComponent(
         result.current[1]({
           style: "success",
         })()
       );
 
-      waitFor(() =>
+      await waitFor(() =>
         expect(result.current[0]).toEqual({
           checked: true,
           ok: true,

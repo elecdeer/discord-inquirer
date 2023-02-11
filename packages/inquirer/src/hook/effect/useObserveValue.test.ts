@@ -38,7 +38,7 @@ describe("packages/inquirer/src/hook/effect/useObserveValue", () => {
         };
       });
 
-      act(() => {
+      await act(() => {
         result.current.setState(10);
       });
 

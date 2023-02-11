@@ -56,7 +56,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
       );
 
       const component = result.current[1]();
-      interactionHelper.selectMentionableSelectComponent(component, [
+      await interactionHelper.selectMentionableSelectComponent(component, [
         {
           type: "user",
           username: "foo",

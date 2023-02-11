@@ -20,7 +20,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
       );
 
       const component = result.current[1]();
-      interactionHelper.selectChannelSelectComponent(component, [
+      await interactionHelper.selectChannelSelectComponent(component, [
         {
           type: "guildText",
           name: "foo",
@@ -51,7 +51,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
       );
 
       const component = result.current[1]();
-      interactionHelper.selectChannelSelectComponent(component, [
+      await interactionHelper.selectChannelSelectComponent(component, [
         {
           type: "guildText",
           name: "foo",

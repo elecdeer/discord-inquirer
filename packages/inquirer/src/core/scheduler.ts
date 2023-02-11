@@ -69,6 +69,9 @@ export const createScheduler = (
 
   //同期的にキューを全て処理する
   const flushWork = async () => {
+    logger.pushContext("flushWork");
+
+    logger.log("trace", "start");
     while (dispatchQueue.length > 0 || commitQueue.length > 0) {
       if (dispatchQueue.length > 0) {
         workDispatch();
@@ -77,6 +80,7 @@ export const createScheduler = (
         await workCommit();
       }
     }
+    logger.log("trace", "end");
   };
 
   const scheduleWork = workScheduler(work);
