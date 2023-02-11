@@ -16,7 +16,7 @@ client.on("ready", async (readyClient) => {
   console.log("Client is ready");
 
   readyClient.on("interactionCreate", async (interaction) => {
-    console.log("interactionReceived", interaction);
+    // console.log("interactionReceived", interaction);
     if (!interaction.isChatInputCommand()) return;
     if (interaction.commandName !== "example") return;
 

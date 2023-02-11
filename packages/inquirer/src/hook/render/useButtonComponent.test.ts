@@ -7,30 +7,27 @@ describe("packages/inquirer/src/hook/render/useButtonComponent", () => {
   describe("useButtonComponent()", () => {
     test("クリック時にonClickとdeferUpdateが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, adaptorMock, interactionHelper, waitFor } = renderHook(
-        () =>
-          useButtonComponent({
-            onClick: handle,
-          })
+      const { result, adaptorMock, interactionHelper } = await renderHook(() =>
+        useButtonComponent({
+          onClick: handle,
+        })
       );
 
       const component = result.current({
         style: "primary",
       })();
-      interactionHelper.clickButtonComponent(component);
+      await interactionHelper.clickButtonComponent(component);
 
-      await waitFor(() => {
-        expect(adaptorMock.sendInteractionResponse).toHaveBeenCalledOnce();
-        expect(adaptorMock.sendInteractionResponse).toHaveBeenCalledWith(
-          expect.anything(),
-          expect.anything(),
-          {
-            type: "deferredUpdateMessage",
-          }
-        );
-      });
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalledOnce();
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        {
+          type: "deferredUpdateMessage",
+        }
+      );
 
-      await waitFor(() => expect(handle).toHaveBeenCalledOnce());
+      expect(handle).toHaveBeenCalledOnce();
     });
   });
 });

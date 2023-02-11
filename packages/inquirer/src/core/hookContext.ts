@@ -1,8 +1,5 @@
-import assert from "node:assert";
-
 import type { DiscordAdaptor, Snowflake } from "../adaptor";
 import type { Logger } from "../util/logger";
-import type { Awaitable } from "../util/types";
 
 export type HookContext = {
   index: number;
@@ -12,8 +9,8 @@ export type HookContext = {
     index: number;
   }[];
   renderIndex: number;
-  mountHooks: ((messageId: Snowflake, updated: boolean) => void)[][];
-  unmountHooks: (() => void)[][];
+  mountHooks: ((messageId: Snowflake) => void)[];
+  unmountHooks: (() => void)[];
   adaptor: DiscordAdaptor;
   dispatch: () => void;
   logger: Logger;
@@ -45,9 +42,8 @@ const unbindHookContext = () => {
 export type HookCycle = {
   startRender: () => number;
   endRender: () => void;
-  mount: (renderIndex: number, messageId: Snowflake) => void;
-  unmount: (renderIndex: number) => void;
-  update: (renderIndex: number, messageId: Snowflake, edited: boolean) => void;
+  callEffectHooks: (messageId: Snowflake) => void;
+  callRemoveEffectHooks: () => void;
   context: HookContext;
 };
 
@@ -69,10 +65,9 @@ export const createHookCycle = (
 
   const startRender = () => {
     context.index = 0;
+    context.mountHooks = [];
     bindHookContext(context);
 
-    context.mountHooks.push([]);
-    context.unmountHooks.push([]);
     return context.renderIndex;
   };
 
@@ -81,55 +76,27 @@ export const createHookCycle = (
     context.renderIndex++;
   };
 
-  const callMountHooks = (
-    renderIndex: number,
-    messageId: Snowflake,
-    updated: boolean
-  ) => {
-    const currentMountHooks = context.mountHooks[renderIndex];
-    assert(currentMountHooks !== undefined);
-
-    while (currentMountHooks.length > 0) {
-      const hook = currentMountHooks.shift();
+  const callEffectHooks = (messageId: Snowflake) => {
+    while (context.mountHooks.length > 0) {
       //length > 0の時点でhookは存在する
-      hook!(messageId, updated);
+      const hook = context.mountHooks.shift()!;
+      hook(messageId);
     }
   };
 
-  const callUnmountHooks = (renderIndex: number) => {
-    const prevUnmountHooks = context.unmountHooks[renderIndex];
-    assert(prevUnmountHooks !== undefined);
-
-    while (prevUnmountHooks.length > 0) {
-      const hook = prevUnmountHooks.shift();
+  const callRemoveEffectHooks = () => {
+    while (context.unmountHooks.length > 0) {
       //length > 0の時点でhookは存在する
+      const hook = context.unmountHooks.shift();
       hook!();
     }
-  };
-
-  const mount = (renderIndex: number, messageId: Snowflake) => {
-    callMountHooks(renderIndex, messageId, true);
-  };
-
-  const update = (
-    renderIndex: number,
-    messageId: Snowflake,
-    edited: boolean
-  ) => {
-    callUnmountHooks(renderIndex - 1);
-    callMountHooks(renderIndex, messageId, edited);
-  };
-
-  const unmount = (renderIndex: number) => {
-    callUnmountHooks(renderIndex);
   };
 
   return {
     startRender,
     endRender,
-    mount,
-    unmount,
-    update,
+    callEffectHooks,
+    callRemoveEffectHooks,
     context,
   };
 };
@@ -156,99 +123,6 @@ export const stockHookValue =
 
 export const takeValue = <T>(ctx: HookContext, index: number): T => {
   return ctx.hookValues[index]?.value as T;
-};
-
-export const deferDispatch = <T>(ctx: HookContext, cb: () => T) => {
-  console.log("deferDispatch");
-  const prevDispatch = ctx.dispatch;
-  let dispatched = false;
-
-  console.log(`  #${ctx.renderIndex} patch defer dispatch`);
-  ctx.dispatch = () => {
-    dispatched = true;
-  };
-  const result = cb();
-
-  ctx.dispatch = prevDispatch;
-  console.log(
-    `  #${ctx.renderIndex} unpatch defer dispatch dispatched: ${dispatched}`
-  );
-
-  return {
-    dispatched,
-    result,
-  };
-};
-
-export const deferDispatchAsync = async <T>(
-  ctx: HookContext,
-  cb: () => Awaitable<T>
-) => {
-  console.log("deferDispatchAsync");
-  const prevDispatch = ctx.dispatch;
-  let dispatched = false;
-
-  console.log(`  #${ctx.renderIndex} patch defer dispatch async`);
-
-  ctx.dispatch = () => {
-    dispatched = true;
-  };
-  const result = await cb();
-
-  ctx.dispatch = prevDispatch;
-  console.log(
-    `  #${ctx.renderIndex} unpatch defer dispatch async dispatched: ${dispatched}`
-  );
-
-  return {
-    dispatched,
-    result,
-  };
-};
-
-export const batchDispatch = <T>(ctx: HookContext, cb: () => T): T => {
-  console.log("batchDispatch");
-  const prevDispatch = ctx.dispatch;
-  console.log(`  #${ctx.renderIndex} patch dispatch`);
-
-  let isDispatched = false;
-  ctx.dispatch = () => {
-    isDispatched = true;
-  };
-  const result = cb();
-  ctx.dispatch = prevDispatch;
-  console.log(`  #${ctx.renderIndex} unpatch dispatch`);
-
-  if (isDispatched) {
-    console.log(`  #${ctx.renderIndex} call dispatch`);
-    ctx.dispatch();
-  }
-
-  return result;
-};
-
-export const batchDispatchAsync = async <T>(
-  ctx: HookContext,
-  cb: () => Awaitable<T>
-): Promise<T> => {
-  console.log("batchDispatchAsync");
-  const prevDispatch = ctx.dispatch;
-  console.log(`  #${ctx.renderIndex} patch dispatch async`);
-
-  let isDispatched = false;
-  ctx.dispatch = () => {
-    isDispatched = true;
-  };
-  const result = await cb();
-  ctx.dispatch = prevDispatch;
-  console.log(`  #${ctx.renderIndex} unpatch dispatch async`);
-
-  if (isDispatched) {
-    console.log(`  #${ctx.renderIndex} call dispatch async`);
-    ctx.dispatch();
-  }
-
-  return result;
 };
 
 export const isDepsChanged = (

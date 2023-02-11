@@ -1,6 +1,6 @@
 import { createEventFlow } from "@elecdeer/event-flow";
 
-import { createHookCycle, deferDispatch, getHookContext } from "./hookContext";
+import { createRenderer } from "./renderer";
 import { isMatchHash } from "../util/hash";
 import { defaultLogger } from "../util/logger";
 import { createTimer } from "../util/timer";
@@ -35,7 +35,7 @@ export type Inquire<T extends Record<string, unknown>> = (
   config: InquireConfig<T>
 ) => InquireResult<T>;
 
-interface InquireConfig<T extends Record<string, unknown>> {
+export interface InquireConfig<T extends Record<string, unknown>> {
   screen: Screen;
   adaptor: DiscordAdaptor;
 
@@ -54,7 +54,7 @@ interface InquireConfig<T extends Record<string, unknown>> {
    */
   idle?: number;
 
-  log?: Logger;
+  logger?: Logger;
 }
 
 export type Prompt<T extends Record<string, unknown>> = (
@@ -80,7 +80,7 @@ const completeConfig = <T extends Record<string, unknown>>(
     defaultResult: config.defaultResult ?? {},
     time: Math.min(config.time ?? 14.5 * 60 * 1000, 15 * 60 * 1000),
     idle: config.idle ?? 2 ** 31 - 1, // 32bitの最大値
-    log: config.log ?? defaultLogger,
+    logger: config.logger ?? defaultLogger,
   };
 };
 
@@ -88,7 +88,7 @@ export const inquire = <T extends Record<string, unknown>>(
   prompt: Prompt<T>,
   partialConfig: InquireConfig<T>
 ): InquireResult<T> => {
-  const { screen, adaptor, defaultResult, time, idle, log } =
+  const { screen, adaptor, defaultResult, time, idle, logger } =
     completeConfig(partialConfig);
   const result: Partial<T> = defaultResult;
   const answerEvent = createEventFlow<
@@ -106,8 +106,8 @@ export const inquire = <T extends Record<string, unknown>>(
     // 値が変わっていない場合は何もしない
     if (isMatchHash(prev, value)) return;
 
-    log("debug", "answer");
-    log("debug", { key, value, prev });
+    logger.log("debug", "answer");
+    logger.log("debug", { key, value, prev });
     result[key] = value;
     answerEvent.emit({
       key,
@@ -116,124 +116,54 @@ export const inquire = <T extends Record<string, unknown>>(
     });
   };
 
-  const renderPrompt = (): {
-    renderIndex: number;
-    renderResult: MessageMutualPayload;
-  } => {
-    //render中にdispatchが発生した場合は、再度renderを行う
-    const renderIndex = hookContext.startRender();
-    log("debug", `render #${renderIndex} start`);
-    const ctx = getHookContext();
+  let lastSendMessageId: string | undefined;
 
-    log("debug", `render #${renderIndex} dispatch override`);
-
-    let promptResult: MessageMutualPayload;
-    const { dispatched } = deferDispatch(ctx, () => {
-      promptResult = prompt(
-        answer as UnionToIntersection<AnswerPrompt<T>>,
-        close
-      );
-    });
-
-    log("debug", `render #${renderIndex} dispatch override end`);
-
-    hookContext.endRender();
-    log("debug", `render #${renderIndex} end`);
-
-    if (dispatched) {
-      log("debug", `render #${renderIndex} rerender`);
-      return renderPrompt();
-    } else {
-      log("debug", `render #${renderIndex} complete`);
-      return {
-        renderIndex,
-        renderResult: promptResult!,
-      };
-    }
-  };
-
-  const open = async () => {
-    log("debug", "inquirer open");
-
-    const { renderIndex, renderResult } = renderPrompt();
-
-    log("debug", {
-      renderResult: renderResult,
-    });
-
-    const commitResult = await screen.commit(renderResult);
-    if (commitResult.updated) {
-      hookContext.mount(renderIndex, commitResult.messageId);
-      log("debug", `payload mounted messageId: ${commitResult.messageId}`);
+  const renderer = createRenderer(
+    () => {
+      return prompt(answer as UnionToIntersection<AnswerPrompt<T>>, () => {
+        void close();
+      });
+    },
+    async (value) => {
       resetIdleTimer();
-    } else {
-      log("error", "failed to initial commit");
-      await close();
-    }
-  };
-
-  const update = async () => {
-    log("debug", "inquirer update");
-
-    const { renderIndex, renderResult } = renderPrompt();
-
-    log("debug", {
-      renderResult: renderResult,
-    });
-
-    const commitResult = await screen.commit(renderResult);
-    if (commitResult.messageId !== null) {
-      hookContext.update(
-        renderIndex,
-        commitResult.messageId,
-        commitResult.updated
-      );
-    } else {
-      log("warn", "messageId is null");
-    }
-
-    if (commitResult.updated) {
-      log("debug", `payload updated messageId: ${commitResult.messageId}`);
-      resetIdleTimer();
-    }
-  };
+      const { messageId } = await screen.commit(value);
+      lastSendMessageId = messageId ?? lastSendMessageId;
+      if (lastSendMessageId === undefined) {
+        throw new Error("lastSendMessageId is undefined");
+      }
+      return lastSendMessageId;
+    },
+    adaptor,
+    logger
+  );
 
   const close = async () => {
-    log("debug", "inquirer close");
-    answerEvent.offAll();
-
-    const { renderIndex, renderResult } = renderPrompt();
-
-    log("debug", {
-      renderResult: renderResult,
+    disposeTimers();
+    await renderer.act(() => {
+      renderer.unmount();
     });
 
-    await screen.commit(renderResult);
     await screen.close();
-
-    hookContext.unmount(renderIndex);
-    log("debug", "payload unmounted");
-
-    disposeTimers();
   };
 
-  const hookContext = createHookCycle(adaptor, log, update);
   const { resetIdleTimer, disposeTimers } = createInquireTimer(
     {
       time,
       idle,
-      log,
+      logger,
     },
-    close
+    () => {
+      void close();
+    }
   );
 
   //初回送信
-  setImmediate(open);
+  renderer.mount();
 
   return {
     resultEvent: answerEvent,
     result: () => result,
-    close,
+    close: close,
   };
 };
 
@@ -241,17 +171,17 @@ const createInquireTimer = (
   {
     time,
     idle,
-    log,
-  }: Pick<Required<InquireConfig<never>>, "idle" | "time" | "log">,
+    logger,
+  }: Pick<Required<InquireConfig<never>>, "idle" | "time" | "logger">,
   close: () => void
 ) => {
   const timeoutTimer = createTimer(time).onTimeout(() => {
-    log("debug", "inquirer timeout");
+    logger.log("debug", "inquirer timeout");
     close();
   });
 
   const idleTimer = createTimer(idle).onTimeout(() => {
-    log("debug", "inquirer idle timeout");
+    logger.log("debug", "inquirer idle timeout");
     close();
   });
 

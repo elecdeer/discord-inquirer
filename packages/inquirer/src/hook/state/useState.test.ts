@@ -5,8 +5,8 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useState", () => {
   describe("useState()", () => {
-    test("初期値が保持される", () => {
-      const { result, rerender } = renderHook(
+    test("初期値が保持される", async () => {
+      const { result, rerender } = await renderHook(
         (args) => {
           const [value, setState] = useState(args);
           return {
@@ -21,19 +21,19 @@ describe("packages/inquirer/src/hook/useState", () => {
 
       expect(result.current.value).toBe(3);
 
-      rerender();
+      await rerender();
 
       expect(result.current.value).toBe(3);
 
-      rerender({
+      await rerender({
         newArgs: 10,
       });
 
       expect(result.current.value).toBe(3);
     });
 
-    test("setStateで正しく状態が保存される", () => {
-      const { result, act } = renderHook(() => {
+    test("setStateで正しく状態が保存される", async () => {
+      const { result, act } = await renderHook(() => {
         const [value, setState] = useState(2);
         return {
           value,
@@ -42,12 +42,12 @@ describe("packages/inquirer/src/hook/useState", () => {
       });
       expect(result.current.value).toBe(2);
 
-      act(() => {
+      await act(() => {
         result.current.setState(10);
       });
       expect(result.current.value).toBe(10);
 
-      act(() => {
+      await act(() => {
         result.current.setState((prev) => prev + 2);
         result.current.setState((prev) => prev + 3);
       });
@@ -55,10 +55,10 @@ describe("packages/inquirer/src/hook/useState", () => {
       expect(result.current.value).toBe(15);
     });
 
-    test("setStateの呼び出しでdispatchが呼ばれる", () => {
+    test("setStateの呼び出しでdispatchが呼ばれる", async () => {
       let renderNum = 0;
 
-      const { result, act } = renderHook(() => {
+      const { result, act } = await renderHook(() => {
         renderNum++;
 
         const [value, setState] = useState(2);
@@ -70,13 +70,13 @@ describe("packages/inquirer/src/hook/useState", () => {
 
       expect(renderNum).toBe(1);
 
-      act(() => {
+      await act(() => {
         result.current.setState(3);
       });
 
       expect(renderNum).toBe(2);
 
-      act(() => {
+      await act(() => {
         result.current.setState((prev) => prev + 2);
       });
 

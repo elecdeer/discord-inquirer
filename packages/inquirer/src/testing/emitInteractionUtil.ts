@@ -25,10 +25,11 @@ import type {
   Snowflake,
 } from "../adaptor";
 import type { RandomSource } from "../util/randomSource";
+import type { Awaitable } from "../util/types";
 
 export const createEmitInteractionTestUtil = (
   emitInteraction: (interaction: AdaptorInteraction) => Promise<void>,
-  actAsync: <T>(cb: () => Promise<T>, messageId?: string) => Promise<T>,
+  act: <T>(cb: () => Awaitable<T>, messageId?: string) => Promise<T>,
   randomSource: RandomSource
 ) => {
   const faker = adaptorFaker(randomSource);
@@ -216,17 +217,6 @@ export const createEmitInteractionTestUtil = (
     return interaction;
   };
 
-  const clickButtonComponent = (
-    component: AdaptorNonLinkButtonComponent,
-    overrideParam?: Partial<AdaptorButtonInteraction>
-  ) => {
-    const customId = component.customId;
-    if (component.disabled) {
-      throw new InvalidInteractionError("button is disabled");
-    }
-    return emitButtonInteraction(customId, overrideParam);
-  };
-
   const emitModalInteraction = async (
     customId: Snowflake,
     fields: Readonly<Record<string, string>>,
@@ -244,6 +234,17 @@ export const createEmitInteractionTestUtil = (
 
     await emitInteraction(interaction);
     return interaction;
+  };
+
+  const clickButtonComponent = async (
+    component: AdaptorNonLinkButtonComponent,
+    overrideParam?: Partial<AdaptorButtonInteraction>
+  ) => {
+    const customId = component.customId;
+    if (component.disabled) {
+      throw new InvalidInteractionError("button is disabled");
+    }
+    return act(() => emitButtonInteraction(customId, overrideParam));
   };
 
   const assertSelectEmit = (
@@ -265,7 +266,7 @@ export const createEmitInteractionTestUtil = (
     }
   };
 
-  const selectStringSelectComponent = <T>(
+  const selectStringSelectComponent = async <T>(
     component: Readonly<AdaptorStringSelectComponent<T>>,
     values: string[],
     overrideParam?: Readonly<Partial<AdaptorStringSelectInteraction>>
@@ -282,12 +283,12 @@ export const createEmitInteractionTestUtil = (
       }
     });
 
-    return actAsync(() =>
+    return act(() =>
       emitStringSelectInteraction(customId, values, overrideParam)
     );
   };
 
-  const selectUserSelectComponent = (
+  const selectUserSelectComponent = async (
     component: Readonly<AdaptorUserSelectComponent>,
     dummyUsers: number | readonly Partial<AdaptorUser>[],
     overrideParam?: Readonly<Partial<AdaptorUserSelectInteraction>>
@@ -298,12 +299,12 @@ export const createEmitInteractionTestUtil = (
       : (dummyUsers as number);
     assertSelectEmit(component, dummyUserNum);
 
-    return actAsync(() =>
+    return act(() =>
       emitUserSelectInteraction(customId, dummyUsers, overrideParam)
     );
   };
 
-  const selectRoleSelectComponent = (
+  const selectRoleSelectComponent = async (
     component: Readonly<AdaptorRoleSelectComponent>,
     dummyRoles: number | readonly Partial<AdaptorRole>[],
     overrideParam?: Readonly<Partial<AdaptorRoleSelectInteraction>>
@@ -314,12 +315,12 @@ export const createEmitInteractionTestUtil = (
       : (dummyRoles as number);
     assertSelectEmit(component, dummyRoleNum);
 
-    return actAsync(() =>
+    return act(() =>
       emitRoleSelectInteraction(customId, dummyRoles, overrideParam)
     );
   };
 
-  const selectChannelSelectComponent = (
+  const selectChannelSelectComponent = async (
     component: Readonly<AdaptorChannelSelectComponent>,
     dummyChannels: readonly (Partial<AdaptorPartialChannel> &
       Pick<AdaptorPartialChannel, "type">)[],
@@ -339,12 +340,12 @@ export const createEmitInteractionTestUtil = (
       });
     }
 
-    return actAsync(() =>
+    return act(() =>
       emitChannelSelectInteraction(customId, dummyChannels, overrideParam)
     );
   };
 
-  const selectMentionableSelectComponent = (
+  const selectMentionableSelectComponent = async (
     component: Readonly<AdaptorMentionableSelectComponent>,
     dummyMentionables: (
       | ({
@@ -359,7 +360,7 @@ export const createEmitInteractionTestUtil = (
     const customId = component.customId;
     assertSelectEmit(component, dummyMentionables.length);
 
-    return actAsync(() =>
+    return act(() =>
       emitMentionableSelectInteraction(
         customId,
         dummyMentionables,
@@ -368,7 +369,7 @@ export const createEmitInteractionTestUtil = (
     );
   };
 
-  const confirmModal = (
+  const confirmModal = async (
     responseData: Readonly<AdaptorInteractionResponseModalData>,
     fields: Readonly<Record<string, string>>,
     overrideParam?: Readonly<Partial<AdaptorModalSubmitInteraction>>
@@ -404,9 +405,7 @@ export const createEmitInteractionTestUtil = (
         }
       });
 
-    return actAsync(() =>
-      emitModalInteraction(customId, fields, overrideParam)
-    );
+    return act(() => emitModalInteraction(customId, fields, overrideParam));
   };
 
   return {

@@ -9,7 +9,7 @@ export const subscribeInteraction =
   (handler) => {
     const listener = (data: APIInteraction, shardId: number) => {
       const adaptorInteraction = transformers.interaction(data);
-      handler(adaptorInteraction);
+      void handler(adaptorInteraction);
     };
 
     client.ws.on(GatewayDispatchEvents.InteractionCreate, listener);

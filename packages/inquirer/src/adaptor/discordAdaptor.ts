@@ -45,6 +45,6 @@ export interface DiscordAdaptor {
   deleteFollowup: (messageId: Snowflake, token: string) => Promise<void>;
 
   subscribeInteraction: (
-    handleInteraction: (interaction: AdaptorInteraction) => void
+    handleInteraction: (interaction: AdaptorInteraction) => Promise<void>
   ) => () => void;
 }

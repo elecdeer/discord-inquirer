@@ -7,7 +7,7 @@ describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
   describe("useStringSelectEvent()", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
-      const { interactionHelper } = renderHook(() =>
+      const { interactionHelper } = await renderHook(() =>
         useStringSelectEvent("customId", handle)
       );
 
@@ -24,17 +24,17 @@ describe("packages/inquirer/src/hook/useStringSelectEvent", () => {
       expect(handle).toBeCalledTimes(1);
     });
 
-    test("customIdやtypeが一致していない場合はhandlerが呼ばれない", () => {
+    test("customIdやtypeが一致していない場合はhandlerが呼ばれない", async () => {
       const handle = vi.fn();
-      const { interactionHelper } = renderHook(() =>
+      const { interactionHelper } = await renderHook(() =>
         useStringSelectEvent("customId", handle)
       );
 
-      interactionHelper.emitStringSelectInteraction("unmatchedCustomId", [
+      await interactionHelper.emitStringSelectInteraction("unmatchedCustomId", [
         "value1",
         "value2",
       ]);
-      interactionHelper.emitButtonInteraction("customId");
+      await interactionHelper.emitButtonInteraction("customId");
 
       expect(handle).not.toHaveBeenCalled();
     });

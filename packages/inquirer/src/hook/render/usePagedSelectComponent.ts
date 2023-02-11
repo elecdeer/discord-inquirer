@@ -111,7 +111,6 @@ export const usePagedSelectComponent = <T>({
       //表示されていないなら無視
       if (!showOptions.some((option) => option.key === key)) return false;
       if (prev === next) return false;
-      console.log("update");
 
       markUpdate();
       return true;

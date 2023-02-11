@@ -6,15 +6,11 @@ import { modalPrompt } from "../propmt/modalPrompt";
 import { pagedSelectPrompt } from "../propmt/pagedSelectPrompt";
 import { selectsPrompt } from "../propmt/selectsPrompt";
 
-import type { DiscordAdaptor } from "discord-inquirer";
+import type { DiscordAdaptor, InquireConfig } from "discord-inquirer";
 
 export const openPrompt =
   (adaptor: DiscordAdaptor) =>
   async (interaction: { id: string; token: string }, promptType: string) => {
-    // const adaptor = createDiscordJsAdaptor(readyClient);
-
-    // const prompt = prompts[promptType];
-
     const screen = createScreen(
       adaptor,
       {
@@ -28,7 +24,8 @@ export const openPrompt =
       }
     );
 
-    const promptOption = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const promptOption: InquireConfig<any> = {
       screen,
       adaptor,
       log,

@@ -5,22 +5,22 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
   describe("useChannelSelectComponent()", () => {
-    test("初期状態ではどのチャンネルも選択されていない", () => {
-      const { result } = renderHook(() => useChannelSelectComponent());
+    test("初期状態ではどのチャンネルも選択されていない", async () => {
+      const { result } = await renderHook(() => useChannelSelectComponent());
 
       expect(result.current[0]).toEqual([]);
     });
 
     test("チャンネルが選択されるとonSelectが呼ばれる", async () => {
       const handle = vi.fn();
-      const { result, interactionHelper, waitFor } = renderHook(() =>
+      const { result, interactionHelper } = await renderHook(() =>
         useChannelSelectComponent({
           onSelected: handle,
         })
       );
 
       const component = result.current[1]();
-      interactionHelper.selectChannelSelectComponent(component, [
+      await interactionHelper.selectChannelSelectComponent(component, [
         {
           type: "guildText",
           name: "foo",
@@ -31,7 +31,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
         },
       ]);
 
-      await waitFor(() => expect(handle).toBeCalledTimes(1));
+      expect(handle).toBeCalledTimes(1);
 
       expect(handle).toBeCalledWith([
         expect.objectContaining({
@@ -46,12 +46,12 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
     });
 
     test("チャンネルが選択されると選択状態が更新される", async () => {
-      const { result, interactionHelper, waitFor } = renderHook(() =>
+      const { result, interactionHelper } = await renderHook(() =>
         useChannelSelectComponent()
       );
 
       const component = result.current[1]();
-      interactionHelper.selectChannelSelectComponent(component, [
+      await interactionHelper.selectChannelSelectComponent(component, [
         {
           type: "guildText",
           name: "foo",
@@ -62,22 +62,20 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
         },
       ]);
 
-      await waitFor(() =>
-        expect(result.current[0]).toEqual([
-          expect.objectContaining({
-            type: "guildText",
-            name: "foo",
-          }),
-          expect.objectContaining({
-            type: "guildText",
-            name: "bar",
-          }),
-        ])
-      );
+      expect(result.current[0]).toEqual([
+        expect.objectContaining({
+          type: "guildText",
+          name: "foo",
+        }),
+        expect.objectContaining({
+          type: "guildText",
+          name: "bar",
+        }),
+      ]);
     });
 
     test("最小選択数と最大選択数の指定がコンポーネントデータに含まれる", async () => {
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useChannelSelectComponent({
           minValues: 1,
           maxValues: 2,

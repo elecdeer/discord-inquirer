@@ -5,8 +5,8 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
   describe("useConfirmButtonComponent()", () => {
-    test("初期状態ではcheckedとokはfalse", () => {
-      const { result } = renderHook(() =>
+    test("初期状態ではcheckedとokはfalse", async () => {
+      const { result } = await renderHook(() =>
         useConfirmButtonComponent({
           validate: () => ({
             ok: true,
@@ -25,7 +25,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
         ok: true,
       }));
 
-      const { result, interactionHelper, waitFor } = renderHook(() =>
+      const { result, interactionHelper } = await renderHook(() =>
         useConfirmButtonComponent({
           validate: handle,
         })
@@ -34,9 +34,12 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
       const component = result.current[1]({
         style: "success",
       })();
-      interactionHelper.clickButtonComponent(component);
 
-      await waitFor(() => expect(handle).toBeCalledTimes(1));
+      expect(handle).toBeCalledTimes(0);
+
+      await interactionHelper.clickButtonComponent(component);
+
+      expect(handle).toBeCalledTimes(1);
 
       expect(result.current[0]).toEqual({
         checked: true,
@@ -45,7 +48,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
     });
 
     test("validate結果がvalidateResultに反映される", async () => {
-      const { result, rerender, interactionHelper, waitFor } = renderHook(
+      const { result, rerender, interactionHelper } = await renderHook(
         (ok: boolean) =>
           useConfirmButtonComponent({
             validate: () => ({
@@ -57,35 +60,31 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
         }
       );
 
-      interactionHelper.clickButtonComponent(
+      await interactionHelper.clickButtonComponent(
         result.current[1]({
           style: "success",
         })()
       );
 
-      await waitFor(() =>
-        expect(result.current[0]).toEqual({
-          checked: true,
-          ok: false,
-        })
-      );
+      expect(result.current[0]).toEqual({
+        checked: true,
+        ok: false,
+      });
 
-      rerender({
+      await rerender({
         newArgs: true,
       });
 
-      interactionHelper.clickButtonComponent(
+      await interactionHelper.clickButtonComponent(
         result.current[1]({
           style: "success",
         })()
       );
 
-      waitFor(() =>
-        expect(result.current[0]).toEqual({
-          checked: true,
-          ok: true,
-        })
-      );
+      expect(result.current[0]).toEqual({
+        checked: true,
+        ok: true,
+      });
     });
   });
 });

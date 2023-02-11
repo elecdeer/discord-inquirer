@@ -5,8 +5,8 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/useCustomId", () => {
   describe("useCustomId()", () => {
-    test("ユニークなIdを生成し保持する", () => {
-      const { result } = renderHook(() => useCustomId("this-is-prefix"));
+    test("ユニークなIdを生成し保持する", async () => {
+      const { result } = await renderHook(() => useCustomId("this-is-prefix"));
       const customId = result.current;
       expect(result.current.length).toBeLessThan(100);
 

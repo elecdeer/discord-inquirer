@@ -3,8 +3,7 @@ import {
   isAdaptorMentionableSelectInteraction,
   messageFacade,
 } from "../../adaptor";
-import { batchDispatchAsync } from "../../core/hookContext";
-import { useAdaptor, useHookContext } from "../core/useHookContext";
+import { useAdaptor } from "../core/useHookContext";
 
 import type {
   AdaptorMentionableSelectInteraction,
@@ -30,13 +29,12 @@ export const useMentionableSelectEvent = (
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const ctx = useHookContext();
   const adaptor = useAdaptor();
 
   useEffect(() => {
     const facade = messageFacade(adaptor);
 
-    const clear = adaptor.subscribeInteraction((interaction) => {
+    const clear = adaptor.subscribeInteraction(async (interaction) => {
       if (!isAdaptorMentionableSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
@@ -67,9 +65,7 @@ export const useMentionableSelectEvent = (
           (value): value is MentionableSelectValue => value !== undefined
         );
 
-      void batchDispatchAsync(ctx, async () => {
-        await handle(interaction, values, deferUpdate);
-      });
+      await handle(interaction, values, deferUpdate);
     });
 
     return () => {

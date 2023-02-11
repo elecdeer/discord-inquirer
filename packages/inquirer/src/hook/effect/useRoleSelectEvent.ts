@@ -1,7 +1,6 @@
 import { useEffect } from "./useEffect";
 import { isAdaptorRoleSelectInteraction, messageFacade } from "../../adaptor";
-import { batchDispatchAsync } from "../../core/hookContext";
-import { useAdaptor, useHookContext } from "../core/useHookContext";
+import { useAdaptor } from "../core/useHookContext";
 
 import type {
   AdaptorRole,
@@ -18,13 +17,12 @@ export const useRoleSelectEvent = (
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const ctx = useHookContext();
   const adaptor = useAdaptor();
 
   useEffect(() => {
     const facade = messageFacade(adaptor);
 
-    const clear = adaptor.subscribeInteraction((interaction) => {
+    const clear = adaptor.subscribeInteraction(async (interaction) => {
       if (!isAdaptorRoleSelectInteraction(interaction)) return;
       if (interaction.data.customId !== customId) return;
 
@@ -36,9 +34,7 @@ export const useRoleSelectEvent = (
         (id) => interaction.data.resolved.roles[id]
       );
 
-      void batchDispatchAsync(ctx, async () => {
-        await handle(interaction, roles, deferUpdate);
-      });
+      await handle(interaction, roles, deferUpdate);
     });
 
     return () => {

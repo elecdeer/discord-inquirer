@@ -5,8 +5,8 @@ import { renderHook } from "../../testing";
 
 describe("packages/inquirer/src/hook/render/useMultiPagePrompt", () => {
   describe("useMultiPagePrompt()", () => {
-    test("defaultPageで指定したページが初期状態になる", () => {
-      const { result } = renderHook(() =>
+    test("defaultPageで指定したページが初期状態になる", async () => {
+      const { result } = await renderHook(() =>
         useMultiPagePrompt(
           [
             ["foo", () => ({ content: "foo" })],
@@ -22,7 +22,7 @@ describe("packages/inquirer/src/hook/render/useMultiPagePrompt", () => {
     });
 
     test("ページを切り替えるとresultが更新される", async () => {
-      const { result, act } = renderHook(() =>
+      const { result, act } = await renderHook(() =>
         useMultiPagePrompt(
           [
             ["foo", () => ({ content: "foo" })],
@@ -32,18 +32,18 @@ describe("packages/inquirer/src/hook/render/useMultiPagePrompt", () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.setPage("bar");
       });
 
       expect(result.current.result).toEqual({ content: "bar" });
     });
 
-    test("表示されるかどうかに関わらず全てのページがRenderされる", () => {
+    test("表示されるかどうかに関わらず全てのページがRenderされる", async () => {
       const renderFoo = vi.fn(() => ({ content: "foo" }));
       const renderBar = vi.fn(() => ({ content: "bar" }));
 
-      renderHook(() =>
+      await renderHook(() =>
         useMultiPagePrompt(
           [
             ["foo", renderFoo],

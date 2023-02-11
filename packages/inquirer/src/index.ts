@@ -8,6 +8,7 @@ export {
   InquireResultEvent,
   InquireResult,
   AnswerFunc,
+  InquireConfig,
 } from "./core/inquire";
 export { createScreen, Screen, ScreenConfig } from "./core/screen";
 export * from "./core/hookContext";

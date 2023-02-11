@@ -1,4 +1,3 @@
-import { createEventFlow } from "@elecdeer/event-flow";
 import { vi } from "vitest";
 
 import type { DiscordAdaptor } from "../adaptor";
@@ -9,7 +8,9 @@ export type AdaptorMock = DiscordAdaptor & {
 };
 
 export const createDiscordAdaptorMock = (): AdaptorMock => {
-  const handlerFlow = createEventFlow<AdaptorInteraction>();
+  const interactionHandlers = new Set<
+    (interaction: AdaptorInteraction) => Promise<void>
+  >();
 
   return {
     sendMessage: vi.fn(),
@@ -23,23 +24,20 @@ export const createDiscordAdaptorMock = (): AdaptorMock => {
     editFollowup: vi.fn(),
     deleteFollowup: vi.fn(),
     subscribeInteraction: vi.fn(
-      (handleInteraction: (interaction: AdaptorInteraction) => void) => {
-        const { off } = handlerFlow.on(handleInteraction);
+      (
+        handleInteraction: (interaction: AdaptorInteraction) => Promise<void>
+      ) => {
+        interactionHandlers.add(handleInteraction);
         return () => {
-          off();
+          interactionHandlers.delete(handleInteraction);
         };
       }
     ),
 
     emitInteraction: async (interaction) => {
-      handlerFlow.emit(interaction);
-      return new Promise((resolve) => {
-        //TODO FIXME
-        handlerFlow.once(() => {
-          resolve();
-        });
-        handlerFlow.emit(interaction);
-      });
+      for (const handler of interactionHandlers) {
+        await handler(interaction);
+      }
     },
   };
 };
