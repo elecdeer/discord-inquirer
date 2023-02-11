@@ -54,7 +54,7 @@ export interface InquireConfig<T extends Record<string, unknown>> {
    */
   idle?: number;
 
-  log?: Logger;
+  logger?: Logger;
 }
 
 export type Prompt<T extends Record<string, unknown>> = (
@@ -80,7 +80,7 @@ const completeConfig = <T extends Record<string, unknown>>(
     defaultResult: config.defaultResult ?? {},
     time: Math.min(config.time ?? 14.5 * 60 * 1000, 15 * 60 * 1000),
     idle: config.idle ?? 2 ** 31 - 1, // 32bitの最大値
-    log: config.log ?? defaultLogger,
+    logger: config.logger ?? defaultLogger,
   };
 };
 
@@ -88,7 +88,7 @@ export const inquire = <T extends Record<string, unknown>>(
   prompt: Prompt<T>,
   partialConfig: InquireConfig<T>
 ): InquireResult<T> => {
-  const { screen, adaptor, defaultResult, time, idle, log } =
+  const { screen, adaptor, defaultResult, time, idle, logger } =
     completeConfig(partialConfig);
   const result: Partial<T> = defaultResult;
   const answerEvent = createEventFlow<
@@ -106,8 +106,8 @@ export const inquire = <T extends Record<string, unknown>>(
     // 値が変わっていない場合は何もしない
     if (isMatchHash(prev, value)) return;
 
-    log("debug", "answer");
-    log("debug", { key, value, prev });
+    logger.log("debug", "answer");
+    logger.log("debug", { key, value, prev });
     result[key] = value;
     answerEvent.emit({
       key,
@@ -134,7 +134,7 @@ export const inquire = <T extends Record<string, unknown>>(
       return lastSendMessageId;
     },
     adaptor,
-    log
+    logger
   );
 
   const close = async () => {
@@ -150,7 +150,7 @@ export const inquire = <T extends Record<string, unknown>>(
     {
       time,
       idle,
-      log,
+      logger,
     },
     () => {
       void close();
@@ -171,17 +171,17 @@ const createInquireTimer = (
   {
     time,
     idle,
-    log,
-  }: Pick<Required<InquireConfig<never>>, "idle" | "time" | "log">,
+    logger,
+  }: Pick<Required<InquireConfig<never>>, "idle" | "time" | "logger">,
   close: () => void
 ) => {
   const timeoutTimer = createTimer(time).onTimeout(() => {
-    log("debug", "inquirer timeout");
+    logger.log("debug", "inquirer timeout");
     close();
   });
 
   const idleTimer = createTimer(idle).onTimeout(() => {
-    log("debug", "inquirer idle timeout");
+    logger.log("debug", "inquirer idle timeout");
     close();
   });
 

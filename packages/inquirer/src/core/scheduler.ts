@@ -1,11 +1,10 @@
+import type { Logger } from "../util/logger";
+
 const maxQueueSize = 50;
 
 export const createScheduler = (
-  workScheduler = (work: () => void) => () => {
-    setTimeout(() => {
-      work();
-    }, 10);
-  }
+  workScheduler: (work: () => void) => () => void,
+  logger: Logger
 ) => {
   let dispatchCount = 0;
   let commitCount = 0;
@@ -19,26 +18,38 @@ export const createScheduler = (
   }[] = [];
 
   const scheduleDispatch = (dispatch: () => void) => {
-    console.log(`scheduleDispatch: ${dispatchCount}`);
+    const index = ++dispatchCount;
+
+    logger.pushContext(`dispatch #${index}`);
+    logger.log("trace", `scheduled`);
+
     dispatchQueue.push({
-      index: ++dispatchCount,
+      index: index,
       dispatch,
     });
     if (dispatchQueue.length > maxQueueSize) {
+      logger.popContext();
       throw new Error("dispatchQueue is too large");
     }
     scheduleWork();
+    logger.popContext();
   };
 
   const scheduleCommit = (commit: () => Promise<void>) => {
-    console.log(`scheduleCommit: ${commitCount}`);
+    const index = ++commitCount;
+
+    logger.pushContext(`commit #${index}`);
+    logger.log("trace", `scheduled`);
+
     commitQueue.push({
-      index: ++commitCount,
+      index: index,
       commit,
     });
     if (commitQueue.length > maxQueueSize) {
+      logger.popContext();
       throw new Error("dispatchQueue is too large");
     }
+    logger.popContext();
     scheduleWork();
   };
 
@@ -73,28 +84,33 @@ export const createScheduler = (
   const workDispatch = () => {
     while (dispatchQueue.length > 0) {
       const dispatchTask = dispatchQueue.shift()!;
+      logger.pushContext(`dispatch #${dispatchTask.index}`);
       if (dispatchTask.index < dispatchCount) {
         //より新しいdispatchが予約されているのでスキップ
-        console.log("skip dispatch");
+        logger.log("trace", `skipped`);
       } else {
-        console.log("dispatch");
+        logger.log("trace", `start`);
         dispatchTask.dispatch();
-        console.log("dispatch end");
+        logger.log("trace", `end`);
       }
+      logger.popContext();
     }
   };
 
   const workCommit = async () => {
     const commitTask = commitQueue.shift();
     if (commitTask === undefined) return;
+
+    logger.pushContext(`commit #${commitTask.index}`);
     if (commitTask.index < commitCount) {
       //より新しいcommitが予約されているのでスキップ
-      console.log("skip commit");
+      logger.log("trace", "skipped");
     } else {
-      console.log("commit");
+      logger.log("trace", "start");
       await commitTask.commit();
-      console.log("commit end");
+      logger.log("trace", "end");
     }
+    logger.popContext();
   };
 
   return {

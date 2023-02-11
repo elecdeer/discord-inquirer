@@ -11,12 +11,13 @@ export const createRenderer = <T>(
   adaptor: DiscordAdaptor,
   logger: Logger
 ) => {
-  const scheduler = createScheduler((work) => () => {
-    setTimeout(() => {
-      work();
-    }, 10);
-    // work();
-  });
+  const scheduler = createScheduler((work) => {
+    return () => {
+      setTimeout(() => {
+        work();
+      }, 10);
+    };
+  }, logger);
 
   const hookCycle = createHookCycle(adaptor, logger, () => {
     update();

@@ -32,7 +32,6 @@ export const createDiscordAdaptorMock = (): AdaptorMock => {
     ),
 
     emitInteraction: (interaction) => {
-      console.log("emitInteraction", interaction);
       handlerFlow.emit(interaction);
     },
   };

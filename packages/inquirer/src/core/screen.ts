@@ -8,35 +8,37 @@ import type {
   MessageTarget,
   Snowflake,
 } from "../adaptor";
+import type { Logger } from "../util/logger";
 import type { SetNullable } from "../util/types";
 
+/**
+ * メッセージを編集するためのインターフェース
+ */
 export interface Screen {
   /**
-   * Post or edit message.
-   *
-   * If a message has not been sent from this screen, post a new message.
-   * If a message has been sent and there is a difference in payload, edit the message.
+   * メッセージを編集する
+   * 編集するメッセージが存在しない場合は新規に送信する
    * @param payload
    */
   commit: (payload: MessageMutualPayload) => Promise<CommitResult>;
 
   /**
-   * Close this screen.
-   *
-   * Corresponding to the setting mode and edits the messages.
+   * このScreenを閉じる
+   * config.onCloseによって挙動が変わる
+   * Screenが閉じられた後はcommitを呼び出しても何も起こらない
    */
   close: () => Promise<void>;
 }
 
 export interface ScreenConfig {
   onClose: "deleteMessage" | "deleteComponent" | "keep";
-  log: (type: "debug" | "warn" | "error", message: unknown) => void;
+  logger: Logger;
 }
 
 const completeScreenConfig = (config: Partial<ScreenConfig>): ScreenConfig => {
   return {
-    onClose: config.onClose ?? "deleteMessage",
-    log: config.log ?? defaultLogger,
+    onClose: config.onClose ?? "deleteComponent",
+    logger: config.logger ?? defaultLogger,
   };
 };
 
@@ -56,7 +58,7 @@ export const createScreen = (
   target: MessageTarget,
   config: Partial<ScreenConfig>
 ): Screen => {
-  const { onClose, log } = completeScreenConfig(config);
+  const { onClose, logger } = completeScreenConfig(config);
   const facade = messageFacade(adaptor);
 
   let closed = false;
@@ -71,10 +73,10 @@ export const createScreen = (
   const commit = async (
     payload: MessageMutualPayload
   ): Promise<CommitResult> => {
-    log("debug", "screen.commit");
-    log("debug", payload);
+    logger.log("debug", "screen.commit");
+    logger.log("debug", payload);
     if (closed) {
-      log("warn", "this screen is already closed");
+      logger.log("warn", "this screen is already closed");
       return {
         updated: false,
         messageId: editor?.messageId ?? null,
@@ -82,7 +84,7 @@ export const createScreen = (
     }
 
     if (editor === null) {
-      log("debug", "initial message");
+      logger.log("debug", "initial message");
       try {
         const controller = await facade.send(target, payload);
         editor = {
@@ -90,7 +92,7 @@ export const createScreen = (
           latestPayload: payload,
         };
       } catch (e) {
-        log("error", {
+        logger.log("error", {
           message: "failed to send message",
           error: e,
         });
@@ -111,7 +113,7 @@ export const createScreen = (
         payload
       );
       if (difference !== null) {
-        log("debug", "there is a difference in payload, edit message");
+        logger.log("debug", "there is a difference in payload, edit message");
 
         try {
           await editor.edit(payload);
@@ -120,7 +122,7 @@ export const createScreen = (
             latestPayload: payload,
           };
         } catch (e) {
-          log("error", {
+          logger.log("error", {
             message: "failed to edit message",
             error: e,
           });
@@ -136,7 +138,7 @@ export const createScreen = (
           messageId: editor.messageId,
         };
       } else {
-        log("debug", "no difference in payload, skip edit message");
+        logger.log("debug", "no difference in payload, skip edit message");
         editor = {
           ...editor,
           latestPayload: payload,
@@ -150,12 +152,12 @@ export const createScreen = (
   };
 
   const close = async () => {
-    log("debug", `screen.close mode: ${onClose}`);
+    logger.log("debug", `screen.close mode: ${onClose}`);
     if (onClose === "deleteMessage") {
       await editor
         ?.del()
         .catch((e) => {
-          log("error", {
+          logger.log("error", {
             message: "failed to delete message",
             error: e,
           });
@@ -170,7 +172,7 @@ export const createScreen = (
         components: [],
       })
         .catch((e) => {
-          log("error", {
+          logger.log("error", {
             message: "failed to delete component",
             error: e,
           });
