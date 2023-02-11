@@ -17,15 +17,21 @@ export const dispatchExamplePrompt = ((answer, close) => {
 
   const PlusButton = useButtonComponent({
     onClick: () => {
-      setCount((page) => page + 1);
+      setCount((c) => c + 1);
+    },
+  });
+
+  const PlusTwoButton = useButtonComponent({
+    onClick: () => {
+      setCount((c) => c + 2);
     },
   });
 
   const PlusPlusButton = useButtonComponent({
     onClick: () => {
       logger.log("debug", "setCountTwice");
-      setCount((page) => page + 1);
-      setCount((page) => page + 1);
+      setCount((c) => c + 1);
+      setCount((c) => c + 1);
     },
   });
 
@@ -53,10 +59,11 @@ export const dispatchExamplePrompt = ((answer, close) => {
     content: closed ? "closed" : `count: ${count}`,
     components: [
       Row(
-        PlusButton({ style: "primary", label: "+" })(),
-        PlusPlusButton({ style: "primary", label: "++" })(),
-        CloseButton({ style: "danger", label: "close" })()
+        PlusButton({ style: "primary", label: "+1" })(),
+        PlusTwoButton({ style: "primary", label: "+2" })(),
+        PlusPlusButton({ style: "primary", label: "+1 +1" })()
       ),
+      Row(CloseButton({ style: "danger", label: "close" })()),
     ],
   };
 }) satisfies Prompt<{
