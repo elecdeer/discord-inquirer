@@ -3,7 +3,6 @@ import {
   isAdaptorMentionableSelectInteraction,
   messageFacade,
 } from "../../adaptor";
-import { batchDispatchAsync } from "../../core/hookContext";
 import { useAdaptor, useHookContext } from "../core/useHookContext";
 
 import type {
@@ -67,9 +66,7 @@ export const useMentionableSelectEvent = (
           (value): value is MentionableSelectValue => value !== undefined
         );
 
-      void batchDispatchAsync(ctx, async () => {
-        await handle(interaction, values, deferUpdate);
-      });
+      void handle(interaction, values, deferUpdate);
     });
 
     return () => {

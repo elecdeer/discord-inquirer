@@ -1,7 +1,6 @@
 import { useEffect } from "./useEffect";
 import { isAdaptorStringSelectInteraction, messageFacade } from "../../adaptor";
-import { batchDispatchAsync } from "../../core/hookContext";
-import { useAdaptor, useHookContext } from "../core/useHookContext";
+import { useAdaptor } from "../core/useHookContext";
 
 import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
@@ -14,13 +13,10 @@ export const useStringSelectEvent = (
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ) => {
-  const ctx = useHookContext();
   const adaptor = useAdaptor();
 
   useEffect(() => {
     const facade = messageFacade(adaptor);
-
-    console.log("subscribeInteraction");
 
     const clear = adaptor.subscribeInteraction((interaction) => {
       if (!isAdaptorStringSelectInteraction(interaction)) return;
@@ -30,14 +26,10 @@ export const useStringSelectEvent = (
         await facade.deferUpdate(interaction.id, interaction.token);
       };
 
-      console.log("callHandle");
-      void batchDispatchAsync(ctx, async () => {
-        await handle(interaction, interaction.data.values, deferUpdate);
-      });
+      void handle(interaction, interaction.data.values, deferUpdate);
     });
 
     return () => {
-      console.log("unsubscribeInteraction");
       clear();
     };
   }, [customId, handle]);

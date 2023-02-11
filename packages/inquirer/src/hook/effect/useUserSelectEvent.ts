@@ -1,6 +1,5 @@
 import { useEffect } from "./useEffect";
 import { isAdaptorUserSelectInteraction, messageFacade } from "../../adaptor";
-import { batchDispatchAsync } from "../../core/hookContext";
 import { useAdaptor, useHookContext } from "../core/useHookContext";
 
 import type {
@@ -45,9 +44,7 @@ export const useUserSelectEvent = (
         };
       });
 
-      void batchDispatchAsync(ctx, async () => {
-        await handle(interaction, users, deferUpdate);
-      });
+      void handle(interaction, users, deferUpdate);
     });
 
     return () => {

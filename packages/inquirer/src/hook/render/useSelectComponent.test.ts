@@ -56,15 +56,12 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
         })
       );
 
-      console.log("current", result.current);
-
       await interactionHelper.selectStringSelectComponent(
         result.current[1](),
         result.current[1]()
           .options.filter((option) => option.label === "bar")
           .map((option) => option.value)
       );
-      console.log("B");
 
       await waitFor(() => expect(handle).toBeCalledTimes(1));
 

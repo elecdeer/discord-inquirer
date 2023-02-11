@@ -1,6 +1,5 @@
 import type { DiscordAdaptor, Snowflake } from "../adaptor";
 import type { Logger } from "../util/logger";
-import type { Awaitable } from "../util/types";
 
 export type HookContext = {
   index: number;
@@ -124,102 +123,6 @@ export const stockHookValue =
 
 export const takeValue = <T>(ctx: HookContext, index: number): T => {
   return ctx.hookValues[index]?.value as T;
-};
-
-export const deferDispatch = <T>(ctx: HookContext, cb: () => T) => {
-  console.log("deferDispatch");
-  const prevDispatch = ctx.dispatch;
-  let dispatched = false;
-
-  console.log(`  #${ctx.renderIndex} patch defer dispatch`);
-  ctx.dispatch = () => {
-    dispatched = true;
-  };
-  const result = cb();
-
-  ctx.dispatch = prevDispatch;
-  console.log(
-    `  #${ctx.renderIndex} unpatch defer dispatch dispatched: ${dispatched}`
-  );
-
-  return {
-    dispatched,
-    result,
-  };
-};
-
-export const deferDispatchAsync = async <T>(
-  ctx: HookContext,
-  cb: () => Awaitable<T>
-) => {
-  console.log("deferDispatchAsync");
-  const prevDispatch = ctx.dispatch;
-  let dispatched = false;
-
-  console.log(`  #${ctx.renderIndex} patch defer dispatch async`);
-
-  ctx.dispatch = () => {
-    dispatched = true;
-  };
-  const result = await cb();
-
-  ctx.dispatch = prevDispatch;
-  console.log(
-    `  #${ctx.renderIndex} unpatch defer dispatch async dispatched: ${dispatched}`
-  );
-
-  return {
-    dispatched,
-    result,
-  };
-};
-
-export const batchDispatch = <T>(ctx: HookContext, cb: () => T): T => {
-  console.log("batchDispatch");
-  // const prevDispatch = ctx.dispatch;
-  // console.log(`  #${ctx.renderIndex} patch dispatch`);
-  //
-  // let isDispatched = false;
-  // ctx.dispatch = () => {
-  //   isDispatched = true;
-  // };
-  // const result = cb();
-  // ctx.dispatch = prevDispatch;
-  // console.log(`  #${ctx.renderIndex} unpatch dispatch`);
-  //
-  // if (isDispatched) {
-  //   console.log(`  #${ctx.renderIndex} call dispatch`);
-  //   ctx.dispatch();
-  // }
-  //
-  // return result;
-  return cb();
-};
-
-export const batchDispatchAsync = async <T>(
-  ctx: HookContext,
-  cb: () => Awaitable<T>
-): Promise<T> => {
-  console.log("batchDispatchAsync");
-  // const prevDispatch = ctx.dispatch;
-  // console.log(`  #${ctx.renderIndex} patch dispatch async`);
-  //
-  // let isDispatched = false;
-  // ctx.dispatch = () => {
-  //   isDispatched = true;
-  // };
-  // const result = await cb();
-  // ctx.dispatch = prevDispatch;
-  // console.log(`  #${ctx.renderIndex} unpatch dispatch async`);
-  //
-  // if (isDispatched) {
-  //   console.log(`  #${ctx.renderIndex} call dispatch async`);
-  //   ctx.dispatch();
-  // }
-  //
-  // return result;
-
-  return cb();
 };
 
 export const isDepsChanged = (

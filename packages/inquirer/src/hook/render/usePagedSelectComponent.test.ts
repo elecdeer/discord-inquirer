@@ -292,15 +292,10 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           (option) => option.label === "0-1" || option.label === "2-0"
         )
         .map((option) => option.value);
-      console.log("values", values);
       await interactionHelper.selectStringSelectComponent(
         result.current.Select(),
         values
       );
-
-      setTimeout(() => {
-        console.log(result.current.Select().options);
-      }, 500);
 
       await waitFor(() =>
         expect(result.current.Select().options).toEqual([
