@@ -50,8 +50,10 @@ export const openPrompt =
     }
 
     result.resultEvent.on(({ key, value, all }) => {
-      console.log("key", key);
-      console.log("value", value);
-      console.log("all", all);
+      logger.log("debug", {
+        key,
+        value,
+        all,
+      });
     });
   };

@@ -6,6 +6,7 @@ import {
   useUserSingleSelectComponent,
   useMultiPagePrompt,
   useEffect,
+  useLogger,
 } from "discord-inquirer";
 
 import type { Prompt, Snowflake, InquireResultEvent } from "discord-inquirer";
@@ -98,6 +99,7 @@ export const subPrompt =
     userId: Snowflake;
   }> =>
   (answer, close) => {
+    const logger = useLogger();
     //promptの順番を変えてはいけない
     const { setPage, result } = useMultiPagePrompt(
       [
@@ -110,7 +112,7 @@ export const subPrompt =
     useEffect(() => {
       const { off } = mainPageResultEvent.on(({ key, value }) => {
         if (key === "setSubPage") {
-          console.log("set sub page", value);
+          logger.log("debug", `set sub page: ${value}`);
           setPage(value);
         }
       });

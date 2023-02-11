@@ -20,7 +20,11 @@ const adaptor = createDiscordJsAdaptor(client);
 
 client.on("ready", async (readyClient) => {
   readyClient.on("interactionCreate", async (interaction) => {
-    console.log("interactionReceived", interaction);
+    logger.log(
+      "debug",
+      `interaction received type:${interaction.type} id:${interaction.id} token:${interaction.token}`
+    );
+    logger.log("trace", interaction);
     if (!interaction.isChatInputCommand()) return;
     if (interaction.commandName !== "example") return;
     if (
@@ -77,9 +81,11 @@ client.on("ready", async (readyClient) => {
       });
 
     subResult.resultEvent.on(({ key, value, all }) => {
-      console.log("key", key);
-      console.log("value", value);
-      console.log("all", all);
+      logger.log("debug", {
+        key,
+        value,
+        all,
+      });
     });
   });
 });

@@ -4,6 +4,7 @@ import {
   closeSplitter,
   Row,
   useButtonComponent,
+  useLogger,
 } from "discord-inquirer";
 
 import type { Prompt } from "discord-inquirer";
@@ -13,14 +14,17 @@ const allOptions = [...Array(30)].map((_, i) => ({
   payload: i,
 }));
 
-export const pagedSelectPrompt = ((answer, close) => {
+export const pagedSelectPrompt = (() => {
+  const logger = useLogger();
   const { setPage, page, pageNum, result, Select, stateAccessor } =
     usePagedSelectComponent({
       optionsResolver: closeSplitter(allOptions),
       showSelectedAlways: false,
       pageTorus: true,
       onSelected: (selected) => {
-        console.log("completelySelected", selected);
+        logger.log("debug", {
+          selected,
+        });
       },
     });
 

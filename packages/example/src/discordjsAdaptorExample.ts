@@ -2,6 +2,7 @@ import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
 import { Client } from "discord.js";
 import { config } from "dotenv";
 
+import { logger } from "./util/logger";
 import { openPrompt } from "./util/openPrompt";
 
 config();
@@ -13,10 +14,14 @@ const client = new Client({
 const adaptor = createDiscordJsAdaptor(client);
 
 client.on("ready", async (readyClient) => {
-  console.log("Client is ready");
+  logger.log("debug", "discord.js client ready");
 
   readyClient.on("interactionCreate", async (interaction) => {
-    // console.log("interactionReceived", interaction);
+    logger.log(
+      "debug",
+      `interaction received type:${interaction.type} id:${interaction.id} token:${interaction.token}`
+    );
+    logger.log("trace", interaction);
     if (!interaction.isChatInputCommand()) return;
     if (interaction.commandName !== "example") return;
 
