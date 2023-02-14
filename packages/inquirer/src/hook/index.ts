@@ -6,6 +6,7 @@ export * from "./state/useCustomId";
 export * from "./state/useMemo";
 export * from "./state/useReducer";
 export * from "./state/useRef";
+export * from "./state/useFetch";
 
 export * from "./effect/useEffect";
 export * from "./effect/useButtonEvent";

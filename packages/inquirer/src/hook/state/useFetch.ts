@@ -43,7 +43,7 @@ export type UseFetchResult<TData> = FetchState<TData> & {
 };
 
 export const useFetchExternalCache = <TKey, TData>(
-  key: Lazy<TKey>,
+  key: Lazy<TKey | undefined | null>,
   fetcher: (args: TKey) => Promise<TData>,
   cache: UseFetchCache<CacheValue<TData>>
 ): UseFetchResult<TData> => {
@@ -55,7 +55,7 @@ export const useFetchExternalCache = <TKey, TData>(
   const cacheKey = keyToCacheKey(resolvedKey);
 
   const revalidate = () => {
-    fetcher(resolvedKey).then(
+    fetcher(resolvedKey!).then(
       (data) => {
         const value = {
           data,
@@ -130,7 +130,7 @@ export const useFetchExternalCache = <TKey, TData>(
 };
 
 export const useFetch = <TKey, TData>(
-  key: Lazy<TKey>,
+  key: Lazy<TKey | undefined | null>,
   fetcher: (args: TKey) => Promise<TData>
 ): UseFetchResult<TData> => {
   const cacheRef = useRef(new Map<string, CacheValue<TData>>());
