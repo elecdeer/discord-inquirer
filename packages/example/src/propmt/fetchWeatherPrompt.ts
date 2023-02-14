@@ -26,7 +26,7 @@ export const fetchWeatherPrompt = (() => {
     options: [
       {
         label: "tokyo",
-        payload: "130000",
+        payload: "130010",
       },
       {
         label: "osaka",
