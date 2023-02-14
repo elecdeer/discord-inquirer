@@ -33,7 +33,7 @@
     "@elecdeer/event-flow": "*",
     "discord-api-types": "^0.37.31",
     "node-object-hash": "^2.3.10",
-    "type-fest": "^3.5.5"
+    "type-fest": "^3.5.7"
   },
   "devDependencies": {
     "@monorepo/eslint-config": "*",
