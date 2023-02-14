@@ -22,27 +22,33 @@ export type FetchState<T> =
       data: T;
     };
 
-export const useFetch = <TKey, TData>(
-  key: Lazy<TKey>,
-  fetcher: (args: TKey) => Promise<TData>
-): FetchState<TData> & {
+export type UseFetchCache<T> = {
+  set: (key: string, value: T) => void;
+  get: (key: string) => T | undefined;
+  delete: (key: string) => void;
+};
+
+export type CacheValue<T> =
+  | {
+      data: T;
+      error: undefined;
+    }
+  | {
+      data: undefined;
+      error: Error;
+    };
+
+export type UseFetchResult<TData> = FetchState<TData> & {
   mutate: () => void;
-} => {
-  type CacheValue =
-    | {
-        data: TData;
-        error: undefined;
-      }
-    | {
-        data: undefined;
-        error: Error;
-      };
+};
 
-  //キャッシュのスコープはこのコンポーネントのみ
-  const cache = useRef(new Map<string, CacheValue>());
-
+export const useFetchExternalCache = <TKey, TData>(
+  key: Lazy<TKey>,
+  fetcher: (args: TKey) => Promise<TData>,
+  cache: UseFetchCache<CacheValue<TData>>
+): UseFetchResult<TData> => {
   const [isLoading, setIsLoading] = useState(false);
-  const [value, setValue] = useState<CacheValue | undefined>(undefined);
+  const [value, setValue] = useState<CacheValue<TData> | undefined>(undefined);
 
   const prevCacheKey = useRef<string>(keyToCacheKey(undefined));
   const resolvedKey = resolveLazy(key);
@@ -55,7 +61,7 @@ export const useFetch = <TKey, TData>(
           data,
           error: undefined,
         };
-        cache.current.set(cacheKey, value);
+        cache.set(cacheKey, value);
         setIsLoading(false);
         setValue(value);
       },
@@ -64,7 +70,7 @@ export const useFetch = <TKey, TData>(
           data: undefined,
           error,
         };
-        cache.current.set(cacheKey, value);
+        cache.set(cacheKey, value);
         setIsLoading(false);
         setValue(value);
       }
@@ -72,7 +78,7 @@ export const useFetch = <TKey, TData>(
   };
 
   const mutate = () => {
-    cache.current.delete(cacheKey);
+    cache.delete(cacheKey);
     revalidate();
   };
 
@@ -88,7 +94,7 @@ export const useFetch = <TKey, TData>(
       setIsLoading(false);
       setValue(undefined);
     } else {
-      const cacheValue = cache.current.get(cacheKey);
+      const cacheValue = cache.get(cacheKey);
       if (cacheValue !== undefined) {
         //キャッシュがある
         setIsLoading(false);
@@ -121,6 +127,27 @@ export const useFetch = <TKey, TData>(
     ...value,
     mutate,
   };
+};
+
+export const useFetch = <TKey, TData>(
+  key: Lazy<TKey>,
+  fetcher: (args: TKey) => Promise<TData>
+): UseFetchResult<TData> => {
+  const cacheRef = useRef(new Map<string, CacheValue<TData>>());
+
+  const cache: UseFetchCache<CacheValue<TData>> = {
+    set: (key, value) => {
+      cacheRef.current.set(key, value);
+    },
+    get: (key) => {
+      return cacheRef.current.get(key);
+    },
+    delete: (key) => {
+      cacheRef.current.delete(key);
+    },
+  };
+
+  return useFetchExternalCache<TKey, TData>(key, fetcher, cache);
 };
 
 const keyToCacheKey = (key: unknown) => {
