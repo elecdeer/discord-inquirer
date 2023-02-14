@@ -17,6 +17,8 @@ export const createScheduler = (
     commit: () => Promise<void>;
   }[] = [];
 
+  let commitPending = false;
+
   const scheduleDispatch = (dispatch: () => void) => {
     const index = ++dispatchCount;
 
@@ -54,6 +56,11 @@ export const createScheduler = (
   };
 
   const work = () => {
+    if (commitPending) {
+      //commitの処理中は他の処理を行ってはいけない
+      scheduleWork();
+      return;
+    }
     if (dispatchQueue.length > 0) {
       workDispatch();
       scheduleWork();
@@ -105,6 +112,12 @@ export const createScheduler = (
     const commitTask = commitQueue.shift();
     if (commitTask === undefined) return;
 
+    if (commitPending) {
+      throw new Error("Concurrent execution of commit tasks is not allowed");
+    }
+
+    commitPending = true;
+
     logger.pushContext(`commit #${commitTask.index}`);
     if (commitTask.index < commitCount) {
       //より新しいcommitが予約されているのでスキップ
@@ -115,6 +128,8 @@ export const createScheduler = (
       logger.log("trace", "end");
     }
     logger.popContext();
+
+    commitPending = false;
   };
 
   return {
