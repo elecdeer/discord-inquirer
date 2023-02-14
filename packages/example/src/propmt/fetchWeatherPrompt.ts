@@ -1,27 +1,40 @@
-import { Row, useFetch, useSingleSelectComponent } from "discord-inquirer";
+import {
+  Row,
+  useFetch,
+  useLogger,
+  useSingleSelectComponent,
+} from "discord-inquirer";
 
-import type { Prompt } from "discord-inquirer";
+import type { Prompt, Logger } from "discord-inquirer";
 
-const weatherFetcher = async (
-  cityCode: string
-): Promise<{
-  title: string;
-  date: string;
-  weather: string;
-}> => {
-  const rawData = await fetch(
-    `https://weather.tsukumijima.net/api/forecast?city=${cityCode}`
-  );
+const weatherFetcher =
+  (logger: Logger) =>
+  async (
+    cityCode: string
+  ): Promise<{
+    title: string;
+    date: string;
+    weather: string;
+  }> => {
+    logger.log("debug", `fetching weather for ${cityCode}`);
+    const rawData = await fetch(
+      `https://weather.tsukumijima.net/api/forecast?city=${cityCode}`
+    );
 
-  const data = await rawData.json();
-  return {
-    title: data.title,
-    date: data.forecasts[0].date,
-    weather: data.forecasts[0].detail.weather,
+    const data = await rawData.json();
+
+    const result = {
+      title: data.title,
+      date: data.forecasts[0].date,
+      weather: data.forecasts[0].detail.weather,
+    };
+
+    logger.log("debug", result);
+    return result;
   };
-};
 
 export const fetchWeatherPrompt = (() => {
+  const logger = useLogger();
   const [selected, SelectComponent] = useSingleSelectComponent({
     options: [
       {
@@ -43,7 +56,10 @@ export const fetchWeatherPrompt = (() => {
     ],
   });
 
-  const { isLoading, data } = useFetch(selected?.payload, weatherFetcher);
+  const { isLoading, data } = useFetch(
+    selected?.payload,
+    weatherFetcher(logger)
+  );
 
   const description = () => {
     if (isLoading) {
@@ -58,7 +74,7 @@ export const fetchWeatherPrompt = (() => {
   return {
     embeds: [
       {
-        title: "天気予報",
+        title: "天気",
         description: description(),
       },
     ],
