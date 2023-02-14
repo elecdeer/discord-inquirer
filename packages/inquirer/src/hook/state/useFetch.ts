@@ -150,6 +150,6 @@ export const useFetch = <TKey, TData>(
   return useFetchExternalCache<TKey, TData>(key, fetcher, cache);
 };
 
-const keyToCacheKey = (key: unknown) => {
+export const keyToCacheKey = (key: unknown) => {
   return hash(key);
 };
