@@ -35,6 +35,12 @@ export const multiMessageSubCommandData = {
   description: "multi message example",
 } as const;
 
+export const weatherSubCommandData = {
+  type: ApplicationCommandOptionType.Subcommand,
+  name: "weather",
+  description: "useFetch example",
+} as const;
+
 export const commandData = {
   type: ApplicationCommandType.ChatInput,
   name: "example",
@@ -45,5 +51,6 @@ export const commandData = {
     pagedSelectSubCommandData,
     modalSubCommandData,
     multiMessageSubCommandData,
+    weatherSubCommandData,
   ],
 } satisfies RESTPostAPIChatInputApplicationCommandsJSONBody;

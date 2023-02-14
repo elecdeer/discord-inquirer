@@ -2,6 +2,7 @@ import { createScreen, inquire } from "discord-inquirer";
 
 import { logger } from "./logger";
 import { dispatchExamplePrompt } from "../propmt/dispatchTestPrompt";
+import { fetchWeatherPrompt } from "../propmt/fetchWeatherPrompt";
 import { modalPrompt } from "../propmt/modalPrompt";
 import { pagedSelectPrompt } from "../propmt/pagedSelectPrompt";
 import { selectsPrompt } from "../propmt/selectsPrompt";
@@ -44,6 +45,9 @@ export const openPrompt =
         break;
       case "modal":
         result = inquire(modalPrompt, promptOption);
+        break;
+      case "weather":
+        result = inquire(fetchWeatherPrompt, promptOption);
         break;
       default:
         throw new Error("Invalid prompt type");
