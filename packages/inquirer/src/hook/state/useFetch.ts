@@ -62,6 +62,9 @@ export const useFetchExternalCache = <TKey, TData>(
           error: undefined,
         };
         cache.set(cacheKey, value);
+
+        //既にkeyが変わっている
+        if (cacheKey !== prevCacheKey.current) return;
         setIsLoading(false);
         setValue(value);
       },
@@ -71,6 +74,9 @@ export const useFetchExternalCache = <TKey, TData>(
           error,
         };
         cache.set(cacheKey, value);
+
+        //既にkeyが変わっている
+        if (cacheKey !== prevCacheKey.current) return;
         setIsLoading(false);
         setValue(value);
       }
