@@ -133,6 +133,30 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
       expect(result.current.error).not.toBe(undefined);
     });
 
+    test("fetch中に異なるキーでレンダリングが行われた際に古い結果で上書きされない", async () => {
+      const { promise: fooPromise, resolve: fooResolve } = deferred();
+      const { promise: barPromise, resolve: barResolve } = deferred();
+      const fetcher = vi.fn((key) =>
+        key === "fooKey" ? fooPromise : barPromise
+      );
+      const cache = new Map();
+
+      const { result, rerender, waitFor } = await renderHook(
+        (key) => useFetchExternalCache(key, fetcher, cache),
+        { initialArgs: "fooKey" }
+      );
+
+      expect(result.current.isLoading).toBe(true);
+      await rerender({ newArgs: "barKey" });
+      expect(result.current.isLoading).toBe(true);
+
+      barResolve("barValue");
+      fooResolve("fooValue");
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.data).toBe("barValue");
+    });
+
     test("mutateを呼ぶとキャッシュが破棄された後fetcherが呼ばれ、settleされたら状態が更新される", async () => {
       let mockValue = "fooValue";
       const fetcher = vi.fn(async () => mockValue);
