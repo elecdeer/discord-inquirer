@@ -1,25 +1,9 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { keyToCacheKey, useFetchExternalCache } from "./useFetch";
-import { renderHook } from "../../testing";
+import { Deferred, renderHook } from "../../testing";
 
 import type { CacheValue } from "./useFetch";
-
-const deferred = <T>() => {
-  let resolve: (value: T) => void;
-  let reject: (reason: unknown) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {
-    promise,
-    resolve: resolve!,
-    reject: reject!,
-  };
-};
 
 describe("packages/inquirer/src/hook/state/useFetch", () => {
   describe("useFetchExternalCache()", () => {
@@ -76,8 +60,8 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
     });
 
     test("fetcherが返すPromiseがresolveした場合はdataに値が入る", async () => {
-      const { promise, resolve } = deferred();
-      const fetcher = vi.fn(() => promise);
+      const deferred = new Deferred();
+      const fetcher = vi.fn(() => deferred.promise);
       const cache = new Map();
 
       const { result, waitFor } = await renderHook(() =>
@@ -88,7 +72,7 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
       expect(result.current.data).toBe(undefined);
       expect(result.current.error).toBe(undefined);
 
-      resolve("fooValue");
+      deferred.resolve("fooValue");
 
       await waitFor(() => expect(result.current.isLoading).toBe(false));
       expect(result.current.data).toBe("fooValue");
@@ -96,8 +80,8 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
     });
 
     test("fetcherが返すPromiseがrejectした場合はerrorにエラーが入る", async () => {
-      const { promise, reject } = deferred();
-      const fetcher = vi.fn(() => promise);
+      const deferred = new Deferred();
+      const fetcher = vi.fn(() => deferred.promise);
       const cache = new Map();
 
       const { result, waitFor } = await renderHook(() =>
@@ -108,7 +92,7 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
       expect(result.current.data).toBe(undefined);
       expect(result.current.error).toBe(undefined);
 
-      reject("fooError");
+      deferred.reject("fooError");
 
       await waitFor(() => expect(result.current.isLoading).toBe(false));
       expect(result.current.data).toBe(undefined);
@@ -134,10 +118,11 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
     });
 
     test("fetch中に異なるキーでレンダリングが行われた際に古い結果で上書きされない", async () => {
-      const { promise: fooPromise, resolve: fooResolve } = deferred();
-      const { promise: barPromise, resolve: barResolve } = deferred();
+      const fooDeferred = new Deferred();
+      const barDeferred = new Deferred();
+
       const fetcher = vi.fn((key) =>
-        key === "fooKey" ? fooPromise : barPromise
+        key === "fooKey" ? fooDeferred.promise : barDeferred.promise
       );
       const cache = new Map();
 
@@ -150,8 +135,8 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
       await rerender({ newArgs: "barKey" });
       expect(result.current.isLoading).toBe(true);
 
-      barResolve("barValue");
-      fooResolve("fooValue");
+      barDeferred.resolve("barValue");
+      fooDeferred.resolve("fooValue");
 
       await waitFor(() => expect(result.current.isLoading).toBe(false));
       expect(result.current.data).toBe("barValue");
