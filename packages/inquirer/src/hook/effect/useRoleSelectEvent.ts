@@ -9,6 +9,11 @@ import type {
 } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
+/**
+ * RoleSelectコンポーネントが押されたときに送られるInteractionイベントを扱うhook
+ * @param customId RoleSelectコンポーネントのcustomId
+ * @param handle Interactionを受け取ったときに実行される関数
+ */
 export const useRoleSelectEvent = (
   customId: Snowflake,
   handle: (
@@ -16,7 +21,7 @@ export const useRoleSelectEvent = (
     values: readonly AdaptorRole[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
-) => {
+): void => {
   const adaptor = useAdaptor();
 
   useEffect(() => {

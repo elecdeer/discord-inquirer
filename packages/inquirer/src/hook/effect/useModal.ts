@@ -47,6 +47,11 @@ export type UseModalParam<TKey extends string> = {
   onSubmit?: (result: Record<TKey, string>) => void;
 };
 
+/**
+ * モーダルの開閉と入力値の取得を行うhook
+ * @param param モーダルコンポーネントの設定
+ * @returns [result, open] resultはモーダルの入力値、openはモーダルを開く関数
+ */
 export const useModal = <TKey extends string>(
   param: UseModalParam<TKey>
 ): UseModalResult<TKey> => {

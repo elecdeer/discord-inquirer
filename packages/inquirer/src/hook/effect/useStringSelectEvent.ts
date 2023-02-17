@@ -5,6 +5,12 @@ import { useAdaptor } from "../core/useHookContext";
 import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
+/**
+ * StringSelectコンポーネントが押されたときに送られるInteractionイベントを扱うhook
+ * @param customId StringSelectコンポーネントのcustomId
+ * @param handle Interactionを受け取ったときに実行される関数
+ * @see useSelectComponent
+ */
 export const useStringSelectEvent = (
   customId: string,
   handle: (
@@ -12,7 +18,7 @@ export const useStringSelectEvent = (
     values: readonly string[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
-) => {
+): void => {
   const adaptor = useAdaptor();
 
   useEffect(() => {
