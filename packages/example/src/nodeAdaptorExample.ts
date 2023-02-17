@@ -29,5 +29,5 @@ adaptor.subscribeInteraction(async (interaction) => {
   const option = interaction.data.options[0];
   if (option.type !== "subCommand") return;
 
-  await openPrompt(adaptor)(interaction, option.name);
+  await openPrompt(adaptor, interaction, option.name);
 });
