@@ -12,6 +12,13 @@ const hookType = "useMemo";
 const assertHook = assertHookValue(hookType);
 const stockValue = stockHookValue(hookType);
 
+/**
+ * メモ化された値を返すhook
+ * Reactとは違い、Promptの変更検知はオブジェクトのハッシュ値で行われるため、多くの場合useMemoを使う必要は無い
+ * 高価な計算をメモ化する場合に使用する
+ * @param factory
+ * @param deps
+ */
 export const useMemo = <T>(factory: () => T, deps: unknown[]): T => {
   const ctx = useHookContext();
 
