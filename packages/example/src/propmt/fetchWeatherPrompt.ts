@@ -87,6 +87,4 @@ export const fetchWeatherPrompt = (() => {
       ),
     ],
   };
-
-  // const {} = useFetch();
 }) satisfies Prompt<Record<string, unknown>>;

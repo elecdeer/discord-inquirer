@@ -25,7 +25,8 @@ client.on("ready", async (readyClient) => {
     if (!interaction.isChatInputCommand()) return;
     if (interaction.commandName !== "example") return;
 
-    await openPrompt(adaptor)(
+    await openPrompt(
+      adaptor,
       interaction,
       interaction.options.getSubcommand(true)
     );
