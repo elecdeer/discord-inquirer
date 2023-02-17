@@ -5,13 +5,20 @@ import { useAdaptor } from "../core/useHookContext";
 import type { AdaptorInteractionBase } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
+/**
+ * Buttonコンポーネントが押されたときに送られるInteractionイベントを扱うhook
+ * @param customId ButtonコンポーネントのcustomId
+ * @param handle Interactionを受け取ったときに実行される関数
+ *
+ * @see useButtonComponent
+ */
 export const useButtonEvent = (
   customId: string,
   handle: (
     interaction: Readonly<AdaptorInteractionBase>,
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
-) => {
+): void => {
   const adaptor = useAdaptor();
 
   useEffect(() => {

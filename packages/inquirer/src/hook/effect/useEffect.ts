@@ -13,10 +13,16 @@ const hookType = "useEffect";
 const assertHook = assertHookValue(hookType);
 const stockValue = stockHookValue(hookType);
 
+/**
+ * 副作用を実行するhook
+ * callbackはDiscordのメッセージが編集された後に実行される
+ * @param callback
+ * @param deps
+ */
 export const useEffect = (
   callback: (messageId: Snowflake) => void | (() => void),
   deps?: readonly unknown[]
-) => {
+): void => {
   const ctx = useHookContext();
 
   const current = takeIndex(ctx);

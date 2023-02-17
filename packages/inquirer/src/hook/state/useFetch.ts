@@ -135,6 +135,14 @@ export const useFetchExternalCache = <TKey, TData>(
   };
 };
 
+/**
+ * キーに対応するデータを非同期に取得するためのhook
+ * 同じキーに対応するデータはキャッシュされる
+ * useFetchを使う限り、キャッシュはhook呼び出し単位で保持される
+ * useFetchExternalCacheを使うと、キャッシュを外部で管理できる
+ * @param key
+ * @param fetcher
+ */
 export const useFetch = <TKey, TData>(
   key: Lazy<TKey | undefined | null>,
   fetcher: (args: TKey) => Promise<TData>

@@ -21,6 +21,12 @@ export type MentionableSelectValue =
       type: "user";
     } & AdaptorUser);
 
+/**
+ * MentionableSelectコンポーネントが押されたときに送られるInteractionイベントを扱うhook
+ * @param customId MentionableSelectコンポーネントのcustomId
+ * @param handle Interactionを受け取ったときに実行される関数
+ * @see useMentionableSelectComponent
+ */
 export const useMentionableSelectEvent = (
   customId: Snowflake,
   handle: (
@@ -28,7 +34,7 @@ export const useMentionableSelectEvent = (
     userOrRoles: readonly MentionableSelectValue[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
-) => {
+): void => {
   const adaptor = useAdaptor();
 
   useEffect(() => {

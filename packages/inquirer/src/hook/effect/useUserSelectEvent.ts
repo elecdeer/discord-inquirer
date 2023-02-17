@@ -13,6 +13,12 @@ export type UserSelectResultValue = AdaptorUser & {
   member: AdaptorPartialMember;
 };
 
+/**
+ * UserSelectコンポーネントが押されたときに送られるInteractionイベントを扱うhook
+ * @param customId UserSelectコンポーネントのcustomId
+ * @param handle Interactionを受け取ったときに実行される関数
+ * @see useUserSelectComponent
+ */
 export const useUserSelectEvent = (
   customId: string,
   handle: (
@@ -20,7 +26,7 @@ export const useUserSelectEvent = (
     users: readonly UserSelectResultValue[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
-) => {
+): void => {
   const adaptor = useAdaptor();
 
   useEffect(() => {

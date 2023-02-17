@@ -14,9 +14,13 @@ const hookType = "useState";
 const assertHook = assertHookValue(hookType);
 const stockValue = stockHookValue(hookType);
 
+/**
+ * 状態変数とそれを更新する関数を返すhook
+ * @param initial 状態の初期値あるいは初期値を返す関数
+ */
 export const useState = <T>(
   initial: Lazy<T>
-): [T, (dispatch: Lazy<T, T>) => void] => {
+): [T, (value: Lazy<T, T>) => void] => {
   const ctx = useHookContext();
   const current = takeIndex(ctx);
 

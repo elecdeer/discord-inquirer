@@ -1,7 +1,7 @@
-//全てのパラメータがオプショナルかどうか
 import type { StrictPropertyCheck } from "./types";
 import type { IsEqual } from "type-fest";
 
+//全てのパラメータがオプショナルかどうか
 type IsAllPartial<T> = IsEqual<T, Partial<T>>;
 
 type If<C, T, F> = C extends true ? T : F;

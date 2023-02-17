@@ -11,6 +11,12 @@ import type {
 } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
+/**
+ * ChannelSelectコンポーネントが押されたときに送られるInteractionイベントを扱うhook
+ * @param customId ChannelSelectコンポーネントのcustomId
+ * @param handle Interactionを受け取ったときに実行される関数
+ * @see useChannelSelectComponent
+ */
 export const useChannelSelectEvent = (
   customId: string,
   handle: (
@@ -18,7 +24,7 @@ export const useChannelSelectEvent = (
     channels: readonly AdaptorPartialChannel[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
-) => {
+): void => {
   const adaptor = useAdaptor();
 
   useEffect(() => {

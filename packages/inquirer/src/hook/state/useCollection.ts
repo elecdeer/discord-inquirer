@@ -3,6 +3,10 @@ import { resolveLazy } from "../../util/lazy";
 
 import type { Lazy } from "../../util/lazy";
 
+/**
+ * MapのようなKey-Valueの状態を保持するhook
+ * @param initialState 初期値
+ */
 export const useCollection = <K, V>(
   initialState: Lazy<Map<K, V> | [K, V][]>
 ) => {
