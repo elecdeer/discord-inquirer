@@ -22,6 +22,12 @@ export type InquireResultEvent<T extends Record<string, unknown>> =
     }[keyof T]
   >;
 
+/**
+ * Inquireの回答
+ * @param resultEvent Promptでanswerが呼ばれ回答状態が変化したときにEmitされるEventFlow
+ * @param result 現在の回答状態を取得する
+ * @param close Inquireを終了する
+ */
 export type InquireResult<T extends Record<string, unknown>> = {
   resultEvent: InquireResultEvent<T>;
 
@@ -35,29 +41,32 @@ export type Inquire<T extends Record<string, unknown>> = (
   config: InquireConfig<T>
 ) => InquireResult<T>;
 
-export interface InquireConfig<T extends Record<string, unknown>> {
+/**
+ * Inquireの設定
+ * @param screen Screen
+ * @param adaptor DiscordAdaptor
+ * @param defaultResult デフォルトのresult値
+ * @param time 最初にinquirerを送信してからタイムアウトするまでの時間（ミリ秒）tokenの有効期限が15分なので最大でもそれより短くする必要がある デフォルトは14.5 * 60 * 1000 ms
+ * @param idle 最後に回答状態かコンポーネントの状態が変化してからタイムアウトするまでの時間（ミリ秒） デフォルトは2 ** 31 - 1 ms
+ */
+export interface InquireConfig<
+  T extends Record<string, unknown> = Record<string, unknown>
+> {
   screen: Screen;
   adaptor: DiscordAdaptor;
 
   defaultResult?: Partial<T>;
 
-  /**
-   * 最初にinquirerを送信してからタイムアウトするまでの時間
-   * tokenの有効期限が15分なので最大でもそれより短くする
-   * @default 14.5 * 60 * 1000 ms
-   */
   time?: number;
 
-  /**
-   * 最後に回答状態かコンポーネントの状態が変化してからタイムアウトするまでの時間
-   * @default 2 ** 31 - 1 ms
-   */
   idle?: number;
 
   logger?: Logger;
 }
 
-export type Prompt<T extends Record<string, unknown>> = (
+export type Prompt<
+  T extends Record<string, unknown> = Record<string, unknown>
+> = (
   answer: UnionToIntersection<AnswerPrompt<T>>,
   close: () => void
 ) => MessageMutualPayload;
@@ -84,6 +93,11 @@ const completeConfig = <T extends Record<string, unknown>>(
   };
 };
 
+/**
+ * Promptを表示する
+ * @param prompt
+ * @param partialConfig
+ */
 export const inquire = <T extends Record<string, unknown>>(
   prompt: Prompt<T>,
   partialConfig: InquireConfig<T>
