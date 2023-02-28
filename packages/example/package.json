@@ -31,7 +31,7 @@
     "dotenv": "^16.0.3"
   },
   "devDependencies": {
-    "@types/node": "^18.13.0",
+    "@types/node": "^18.14.2",
     "@monorepo/eslint-config": "*",
     "@monorepo/tsconfig": "*"
   }
