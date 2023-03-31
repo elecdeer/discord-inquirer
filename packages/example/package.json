@@ -27,11 +27,11 @@
     "discord-inquirer": "*",
     "discord-inquirer-adaptor-discordjs": "*",
     "discord-inquirer-adaptor-node": "*",
-    "discord.js": "^14.7.1",
+    "discord.js": "^14.8.0",
     "dotenv": "^16.0.3"
   },
   "devDependencies": {
-    "@types/node": "^18.13.0",
+    "@types/node": "^18.15.11",
     "@monorepo/eslint-config": "*",
     "@monorepo/tsconfig": "*"
   }
