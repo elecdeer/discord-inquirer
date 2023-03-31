@@ -1,6 +1,7 @@
 import { createEventFlow } from "@elecdeer/event-flow";
-import { verify } from "@noble/ed25519";
 import * as http from "http";
+
+import { verifyKey } from "./verifyKey";
 
 import type {
   APIInteraction,
@@ -82,16 +83,3 @@ const parseBody = (req: http.IncomingMessage) =>
       resolve(Buffer.concat(chunks));
     });
   });
-
-const verifyKey = async (
-  body: Buffer,
-  signature: string,
-  timestamp: string,
-  publicKey: string
-) => {
-  return await verify(
-    signature,
-    Buffer.from(timestamp + body.toString()),
-    publicKey
-  );
-};

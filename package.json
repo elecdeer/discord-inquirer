@@ -25,12 +25,12 @@
   },
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
   "devDependencies": {
-    "@changesets/cli": "^2.26.0",
+    "@changesets/cli": "^2.26.1",
     "@rollup/plugin-typescript": "^11.0.0",
-    "@types/node": "^18.13.0",
-    "rollup": "^3.15.0",
-    "turbo": "^1.7.4",
-    "typescript": "^4.9.5",
-    "vitest": "^0.28.5"
+    "@types/node": "^18.15.11",
+    "rollup": "^3.20.2",
+    "turbo": "^1.8.8",
+    "typescript": "^5.0.3",
+    "vitest": "^0.29.8"
   }
 }
