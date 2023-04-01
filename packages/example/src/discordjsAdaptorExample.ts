@@ -13,7 +13,7 @@ const client = new Client({
 
 const adaptor = createDiscordJsAdaptor(client);
 
-client.on("ready", async (readyClient) => {
+client.on("ready", (readyClient) => {
   logger.log("debug", "discord.js client ready");
 
   readyClient.on("interactionCreate", async (interaction) => {

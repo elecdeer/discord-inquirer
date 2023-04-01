@@ -17,7 +17,7 @@ import type {
 export const sendMessage =
   (client: Client): DiscordAdaptor["sendMessage"] =>
   async (channelId, payload) => {
-    const channel = await fetchTextChannel(client.channels, channelId);
+    const channel = fetchTextChannel(client.channels, channelId);
     const message = await channel.send(createMessageOption(payload));
 
     return message.id;
@@ -26,7 +26,7 @@ export const sendMessage =
 export const editMessage =
   (client: Client): DiscordAdaptor["editMessage"] =>
   async (channelId, messageId, payload) => {
-    const channel = await fetchTextChannel(client.channels, channelId);
+    const channel = fetchTextChannel(client.channels, channelId);
     const res = await channel.messages.edit(
       messageId,
       createMessageEditOption(payload)
@@ -37,7 +37,7 @@ export const editMessage =
 export const deleteMessage =
   (client: Client): DiscordAdaptor["deleteMessage"] =>
   async (channelId, messageId) => {
-    const channel = await fetchTextChannel(client.channels, channelId);
+    const channel = fetchTextChannel(client.channels, channelId);
     await channel.messages.delete(messageId);
   };
 
