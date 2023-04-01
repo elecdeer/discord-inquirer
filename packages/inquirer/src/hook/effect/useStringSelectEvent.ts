@@ -2,7 +2,7 @@ import { useEffect } from "./useEffect";
 import { isAdaptorStringSelectInteraction, messageFacade } from "../../adaptor";
 import { useAdaptor } from "../core/useHookContext";
 
-import type { AdaptorInteractionBase } from "../../adaptor";
+import type { AdaptorStringSelectInteraction } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
 /**
@@ -14,7 +14,7 @@ import type { Awaitable } from "../../util/types";
 export const useStringSelectEvent = (
   customId: string,
   handle: (
-    interaction: Readonly<AdaptorInteractionBase>,
+    interaction: Readonly<AdaptorStringSelectInteraction>,
     values: readonly string[],
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>

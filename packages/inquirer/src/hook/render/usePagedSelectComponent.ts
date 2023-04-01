@@ -13,6 +13,7 @@ import type {
 import type {
   AdaptorSelectOption,
   StringSelectComponentBuilder,
+  AdaptorStringSelectInteraction,
 } from "../../adaptor";
 import type { Lazy } from "../../util/lazy";
 
@@ -21,6 +22,7 @@ export type UsePagedSelectComponentParams<T> = {
   onSelected?: (selected: SelectItemResult<T>[]) => void;
   pageTorus?: boolean;
   minValues?: number;
+  filter?: (interaction: Readonly<AdaptorStringSelectInteraction>) => boolean;
 } & (
   | {
       showSelectedAlways?: false;
@@ -66,6 +68,7 @@ const maximumOptionNum = 25;
  * @param minValues 選択可能なオプションの最小数 ページごとではなく全てのページの合わせた選択数 (デフォルト: 0)
  * @param showSelectedAlways 選択済みのオプションを常に表示するかどうか trueの場合、maxValuesの値だけ1ページごとに表示されるオプションの数が減る
  * @param pageTorus ページの最大値を超えた場合に最小値に戻るかどうか (デフォルト: false)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonSelectedは実行されない
  * @returns { result, Select, page, pageNum, setPage, stateAccessor}
  */
 export const usePagedSelectComponent = <T>({
@@ -75,6 +78,7 @@ export const usePagedSelectComponent = <T>({
   minValues,
   showSelectedAlways,
   pageTorus = false,
+  filter = (_) => true,
 }: UsePagedSelectComponentParams<T>): UsePagedSelectComponentResult<T> => {
   //showSelectedAlwaysの場合は選択されうるオプションの数だけ、表示できる枠が減る
   const maxOptionNumPerPage =
@@ -115,6 +119,7 @@ export const usePagedSelectComponent = <T>({
       markUpdate();
       return true;
     },
+    filter,
   });
 
   const allOptionsWithState = allOptions.map((option) => {

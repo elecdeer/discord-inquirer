@@ -6,7 +6,10 @@ import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
-import type { MentionableSelectComponentBuilder } from "../../adaptor";
+import type {
+  MentionableSelectComponentBuilder,
+  AdaptorMentionableSelectInteraction,
+} from "../../adaptor";
 import type { MentionableSelectValue } from "../effect/useMentionableSelectEvent";
 
 export type UseMentionableSelectComponentResult = [
@@ -31,11 +34,17 @@ export type UseMentionableSelectComponentParams = {
   onSelected?: (selected: MentionableSelectValue[]) => void;
   minValues?: number;
   maxValues?: number;
+  filter?: (
+    interaction: Readonly<AdaptorMentionableSelectInteraction>
+  ) => boolean;
 };
 
 export type UseMentionableSingleSelectComponentParams = {
   onSelected?: (selected: MentionableSelectValue | null) => void;
   minValues?: 1;
+  filter?: (
+    interaction: Readonly<AdaptorMentionableSelectInteraction>
+  ) => boolean;
 };
 
 /**
@@ -43,23 +52,30 @@ export type UseMentionableSingleSelectComponentParams = {
  * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
  * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
  * @param maxValues 選択可能なオプションの最大数 (デフォルト: 制限無し)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonConfirmは実行されない
  */
 export const useMentionableSelectComponent = ({
   onSelected,
   minValues,
   maxValues,
+  filter = (_) => true,
 }: UseMentionableSelectComponentParams = {}): UseMentionableSelectComponentResult => {
   const customId = useCustomId("mentionableSelect");
 
   const [selected, setSelected] = useState<MentionableSelectValue[]>([]);
   const markChanged = useObserveValue(selected, onSelected);
 
-  useMentionableSelectEvent(customId, async (_, userOrRoles, deferUpdate) => {
-    await deferUpdate();
+  useMentionableSelectEvent(
+    customId,
+    async (interaction, userOrRoles, deferUpdate) => {
+      if (!filter(interaction)) return;
 
-    setSelected([...userOrRoles]);
-    markChanged();
-  });
+      await deferUpdate();
+
+      setSelected([...userOrRoles]);
+      markChanged();
+    }
+  );
 
   return [
     selected,
@@ -76,10 +92,12 @@ export const useMentionableSelectComponent = ({
  * useMentionableSelectComponentの単数選択版
  * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
  * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonConfirmは実行されない
  */
 export const useMentionableSingleSelectComponent = ({
   onSelected,
   minValues,
+  filter,
 }: UseMentionableSingleSelectComponentParams = {}): UseMentionableSingleSelectComponentResult => {
   const [selected, MentionableSelect] = useMentionableSelectComponent({
     onSelected: (selected) => {
@@ -88,6 +106,7 @@ export const useMentionableSingleSelectComponent = ({
     },
     minValues: minValues,
     maxValues: 1,
+    filter: filter,
   });
 
   return [selected[0] ?? null, MentionableSelect];

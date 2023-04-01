@@ -95,6 +95,51 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
         })
       );
     });
+
+    test("filterがfalseを返すとonSelectとdeferUpdateが呼ばれない", async () => {
+      const handle = vi.fn();
+
+      const { result, interactionHelper, adaptorMock } = await renderHook(() =>
+        useMentionableSelectComponent({
+          onSelected: handle,
+          filter: (interaction) => interaction.user.id === "foo",
+        })
+      );
+
+      const component = result.current[1]();
+      const dummyMentionables = [
+        {
+          type: "user",
+          username: "foo",
+        },
+        {
+          type: "role",
+          name: "bar",
+        },
+      ] as const;
+
+      await interactionHelper.selectMentionableSelectComponent(
+        component,
+        dummyMentionables
+      );
+
+      expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
+      expect(handle).not.toHaveBeenCalled();
+
+      await interactionHelper.selectMentionableSelectComponent(
+        component,
+        dummyMentionables,
+        (base) => ({
+          user: {
+            ...base.user,
+            id: "foo",
+          },
+        })
+      );
+
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
+      expect(handle).toHaveBeenCalled();
+    });
   });
 
   describe("useMentionableSingleSelectComponent()", () => {

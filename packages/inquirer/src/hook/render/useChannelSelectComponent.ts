@@ -1,4 +1,4 @@
-import { AdaptorButtonInteraction, ChannelSelect } from "../../adaptor";
+import { ChannelSelect } from "../../adaptor";
 import { useChannelSelectEvent } from "../effect/useChannelSelectEvent";
 import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
@@ -19,13 +19,9 @@ export type UseChannelSelectComponentParams<
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
 > = {
   channelTypes?: ChannelTypes[];
-
   onSelected?: (selected: ChannelSelectResultValue<ChannelTypes>[]) => void;
-
   minValues?: number;
-
   maxValues?: number;
-
   filter?: (interaction: Readonly<AdaptorChannelSelectInteraction>) => boolean;
 };
 
@@ -48,6 +44,7 @@ export type UseChannelSingleSelectComponentParams<
     selected: ChannelSelectResultValue<ChannelTypes> | null
   ) => void;
   minValues?: 1;
+  filter?: (interaction: Readonly<AdaptorChannelSelectInteraction>) => boolean;
 };
 
 export type UseChannelSingleSelectComponentResult<
@@ -122,6 +119,7 @@ export const useChannelSelectComponent = <
  * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
  * @param minValues 選択可能なチャンネルの最小数 useChannelSingleSelectComponentでは0か1しか指定できない (デフォルト: 0)
  * @param channelTypes 選択可能なチャンネルの種類 (デフォルト: 全てのチャンネル)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonSelectedは実行されない
  * @returns [selectResult, ChannelSelectComponentBuilder]
  */
 export const useChannelSingleSelectComponent = <
@@ -130,6 +128,7 @@ export const useChannelSingleSelectComponent = <
   onSelected,
   channelTypes,
   minValues,
+  filter = (_) => true,
 }: UseChannelSingleSelectComponentParams<ChannelTypes> = {}): UseChannelSingleSelectComponentResult<ChannelTypes> => {
   const [selected, select] = useChannelSelectComponent({
     channelTypes: channelTypes,
@@ -138,6 +137,7 @@ export const useChannelSingleSelectComponent = <
     },
     minValues: minValues,
     maxValues: 1,
+    filter: filter,
   });
 
   return [selected[0] ?? null, select];

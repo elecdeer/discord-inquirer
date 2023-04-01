@@ -202,14 +202,16 @@ export const createEmitInteractionTestUtil = (
 
   const emitMentionableSelectInteraction = async (
     customId: Snowflake,
-    dummyMentionables: (
-      | ({
-          type: "user";
-        } & Partial<AdaptorUser>)
-      | ({
-          type: "role";
-        } & Partial<AdaptorRole>)
-    )[],
+    dummyMentionables: Readonly<
+      (
+        | ({
+            type: "user";
+          } & Partial<AdaptorUser>)
+        | ({
+            type: "role";
+          } & Partial<AdaptorRole>)
+      )[]
+    >,
     overrideParam?: LazyOverrideParam<AdaptorMentionableSelectInteraction>
   ) => {
     const userList = dummyMentionables
@@ -384,14 +386,16 @@ export const createEmitInteractionTestUtil = (
 
   const selectMentionableSelectComponent = async (
     component: Readonly<AdaptorMentionableSelectComponent>,
-    dummyMentionables: (
-      | ({
-          type: "user";
-        } & Partial<AdaptorUser>)
-      | ({
-          type: "role";
-        } & Partial<AdaptorRole>)
-    )[],
+    dummyMentionables: Readonly<
+      (
+        | ({
+            type: "user";
+          } & Partial<AdaptorUser>)
+        | ({
+            type: "role";
+          } & Partial<AdaptorRole>)
+      )[]
+    >,
     overrideParam?: LazyOverrideParam<AdaptorMentionableSelectInteraction>
   ) => {
     const customId = component.customId;
