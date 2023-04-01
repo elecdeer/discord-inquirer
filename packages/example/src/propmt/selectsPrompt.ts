@@ -11,14 +11,14 @@ import {
 import type {
   Prompt,
   AdaptorRole,
-  TypeSpecifiedChannel,
+  AdaptorTypeSpecifiedChannel,
   UserSelectResultValue,
   MentionableSelectValue,
 } from "discord-inquirer";
 
 export const selectsPrompt: Prompt<{
   stringSelected: number[];
-  channelSelected: TypeSpecifiedChannel<"guildText">[];
+  channelSelected: AdaptorTypeSpecifiedChannel<"guildText">[];
   userSelected: UserSelectResultValue[];
   roleSelected: AdaptorRole[];
   mentionableSelected: MentionableSelectValue[];
