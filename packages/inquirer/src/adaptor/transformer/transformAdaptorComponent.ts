@@ -120,7 +120,7 @@ const transformAdaptorSelectComponentBase = (
 });
 
 const transformAdaptorStringSelectComponent = (
-  component: AdaptorStringSelectComponent<unknown>
+  component: AdaptorStringSelectComponent
 ): APIStringSelectComponent => ({
   type: ComponentType.StringSelect,
   options: component.options.map(transformers.adaptorSelectOption),
@@ -128,7 +128,7 @@ const transformAdaptorStringSelectComponent = (
 });
 
 const transformAdaptorSelectOption = (
-  option: AdaptorSelectOption<unknown>
+  option: AdaptorSelectOption
 ): APISelectMenuOption => ({
   label: option.label,
   value: option.value,

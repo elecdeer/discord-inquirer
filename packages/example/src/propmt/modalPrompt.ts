@@ -4,7 +4,7 @@ import type { Prompt } from "discord-inquirer";
 
 export const modalPrompt: Prompt<{
   value: string;
-}> = (answer, close) => {
+}> = (answer, _close) => {
   const [result, Button] = useModalComponent({
     title: "The modal",
     components: [

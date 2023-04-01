@@ -9,14 +9,24 @@ module.exports = {
   plugins: ["@typescript-eslint", "import"],
   extends: [
     "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier",
   ],
   rules: {
-    "@typescript-eslint/no-unused-vars": "off",
+    // recommended overrides
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+        destructuredArrayIgnorePattern: "^_",
+      },
+    ],
     "@typescript-eslint/require-await": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
+    // custom rules
+    "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/strict-boolean-expressions": [
       "error",

@@ -24,7 +24,7 @@ export interface AdaptorMessageActionRowComponent {
   components:
     | [
         | AdaptorButtonComponent
-        | AdaptorStringSelectComponent<unknown>
+        | AdaptorStringSelectComponent
         | AdaptorUserSelectComponent
         | AdaptorRoleSelectComponent
         | AdaptorMentionableSelectComponent
@@ -54,7 +54,7 @@ export interface AdaptorModalActionRowComponent {
 
 export type AdaptorMessageComponent =
   | AdaptorButtonComponent
-  | AdaptorStringSelectComponent<unknown>
+  | AdaptorStringSelectComponent
   | AdaptorUserSelectComponent
   | AdaptorRoleSelectComponent
   | AdaptorMentionableSelectComponent
@@ -160,20 +160,20 @@ export interface AdaptorSelectComponentBase {
 /**
  * @see https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
  */
-export interface AdaptorStringSelectComponent<T>
+export interface AdaptorStringSelectComponent
   extends AdaptorSelectComponentBase {
   type: "stringSelect";
 
   /**
    * the choices in the select, max 25
    */
-  options: AdaptorSelectOption<T>[];
+  options: AdaptorSelectOption[];
 }
 
 /**
  * @see https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure
  */
-export interface AdaptorSelectOption<T> {
+export interface AdaptorSelectOption {
   /**
    * the user-facing name of the option, max 100 characters
    */

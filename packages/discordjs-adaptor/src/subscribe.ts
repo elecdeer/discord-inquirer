@@ -7,7 +7,7 @@ import type { Client, APIInteraction } from "discord.js";
 export const subscribeInteraction =
   (client: Client<true>): DiscordAdaptor["subscribeInteraction"] =>
   (handler) => {
-    const listener = (data: APIInteraction, shardId: number) => {
+    const listener = (data: APIInteraction, _shardId: number) => {
       const adaptorInteraction = transformers.interaction(data);
       void handler(adaptorInteraction);
     };
