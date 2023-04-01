@@ -66,7 +66,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           value: expect.any(String),
           default: true,
         },
-      ] satisfies AdaptorStringSelectComponent<unknown>["options"]);
+      ] satisfies AdaptorStringSelectComponent["options"]);
 
       await act(() => {
         result.current.setPage(1);
@@ -83,7 +83,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           value: expect.any(String),
           default: false,
         },
-      ] satisfies AdaptorStringSelectComponent<unknown>["options"]);
+      ] satisfies AdaptorStringSelectComponent["options"]);
 
       await act(() => {
         result.current.setPage((prev) => prev + 1);
@@ -105,7 +105,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           value: expect.any(String),
           default: false,
         },
-      ] satisfies AdaptorStringSelectComponent<unknown>["options"]);
+      ] satisfies AdaptorStringSelectComponent["options"]);
     });
 
     test("オプションが選択されると状態が変化する", async () => {
@@ -138,7 +138,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           value: expect.any(String),
           default: false,
         },
-      ] satisfies AdaptorStringSelectComponent<unknown>["options"]);
+      ] satisfies AdaptorStringSelectComponent["options"]);
 
       const component = result.current.Select();
       await interactionHelper.selectStringSelectComponent(component, [

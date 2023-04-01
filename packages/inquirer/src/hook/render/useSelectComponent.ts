@@ -15,7 +15,7 @@ import type {
 import type { Lazy } from "../../util/lazy";
 import type { SetOptional } from "type-fest";
 
-export type SelectItem<T> = Omit<AdaptorSelectOption<T>, "value"> & {
+export type SelectItem<T> = Omit<AdaptorSelectOption, "value"> & {
   payload: T;
   key: string;
   inactive: boolean;
@@ -34,7 +34,7 @@ export type UseSelectComponentResult<T> = [
   selectResult: SelectItemResult<T>[],
   StringSelect: StringSelectComponentBuilder<{
     customId: string;
-    options: AdaptorSelectOption<T>[];
+    options: AdaptorSelectOption[];
     minValues: number | undefined;
     maxValues: number | undefined;
   }>,
@@ -45,7 +45,7 @@ export type UseSingleSelectComponentResult<T> = [
   selectResult: SelectItemResult<T> | null,
   StringSelect: StringSelectComponentBuilder<{
     customId: string;
-    options: AdaptorSelectOption<T>[];
+    options: AdaptorSelectOption[];
     minValues: number | undefined;
     maxValues: 1;
   }>,
@@ -107,7 +107,7 @@ export const useSelectComponent = <T>({
         default: stateAccessor.get(item.key),
         description: item.description,
         emoji: item.emoji,
-      } satisfies AdaptorSelectOption<unknown>)
+      } satisfies AdaptorSelectOption)
   );
 
   const renderComponent = StringSelect({

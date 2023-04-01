@@ -49,20 +49,19 @@ export const Row = (
 };
 
 export type StringSelectComponentBuilder<
-  T extends Partial<AdaptorStringSelectComponent<unknown>>
+  T extends Partial<AdaptorStringSelectComponent>
 > = FulfilledCurriedBuilder<
-  AdaptorStringSelectComponent<unknown>,
+  AdaptorStringSelectComponent,
   T & {
     type: "stringSelect";
   },
-  AdaptorStringSelectComponent<unknown>
+  AdaptorStringSelectComponent
 >;
 
-export const StringSelect = createCurriedBuilder<
-  AdaptorStringSelectComponent<unknown>
->()({
-  type: "stringSelect",
-});
+export const StringSelect =
+  createCurriedBuilder<AdaptorStringSelectComponent>()({
+    type: "stringSelect",
+  });
 
 export type UserSelectComponentBuilder<
   T extends Partial<AdaptorUserSelectComponent>
