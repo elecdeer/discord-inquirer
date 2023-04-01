@@ -7,52 +7,12 @@ import { useState } from "../state/useState";
 import type {
   AdaptorChannelTypes,
   ChannelSelectComponentBuilder,
-  AdaptorPartialNonThreadChannel,
-  AdaptorPartialThreadChannel,
+  AdaptorTypeSpecifiedChannel,
 } from "../../adaptor";
 
 export type ChannelSelectResultValue<
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
-> = TypeSpecifiedChannel<ChannelTypes>;
-
-export type TypeSpecifiedChannel<T extends AdaptorChannelTypes> = {
-  guildText: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildText";
-  };
-  dm: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "dm";
-  };
-  guildVoice: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildVoice";
-  };
-  groupDm: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "groupDm";
-  };
-  guildCategory: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildCategory";
-  };
-  guildAnnouncement: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildAnnouncement";
-  };
-  announcementThread: Omit<AdaptorPartialThreadChannel, "type"> & {
-    type: "announcementThread";
-  };
-  publicThread: Omit<AdaptorPartialThreadChannel, "type"> & {
-    type: "publicThread";
-  };
-  privateThread: Omit<AdaptorPartialThreadChannel, "type"> & {
-    type: "privateThread";
-  };
-  guildStageVoice: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildStageVoice";
-  };
-  guildDirectory: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildDirectory";
-  };
-  guildForum: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildForum";
-  };
-}[T];
+> = AdaptorTypeSpecifiedChannel<ChannelTypes>;
 
 export type UseChannelSelectComponentParams<
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
