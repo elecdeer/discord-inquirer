@@ -1,10 +1,6 @@
 {
   "name": "discord-inquirer-example",
   "private": true,
-  "version": "0.0.0",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "typings": "./dist/index.d.ts",
   "scripts": {
     "cleanup": "rimraf dist",
     "register-command": "npm run cleanup && rollup -c -i src/registerCommand.ts && node --enable-source-maps --trace-uncaught ./dist/registerCommand.mjs",
