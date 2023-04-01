@@ -1,5 +1,5 @@
 {
-  "name": "discord-inquirer-adaptor-discordjs",
+  "name": "@discord-inquirer/adaptor-discordjs",
   "version": "0.0.0",
   "description": "discord.js adaptor for discord-inquirer",
   "main": "./dist/index.js",

@@ -1,5 +1,5 @@
 {
-  "name": "@elecdeer/event-flow",
+  "name": "@discord-inquirer/event-flow",
   "version": "1.2.0",
   "description": "event emitter that can be filtered, mapped, etc.",
   "main": "./dist/index.js",
