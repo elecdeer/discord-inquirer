@@ -15,6 +15,7 @@ module.exports = {
   rules: {
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/strict-boolean-expressions": [
