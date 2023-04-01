@@ -2,15 +2,16 @@
   "$schema": "https://turbo.build/schema.json",
   "baseBranch": "origin/main",
   "pipeline": {
-    "type-check": {
-
-    },
     "build": {
       "dependsOn": [
-        "^build",
-        "type-check"
+        "^build"
       ],
       "outputs": ["dist/**"]
+    },
+    "type-check": {
+      "dependsOn": [
+        "^build"
+      ]
     },
     "test": {
       "dependsOn": [
