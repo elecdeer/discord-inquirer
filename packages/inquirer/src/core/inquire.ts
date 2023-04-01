@@ -1,4 +1,4 @@
-import { createEventFlow } from "@elecdeer/event-flow";
+import { createEventFlow } from "@discord-inquirer/event-flow";
 
 import { createRenderer } from "./renderer";
 import { isMatchHash } from "../util/hash";
@@ -8,7 +8,7 @@ import { createTimer } from "../util/timer";
 import type { Screen } from "./screen";
 import type { DiscordAdaptor, MessageMutualPayload } from "../adaptor";
 import type { Logger } from "../util/logger";
-import type { IEventFlowHandler } from "@elecdeer/event-flow";
+import type { IEventFlowHandler } from "@discord-inquirer/event-flow";
 import type { UnionToIntersection } from "type-fest";
 
 export type InquireResultEvent<T extends Record<string, unknown>> =

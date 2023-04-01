@@ -1,4 +1,4 @@
-# @elecdeer/event-flow
+# @discord-inquirer/event-flow
 
 ## 1.2.0
 

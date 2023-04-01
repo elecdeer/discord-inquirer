@@ -1,4 +1,4 @@
-import { createDiscordJsAdaptor } from "discord-inquirer-adaptor-discordjs";
+import { createDiscordJsAdaptor } from "@discord-inquirer/adaptor-discordjs";
 import { Client } from "discord.js";
 import { config } from "dotenv";
 

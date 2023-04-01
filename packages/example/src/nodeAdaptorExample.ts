@@ -1,5 +1,5 @@
+import { createNodeAdaptor } from "@discord-inquirer/adaptor-node";
 import { isAdaptorApplicationCommandInteraction } from "discord-inquirer";
-import { createNodeAdaptor } from "discord-inquirer-adaptor-node";
 import { config } from "dotenv";
 
 import { commandData } from "./commandData";
