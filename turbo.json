@@ -8,16 +8,20 @@
       ],
       "outputs": ["dist/**"]
     },
+    "type-check": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
     "test": {
       "dependsOn": [
         "^build"
       ]
     },
-    "type-check": {
-
-    },
     "lint": {
-
+      "dependsOn": [
+        "^build"
+      ]
     },
     "format": {
 
