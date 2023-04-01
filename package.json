@@ -8,11 +8,12 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "test": "turbo run test --parallel",
-    "type-check": "turbo run type-check --parallel",
-    "lint": "turbo run lint --parallel",
+    "test": "turbo run type-check test lint",
+    "test:vitest": "turbo run test --parallel",
+    "test:type": "turbo run type-check --parallel",
+    "test:lint": "turbo run lint --parallel",
     "format": "turbo run format --parallel",
-    "release": "turbo run build lint test && changeset version && changeset publish"
+    "release": "turbo run type-check build type-check test lint && changeset version && changeset publish"
   },
   "repository": {
     "type": "git",
