@@ -1,6 +1,6 @@
 {
   "name": "@discord-inquirer/adaptor-discordjs",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "discord.js adaptor for discord-inquirer",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
   "dependencies": {
-    "discord-inquirer": "^0.0.0",
+    "discord-inquirer": "^0.1.0",
     "discord.js": "^14.8.0"
   },
   "devDependencies": {
