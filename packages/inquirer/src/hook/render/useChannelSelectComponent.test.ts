@@ -91,7 +91,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
       );
     });
 
-    test("filterがfalseを返すとonSelectとdeferUpdateが呼ばれない", async () => {
+    test("filterでfalseを返したときはinteractionを無視する", async () => {
       const handle = vi.fn();
       const { result, adaptorMock, interactionHelper } = await renderHook(() =>
         useChannelSelectComponent({

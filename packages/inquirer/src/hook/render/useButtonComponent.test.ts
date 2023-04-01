@@ -30,7 +30,7 @@ describe("packages/inquirer/src/hook/render/useButtonComponent", () => {
       expect(handle).toHaveBeenCalledOnce();
     });
 
-    test("filterがfalseを返すとonClickとdeferUpdateが呼ばれない", async () => {
+    test("filterでfalseを返したときはinteractionを無視する", async () => {
       const handle = vi.fn();
       const { result, adaptorMock, interactionHelper } = await renderHook(() =>
         useButtonComponent({

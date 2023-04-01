@@ -372,7 +372,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       expect(result.current.page).toBe(2);
     });
 
-    test("filterでfalseを返した場合はinteractionを無視する", async () => {
+    test("filterでfalseを返したときはinteractionを無視する", async () => {
       const handleSelected = vi.fn();
       const options = createDummyOptions([1, 1, 1]);
 
