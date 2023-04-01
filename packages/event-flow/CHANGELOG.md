@@ -1,5 +1,11 @@
 # @discord-inquirer/event-flow
 
+## 1.3.0
+
+### Minor Changes
+
+- e620761: beta release
+
 ## 1.2.0
 
 ### Minor Changes
