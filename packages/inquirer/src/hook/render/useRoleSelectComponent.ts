@@ -6,7 +6,11 @@ import { useRoleSelectEvent } from "../effect/useRoleSelectEvent";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
-import type { AdaptorRole, RoleSelectComponentBuilder } from "../../adaptor";
+import type {
+  AdaptorRole,
+  RoleSelectComponentBuilder,
+  AdaptorRoleSelectInteraction,
+} from "../../adaptor";
 
 export type UseRoleSelectComponentResult = [
   selectedResult: AdaptorRole[],
@@ -30,11 +34,13 @@ export type UseRoleSelectComponentParams = {
   onSelected?: (selected: AdaptorRole[]) => void;
   minValues?: number;
   maxValues?: number;
+  filter?: (interaction: Readonly<AdaptorRoleSelectInteraction>) => boolean;
 };
 
 export type UseRoleSingleSelectComponentParams = {
   onSelected?: (selected: AdaptorRole | null) => void;
   minValues?: 1;
+  filter?: (interaction: Readonly<AdaptorRoleSelectInteraction>) => boolean;
 };
 
 /**
@@ -42,11 +48,13 @@ export type UseRoleSingleSelectComponentParams = {
  * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
  * @param maxValues 選択可能なオプションの最大数 (デフォルト: 制限無し)
  * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonSelectedは実行されない
  */
 export const useRoleSelectComponent = ({
   onSelected,
   maxValues,
   minValues,
+  filter = (_) => true,
 }: UseRoleSelectComponentParams = {}): UseRoleSelectComponentResult => {
   const customId = useCustomId("roleSelect");
 
@@ -54,7 +62,9 @@ export const useRoleSelectComponent = ({
 
   const markChanged = useObserveValue(selected, onSelected);
 
-  useRoleSelectEvent(customId, async (_, roles, deferUpdate) => {
+  useRoleSelectEvent(customId, async (interaction, roles, deferUpdate) => {
+    if (!filter(interaction)) return;
+
     await deferUpdate();
 
     setSelected([...roles]);
@@ -76,10 +86,12 @@ export const useRoleSelectComponent = ({
  * useRoleSelectComponentの単一選択版
  * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
  * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonSelectedは実行されない
  */
 export const useRoleSingleSelectComponent = ({
   onSelected,
   minValues,
+  filter,
 }: UseRoleSingleSelectComponentParams = {}): UseRoleSingleSelectComponentResult => {
   const [selected, Select] = useRoleSelectComponent({
     onSelected: (selected) => {
@@ -88,6 +100,7 @@ export const useRoleSingleSelectComponent = ({
     },
     minValues: minValues,
     maxValues: 1,
+    filter,
   });
 
   return [selected[0] ?? null, Select];

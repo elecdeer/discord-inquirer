@@ -10,6 +10,7 @@ import { useCustomId } from "../state/useCustomId";
 import type {
   AdaptorSelectOption,
   StringSelectComponentBuilder,
+  AdaptorStringSelectInteraction,
 } from "../../adaptor";
 import type { Lazy } from "../../util/lazy";
 import type { SetOptional } from "type-fest";
@@ -56,6 +57,7 @@ export type UseSelectComponentParams<T> = {
   onSelected?: (selected: SelectItemResult<T>[]) => void;
   minValues?: number;
   maxValues?: number;
+  filter?: (interaction: Readonly<AdaptorStringSelectInteraction>) => boolean;
 };
 
 /**
@@ -64,6 +66,7 @@ export type UseSelectComponentParams<T> = {
  * @param onSelected 選択状態が変更されたときに呼び出される
  * @param maxValues 選択可能なオプションの最大数 (デフォルト: 制限無し)
  * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonClickは実行されない
  * @returns [selectResult, StringSelect, stateAccessor]
  */
 export const useSelectComponent = <T>({
@@ -71,6 +74,7 @@ export const useSelectComponent = <T>({
   onSelected,
   maxValues,
   minValues,
+  filter,
 }: UseSelectComponentParams<T>): UseSelectComponentResult<T> => {
   const customId = useCustomId("stringSelect");
 
@@ -84,6 +88,7 @@ export const useSelectComponent = <T>({
       markUpdate();
       return true;
     },
+    filter,
   });
 
   const optionsWithSelected = completedOptions.map((item) => ({
@@ -127,6 +132,7 @@ export type UseSelectStateParam = {
     next: boolean,
     selectedKeys: readonly string[]
   ) => boolean;
+  filter?: (interaction: AdaptorStringSelectInteraction) => boolean;
 };
 
 export type UseSelectResult = UseSelectResultStateAccessor;
@@ -141,6 +147,7 @@ export const useSelectState = ({
   customId,
   options,
   selectedUpdateHook,
+  filter = (_) => true,
 }: UseSelectStateParam): UseSelectResult => {
   const { setEach, get, set } = useCollection<string, boolean>(
     options.map((item) => [item.key, item.default ?? false])
@@ -154,26 +161,31 @@ export const useSelectState = ({
     setEach: setEach,
   };
 
-  useStringSelectEvent(customId, async (_, selectedKeys, deferUpdate) => {
-    //選択状態が何も変化しないinteractionはそもそもAPIから送られないことを前提としている
-    let updated = false;
+  useStringSelectEvent(
+    customId,
+    async (interaction, selectedKeys, deferUpdate) => {
+      if (!filter(interaction)) return;
 
-    setEach((prev, key) => {
-      const selected = selectedKeys.includes(key);
-      const shouldUpdate =
-        selectedUpdateHook ?? ((_, _prev, _next) => _prev !== _next);
-      if (shouldUpdate(key, prev, selected, selectedKeys)) {
-        updated = true;
-        return selected;
-      } else {
-        return prev;
+      //選択状態が何も変化しないinteractionはそもそもAPIから送られないことを前提としている
+      let updated = false;
+
+      setEach((prev, key) => {
+        const selected = selectedKeys.includes(key);
+        const shouldUpdate =
+          selectedUpdateHook ?? ((_, _prev, _next) => _prev !== _next);
+        if (shouldUpdate(key, prev, selected, selectedKeys)) {
+          updated = true;
+          return selected;
+        } else {
+          return prev;
+        }
+      });
+
+      if (updated) {
+        await deferUpdate();
       }
-    });
-
-    if (updated) {
-      await deferUpdate();
     }
-  });
+  );
 
   return accessor;
 };
@@ -204,12 +216,14 @@ export type UseSingleSelectComponentParam<T> = Omit<
  * @param options 選択肢 payloadにはstringだけでなく任意のオブジェクトを指定でき、結果として受け取ることができる
  * @param onSelected 選択状態が変更されたときに呼び出される
  * @param minValues 選択可能なオプションの最小数 (デフォルト: 0)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonClickは実行されない
  * @returns [selectResult, StringSelect, stateAccessor]
  */
 export const useSingleSelectComponent = <T>({
   options,
   onSelected,
   minValues,
+  filter,
 }: UseSingleSelectComponentParam<T>): UseSingleSelectComponentResult<T> => {
   const [result, Select, stateAccessor] = useSelectComponent({
     options: options,
@@ -218,6 +232,7 @@ export const useSingleSelectComponent = <T>({
     },
     minValues: minValues,
     maxValues: 1,
+    filter: filter,
   });
 
   const singleResult = (resultList: SelectItemResult<T>[]) => {

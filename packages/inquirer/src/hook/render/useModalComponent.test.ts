@@ -53,5 +53,36 @@ describe("packages/inquirer/src/hook/render/useModalComponent", () => {
         } satisfies AdaptorInteractionResponse
       );
     });
+
+    test("filterでfalseを返したときはinteractionを無視する", async () => {
+      const { result, adaptorMock, interactionHelper } = await renderHook(() =>
+        useModalComponent({
+          title: "title",
+          components: [
+            {
+              style: "short",
+              key: "foo",
+              label: "foo",
+            },
+          ],
+          filter: (interaction) => interaction.user.id === "foo",
+        })
+      );
+
+      const component = result.current[1]({
+        style: "primary",
+      })();
+
+      await interactionHelper.clickButtonComponent(component);
+      expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
+
+      await interactionHelper.clickButtonComponent(component, (base) => ({
+        user: {
+          ...base.user,
+          id: "foo",
+        },
+      }));
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
+    });
   });
 });

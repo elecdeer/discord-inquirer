@@ -137,6 +137,48 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
         }),
       ]);
     });
+
+    test("filterでfalseを返したときはinteractionを無視する", async () => {
+      const handle = vi.fn();
+      const { result, adaptorMock, interactionHelper } = await renderHook(() =>
+        useSelectComponent({
+          onSelected: handle,
+          options: [
+            {
+              label: "foo",
+              payload: "foo",
+              inactive: true,
+            },
+            {
+              label: "bar",
+              payload: "bar",
+            },
+          ],
+          filter: (interaction) => interaction.user.id === "foo",
+        })
+      );
+
+      const component = result.current[1]();
+
+      await interactionHelper.selectStringSelectComponent(component, [
+        component.options[0].value,
+      ]);
+      expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
+      expect(handle).not.toHaveBeenCalled();
+
+      await interactionHelper.selectStringSelectComponent(
+        component,
+        [component.options[0].value],
+        (base) => ({
+          user: {
+            ...base.user,
+            id: "foo",
+          },
+        })
+      );
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
+      expect(handle).toHaveBeenCalled();
+    });
   });
 
   describe("useSingleSelectComponent()", () => {

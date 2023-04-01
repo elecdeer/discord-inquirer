@@ -4,7 +4,10 @@ import { useObserveValue } from "../effect/useObserveValue";
 import { useCustomId } from "../state/useCustomId";
 import { useState } from "../state/useState";
 
-import type { NonLinkButtonComponentBuilder } from "../../adaptor";
+import type {
+  NonLinkButtonComponentBuilder,
+  AdaptorButtonInteraction,
+} from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
 export type ValidateResult<T> = ValidateOkResult | ValidateErrorResult<T>;
@@ -38,6 +41,7 @@ export type UseConfirmButtonParams<T> = {
   validate: () => Awaitable<ValidateResult<T>>;
   onConfirm?: () => Awaitable<void>;
   deferInteractionAlways?: boolean;
+  filter?: (interaction: Readonly<AdaptorButtonInteraction>) => boolean;
 };
 
 /**
@@ -45,12 +49,14 @@ export type UseConfirmButtonParams<T> = {
  * @param validate ボタンが押されたときに実行される検証関数
  * @param onConfirm validateが成功したときに実行される関数
  * @param deferInteractionAlways validateの結果に関わらずinteractionをdeferUpdateするかどうか (デフォルトはtrue)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonConfirmは実行されない
  * @returns [validateResult, ConfirmButton]
  */
 export const useConfirmButtonComponent = <T = undefined>({
   validate,
   onConfirm,
   deferInteractionAlways = true,
+  filter = (_) => true,
 }: UseConfirmButtonParams<T>): UseConfirmButtonResult<T> => {
   const customId = useCustomId("confirmButton");
   const [validateResult, setValidateResult] = useState<ValidateResultState<T>>({
@@ -63,7 +69,9 @@ export const useConfirmButtonComponent = <T = undefined>({
     onConfirm?.();
   });
 
-  useButtonEvent(customId, async (_, deferUpdate) => {
+  useButtonEvent(customId, async (interaction, deferUpdate) => {
+    if (!filter(interaction)) return;
+
     //canConfirmの結果がresolveする前に3秒経ってしまうとinteractionがタイムアウトするため、deferInteractionAlwaysがtrueの場合は先に呼ぶ
     if (deferInteractionAlways) {
       await deferUpdate();

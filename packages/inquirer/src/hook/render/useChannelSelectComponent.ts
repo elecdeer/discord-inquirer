@@ -7,63 +7,22 @@ import { useState } from "../state/useState";
 import type {
   AdaptorChannelTypes,
   ChannelSelectComponentBuilder,
-  AdaptorPartialNonThreadChannel,
-  AdaptorPartialThreadChannel,
+  AdaptorTypeSpecifiedChannel,
+  AdaptorChannelSelectInteraction,
 } from "../../adaptor";
 
 export type ChannelSelectResultValue<
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
-> = TypeSpecifiedChannel<ChannelTypes>;
-
-export type TypeSpecifiedChannel<T extends AdaptorChannelTypes> = {
-  guildText: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildText";
-  };
-  dm: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "dm";
-  };
-  guildVoice: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildVoice";
-  };
-  groupDm: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "groupDm";
-  };
-  guildCategory: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildCategory";
-  };
-  guildAnnouncement: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildAnnouncement";
-  };
-  announcementThread: Omit<AdaptorPartialThreadChannel, "type"> & {
-    type: "announcementThread";
-  };
-  publicThread: Omit<AdaptorPartialThreadChannel, "type"> & {
-    type: "publicThread";
-  };
-  privateThread: Omit<AdaptorPartialThreadChannel, "type"> & {
-    type: "privateThread";
-  };
-  guildStageVoice: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildStageVoice";
-  };
-  guildDirectory: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildDirectory";
-  };
-  guildForum: Omit<AdaptorPartialNonThreadChannel, "type"> & {
-    type: "guildForum";
-  };
-}[T];
+> = AdaptorTypeSpecifiedChannel<ChannelTypes>;
 
 export type UseChannelSelectComponentParams<
   ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
 > = {
   channelTypes?: ChannelTypes[];
-
   onSelected?: (selected: ChannelSelectResultValue<ChannelTypes>[]) => void;
-
   minValues?: number;
-
   maxValues?: number;
+  filter?: (interaction: Readonly<AdaptorChannelSelectInteraction>) => boolean;
 };
 
 export type UseChannelSelectComponentResult<
@@ -85,6 +44,7 @@ export type UseChannelSingleSelectComponentParams<
     selected: ChannelSelectResultValue<ChannelTypes> | null
   ) => void;
   minValues?: 1;
+  filter?: (interaction: Readonly<AdaptorChannelSelectInteraction>) => boolean;
 };
 
 export type UseChannelSingleSelectComponentResult<
@@ -104,6 +64,7 @@ export type UseChannelSingleSelectComponentResult<
  * @param maxValues 選択可能なチャンネルの最大数 (デフォルト: 制限無し)
  * @param minValues 選択可能なチャンネルの最小数 (デフォルト: 0)
  * @param channelTypes 選択可能なチャンネルの種類 (デフォルト: 全てのチャンネル)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonSelectedは実行されない
  * @returns [selectResult, ChannelSelectComponentBuilder]
  */
 export const useChannelSelectComponent = <
@@ -113,6 +74,7 @@ export const useChannelSelectComponent = <
   maxValues,
   minValues,
   channelTypes,
+  filter = (_) => true,
 }: UseChannelSelectComponentParams<ChannelTypes> = {}): UseChannelSelectComponentResult<ChannelTypes> => {
   const customId = useCustomId("channelSelect");
 
@@ -122,19 +84,24 @@ export const useChannelSelectComponent = <
 
   const markChanged = useObserveValue(selected, onSelected);
 
-  useChannelSelectEvent(customId, async (_, channels, deferUpdate) => {
-    await deferUpdate();
+  useChannelSelectEvent(
+    customId,
+    async (interaction, channels, deferUpdate) => {
+      if (!filter(interaction)) return;
 
-    const filteredChannels = channels.filter(
-      (channel): channel is ChannelSelectResultValue<ChannelTypes> => {
-        if (channelTypes === undefined) return true;
-        return (channelTypes as string[]).includes(channel.type) ?? false;
-      }
-    );
+      await deferUpdate();
 
-    setSelected(filteredChannels);
-    markChanged();
-  });
+      const filteredChannels = channels.filter(
+        (channel): channel is ChannelSelectResultValue<ChannelTypes> => {
+          if (channelTypes === undefined) return true;
+          return (channelTypes as string[]).includes(channel.type) ?? false;
+        }
+      );
+
+      setSelected(filteredChannels);
+      markChanged();
+    }
+  );
 
   return [
     selected,
@@ -152,6 +119,7 @@ export const useChannelSelectComponent = <
  * @param onSelected 選択状態が変化した時に呼ばれるハンドラ
  * @param minValues 選択可能なチャンネルの最小数 useChannelSingleSelectComponentでは0か1しか指定できない (デフォルト: 0)
  * @param channelTypes 選択可能なチャンネルの種類 (デフォルト: 全てのチャンネル)
+ * @param filter interactionに反応するかどうかのフィルタ falseを返すとdeferUpdateとonSelectedは実行されない
  * @returns [selectResult, ChannelSelectComponentBuilder]
  */
 export const useChannelSingleSelectComponent = <
@@ -160,6 +128,7 @@ export const useChannelSingleSelectComponent = <
   onSelected,
   channelTypes,
   minValues,
+  filter = (_) => true,
 }: UseChannelSingleSelectComponentParams<ChannelTypes> = {}): UseChannelSingleSelectComponentResult<ChannelTypes> => {
   const [selected, select] = useChannelSelectComponent({
     channelTypes: channelTypes,
@@ -168,6 +137,7 @@ export const useChannelSingleSelectComponent = <
     },
     minValues: minValues,
     maxValues: 1,
+    filter: filter,
   });
 
   return [selected[0] ?? null, select];

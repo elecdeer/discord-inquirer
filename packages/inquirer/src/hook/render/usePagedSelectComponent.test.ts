@@ -371,5 +371,40 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
 
       expect(result.current.page).toBe(2);
     });
+
+    test("filterでfalseを返したときはinteractionを無視する", async () => {
+      const handleSelected = vi.fn();
+      const options = createDummyOptions([1, 1, 1]);
+
+      const { result, adaptorMock, interactionHelper } = await renderHook(() =>
+        usePagedSelectComponent({
+          optionsResolver: () => options,
+          onSelected: handleSelected,
+          filter: (interaction) => interaction.user.id === "foo",
+        })
+      );
+
+      await interactionHelper.selectStringSelectComponent(
+        result.current.Select(),
+        [result.current.Select().options[0].value]
+      );
+
+      expect(handleSelected).not.toHaveBeenCalled();
+      expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
+
+      await interactionHelper.selectStringSelectComponent(
+        result.current.Select(),
+        [result.current.Select().options[0].value],
+        (base) => ({
+          user: {
+            ...base.user,
+            id: "foo",
+          },
+        })
+      );
+
+      expect(handleSelected).toHaveBeenCalled();
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
+    });
   });
 });

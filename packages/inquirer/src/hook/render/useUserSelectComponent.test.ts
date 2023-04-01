@@ -85,6 +85,43 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
         })
       );
     });
+
+    test("filterでfalseを返したときはinteractionを無視する", async () => {
+      const handle = vi.fn();
+      const { result, adaptorMock, interactionHelper } = await renderHook(() =>
+        useUserSelectComponent({
+          onSelected: handle,
+          filter: (interaction) => interaction.user.id === "foo",
+        })
+      );
+
+      const component = result.current[1]();
+
+      await interactionHelper.selectUserSelectComponent(component, [
+        {
+          username: "bar",
+        },
+      ]);
+      expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
+      expect(handle).not.toHaveBeenCalled();
+
+      await interactionHelper.selectUserSelectComponent(
+        component,
+        [
+          {
+            username: "foo",
+          },
+        ],
+        (base) => ({
+          user: {
+            ...base.user,
+            id: "foo",
+          },
+        })
+      );
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
+      expect(handle).toHaveBeenCalled();
+    });
   });
 
   describe("useMentionableSingleSelectComponent()", () => {

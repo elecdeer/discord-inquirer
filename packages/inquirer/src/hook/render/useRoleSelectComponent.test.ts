@@ -85,6 +85,43 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
         })
       );
     });
+
+    test("filterでfalseを返したときはinteractionを無視する", async () => {
+      const handle = vi.fn();
+      const { result, adaptorMock, interactionHelper } = await renderHook(() =>
+        useRoleSelectComponent({
+          onSelected: handle,
+          filter: (interaction) => interaction.user.id === "foo",
+        })
+      );
+
+      const component = result.current[1]();
+
+      await interactionHelper.selectRoleSelectComponent(component, [
+        {
+          name: "foo",
+        },
+      ]);
+      expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
+      expect(handle).not.toHaveBeenCalled();
+
+      await interactionHelper.selectRoleSelectComponent(
+        component,
+        [
+          {
+            name: "foo",
+          },
+        ],
+        (base) => ({
+          user: {
+            ...base.user,
+            id: "foo",
+          },
+        })
+      );
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
+      expect(handle).toHaveBeenCalled();
+    });
   });
 
   describe("useMentionableSingleSelectComponent()", () => {

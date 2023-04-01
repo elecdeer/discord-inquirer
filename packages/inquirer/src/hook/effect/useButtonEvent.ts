@@ -2,7 +2,7 @@ import { useEffect } from "./useEffect";
 import { isAdaptorButtonInteraction, messageFacade } from "../../adaptor";
 import { useAdaptor } from "../core/useHookContext";
 
-import type { AdaptorInteractionBase } from "../../adaptor";
+import type { AdaptorButtonInteraction } from "../../adaptor";
 import type { Awaitable } from "../../util/types";
 
 /**
@@ -15,7 +15,7 @@ import type { Awaitable } from "../../util/types";
 export const useButtonEvent = (
   customId: string,
   handle: (
-    interaction: Readonly<AdaptorInteractionBase>,
+    interaction: Readonly<AdaptorButtonInteraction>,
     deferUpdate: () => Promise<void>
   ) => Awaitable<void>
 ): void => {
