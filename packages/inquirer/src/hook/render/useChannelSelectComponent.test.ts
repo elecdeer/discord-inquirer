@@ -90,5 +90,48 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
         })
       );
     });
+
+    test("filterがfalseを返すとonSelectとdeferUpdateが呼ばれない", async () => {
+      const handle = vi.fn();
+      const { result, adaptorMock, interactionHelper } = await renderHook(() =>
+        useChannelSelectComponent({
+          onSelected: handle,
+          filter: (interaction) => interaction.user.id === "foo",
+        })
+      );
+
+      const component = result.current[1]();
+      const dummyChannels = [
+        {
+          type: "guildText",
+          name: "foo",
+        },
+        {
+          type: "guildText",
+          name: "bar",
+        },
+      ] as const;
+      await interactionHelper.selectChannelSelectComponent(
+        component,
+        dummyChannels
+      );
+
+      expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
+      expect(handle).not.toHaveBeenCalled();
+
+      await interactionHelper.selectChannelSelectComponent(
+        component,
+        dummyChannels,
+        (base) => ({
+          user: {
+            ...base.user,
+            id: "foo",
+          },
+        })
+      );
+
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
+      expect(handle).toHaveBeenCalled();
+    });
   });
 });

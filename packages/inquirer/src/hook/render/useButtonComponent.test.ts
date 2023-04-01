@@ -29,5 +29,32 @@ describe("packages/inquirer/src/hook/render/useButtonComponent", () => {
 
       expect(handle).toHaveBeenCalledOnce();
     });
+
+    test("filterがfalseを返すとonClickとdeferUpdateが呼ばれない", async () => {
+      const handle = vi.fn();
+      const { result, adaptorMock, interactionHelper } = await renderHook(() =>
+        useButtonComponent({
+          onClick: handle,
+          filter: (interaction) => interaction.user.id === "foo",
+        })
+      );
+
+      const component = result.current({
+        style: "primary",
+      })();
+
+      await interactionHelper.clickButtonComponent(component);
+      expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
+      expect(handle).not.toHaveBeenCalled();
+
+      await interactionHelper.clickButtonComponent(component, (base) => ({
+        user: {
+          ...base.user,
+          id: "foo",
+        },
+      }));
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
+      expect(handle).toHaveBeenCalled();
+    });
   });
 });

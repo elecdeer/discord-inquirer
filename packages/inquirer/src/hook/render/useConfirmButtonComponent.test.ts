@@ -86,5 +86,35 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
         ok: true,
       });
     });
+
+    test("filterがfalseを返すとonSelectとdeferUpdateが呼ばれない", async () => {
+      const handle = vi.fn();
+      const { result, interactionHelper, adaptorMock } = await renderHook(() =>
+        useConfirmButtonComponent({
+          validate: () => ({
+            ok: true,
+          }),
+          onConfirm: handle,
+          filter: (interaction) => interaction.user.id === "foo",
+        })
+      );
+
+      const component = result.current[1]({
+        style: "success",
+      })();
+
+      await interactionHelper.clickButtonComponent(component);
+      expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
+      expect(handle).not.toHaveBeenCalled();
+
+      await interactionHelper.clickButtonComponent(component, (base) => ({
+        user: {
+          ...base.user,
+          id: "foo",
+        },
+      }));
+      expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
+      expect(handle).toHaveBeenCalled();
+    });
   });
 });
