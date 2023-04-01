@@ -13,6 +13,7 @@ module.exports = {
     "prettier",
   ],
   rules: {
+    // recommended overrides
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
@@ -23,8 +24,9 @@ module.exports = {
       },
     ],
     "@typescript-eslint/require-await": "off",
-    "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/no-non-null-assertion": "off",
+    // custom rules
+    "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/strict-boolean-expressions": [
       "error",
