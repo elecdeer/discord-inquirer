@@ -1,4 +1,4 @@
-import { createEventFlow } from "@elecdeer/event-flow";
+import { createEventFlow } from "@discord-inquirer/event-flow";
 import * as http from "http";
 
 import { verifyKey } from "./verifyKey";
