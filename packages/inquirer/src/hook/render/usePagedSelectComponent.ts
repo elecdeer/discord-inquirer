@@ -46,7 +46,7 @@ export type UsePagedSelectComponentResult<T> = {
   result: (SelectItemResult<T> & { page: number })[];
   Select: StringSelectComponentBuilder<{
     customId: string;
-    options: AdaptorSelectOption<T>[];
+    options: AdaptorSelectOption[];
     minValues: 0;
     maxValues: number | undefined;
   }>;
@@ -182,7 +182,7 @@ export const usePagedSelectComponent = <T>({
             default: opt.selected,
             description: opt.description,
             emoji: opt.emoji,
-          } satisfies AdaptorSelectOption<unknown>)
+          } satisfies AdaptorSelectOption)
       ),
       minValues: pageMinValues,
       maxValues: pageMaxValues(),

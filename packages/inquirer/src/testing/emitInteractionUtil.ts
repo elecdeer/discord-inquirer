@@ -305,8 +305,8 @@ export const createEmitInteractionTestUtil = (
     }
   };
 
-  const selectStringSelectComponent = async <T>(
-    component: Readonly<AdaptorStringSelectComponent<T>>,
+  const selectStringSelectComponent = async (
+    component: Readonly<AdaptorStringSelectComponent>,
     values: string[],
     overrideParam?: LazyOverrideParam<AdaptorStringSelectInteraction>
   ): Promise<AdaptorStringSelectInteraction> => {
