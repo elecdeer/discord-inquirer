@@ -1,5 +1,6 @@
 import { adaptorFaker } from "./adaptorFaker";
 import { InvalidInteractionError } from "../util/errors";
+import { resolveLazy } from "../util/lazy";
 
 import type {
   AdaptorButtonInteraction,
@@ -24,8 +25,11 @@ import type {
   AdaptorUserSelectInteraction,
   Snowflake,
 } from "../adaptor";
+import type { Lazy } from "../util/lazy";
 import type { RandomSource } from "../util/randomSource";
 import type { Awaitable } from "../util/types";
+
+type LazyOverrideParam<T> = Lazy<Readonly<Partial<T>>, Readonly<T>>;
 
 export const createEmitInteractionTestUtil = (
   emitInteraction: (interaction: AdaptorInteraction) => Promise<void>,
@@ -36,17 +40,21 @@ export const createEmitInteractionTestUtil = (
 
   const emitButtonInteraction = async (
     customId: Snowflake,
-    overrideParam?: Readonly<Partial<AdaptorButtonInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorButtonInteraction>
   ) => {
-    const interaction: AdaptorButtonInteraction = {
+    const mockInteraction: AdaptorButtonInteraction = {
       ...faker.userInvokedInteractionBase(),
       type: "messageComponent",
       data: {
         customId: customId,
         componentType: "button",
       },
-      ...overrideParam,
     };
+    const interaction = {
+      ...mockInteraction,
+      ...resolveLazy(overrideParam, mockInteraction),
+    };
+
     await emitInteraction(interaction);
     return interaction;
   };
@@ -54,9 +62,9 @@ export const createEmitInteractionTestUtil = (
   const emitStringSelectInteraction = async (
     customId: Snowflake,
     values: readonly string[],
-    overrideParam?: Readonly<Partial<AdaptorStringSelectInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorStringSelectInteraction>
   ) => {
-    const interaction: AdaptorStringSelectInteraction = {
+    const mockInteraction: AdaptorStringSelectInteraction = {
       ...faker.userInvokedInteractionBase(),
       type: "messageComponent",
       data: {
@@ -66,6 +74,11 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
+    const interaction = {
+      ...mockInteraction,
+      ...resolveLazy(overrideParam, mockInteraction),
+    };
+
     await emitInteraction(interaction);
     return interaction;
   };
@@ -73,7 +86,7 @@ export const createEmitInteractionTestUtil = (
   const emitUserSelectInteraction = async (
     customId: Snowflake,
     dummyUsers: number | readonly Partial<AdaptorUser>[],
-    overrideParam?: Readonly<Partial<AdaptorUserSelectInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorUserSelectInteraction>
   ) => {
     const userList = Array.isArray(dummyUsers)
       ? dummyUsers.map((user) => faker.user(user))
@@ -83,7 +96,7 @@ export const createEmitInteractionTestUtil = (
     );
     const users = Object.fromEntries(userList.map((user) => [user.id, user]));
 
-    const interaction: AdaptorUserSelectInteraction = {
+    const mockInteraction: AdaptorUserSelectInteraction = {
       ...faker.userInvokedInteractionBase(),
       type: "messageComponent",
       data: {
@@ -97,6 +110,11 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
+    const interaction = {
+      ...mockInteraction,
+      ...resolveLazy(overrideParam, mockInteraction),
+    };
+
     await emitInteraction(interaction);
     return interaction;
   };
@@ -104,14 +122,14 @@ export const createEmitInteractionTestUtil = (
   const emitRoleSelectInteraction = async (
     customId: Snowflake,
     dummyRole: number | readonly Partial<AdaptorRole>[],
-    overrideParam?: Readonly<Partial<AdaptorRoleSelectInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorRoleSelectInteraction>
   ) => {
     const roleList = Array.isArray(dummyRole)
       ? dummyRole.map((role) => faker.role(role))
       : [...Array(dummyRole)].map(() => faker.role());
     const roles = Object.fromEntries(roleList.map((role) => [role.id, role]));
 
-    const interaction: AdaptorRoleSelectInteraction = {
+    const mockInteraction: AdaptorRoleSelectInteraction = {
       ...faker.userInvokedInteractionBase(),
       type: "messageComponent",
       data: {
@@ -124,6 +142,11 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
+    const interaction = {
+      ...mockInteraction,
+      ...resolveLazy(overrideParam, mockInteraction),
+    };
+
     await emitInteraction(interaction);
     return interaction;
   };
@@ -132,7 +155,7 @@ export const createEmitInteractionTestUtil = (
     customId: Snowflake,
     dummyChannelTypes: readonly (Partial<AdaptorPartialChannel> &
       Pick<AdaptorPartialChannel, "type">)[],
-    overrideParam?: Readonly<Partial<AdaptorChannelSelectInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorChannelSelectInteraction>
   ) => {
     const channelList = dummyChannelTypes.map((channel) => {
       if (
@@ -155,7 +178,7 @@ export const createEmitInteractionTestUtil = (
       channelList.map((channel) => [channel.id, channel])
     );
 
-    const interaction: AdaptorChannelSelectInteraction = {
+    const mockInteraction: AdaptorChannelSelectInteraction = {
       ...faker.userInvokedInteractionBase(),
       type: "messageComponent",
       data: {
@@ -168,6 +191,11 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
+    const interaction = {
+      ...mockInteraction,
+      ...resolveLazy(overrideParam, mockInteraction),
+    };
+
     await emitInteraction(interaction);
     return interaction;
   };
@@ -182,7 +210,7 @@ export const createEmitInteractionTestUtil = (
           type: "role";
         } & Partial<AdaptorRole>)
     )[],
-    overrideParam?: Readonly<Partial<AdaptorMentionableSelectInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorMentionableSelectInteraction>
   ) => {
     const userList = dummyMentionables
       .filter((mentionable) => mentionable.type === "user")
@@ -198,7 +226,7 @@ export const createEmitInteractionTestUtil = (
       userList.map((user) => [user.id, faker.partialMember()])
     );
 
-    const interaction: AdaptorMentionableSelectInteraction = {
+    const mockInteraction: AdaptorMentionableSelectInteraction = {
       ...faker.userInvokedInteractionBase(),
       type: "messageComponent",
       data: {
@@ -213,6 +241,11 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
+    const interaction = {
+      ...mockInteraction,
+      ...resolveLazy(overrideParam, mockInteraction),
+    };
+
     await emitInteraction(interaction);
     return interaction;
   };
@@ -220,9 +253,9 @@ export const createEmitInteractionTestUtil = (
   const emitModalInteraction = async (
     customId: Snowflake,
     fields: Readonly<Record<string, string>>,
-    overrideParam?: Readonly<Partial<AdaptorModalSubmitInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorModalSubmitInteraction>
   ) => {
-    const interaction: AdaptorModalSubmitInteraction = {
+    const mockInteraction: AdaptorModalSubmitInteraction = {
       ...faker.userInvokedInteractionBase(),
       type: "modalSubmit",
       data: {
@@ -231,6 +264,10 @@ export const createEmitInteractionTestUtil = (
       },
       ...overrideParam,
     };
+    const interaction = {
+      ...mockInteraction,
+      ...resolveLazy(overrideParam, mockInteraction),
+    };
 
     await emitInteraction(interaction);
     return interaction;
@@ -238,7 +275,7 @@ export const createEmitInteractionTestUtil = (
 
   const clickButtonComponent = async (
     component: AdaptorNonLinkButtonComponent,
-    overrideParam?: Partial<AdaptorButtonInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorButtonInteraction>
   ) => {
     const customId = component.customId;
     if (component.disabled) {
@@ -269,7 +306,7 @@ export const createEmitInteractionTestUtil = (
   const selectStringSelectComponent = async <T>(
     component: Readonly<AdaptorStringSelectComponent<T>>,
     values: string[],
-    overrideParam?: Readonly<Partial<AdaptorStringSelectInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorStringSelectInteraction>
   ) => {
     const customId = component.customId;
     assertSelectEmit(component, values.length);
@@ -291,7 +328,7 @@ export const createEmitInteractionTestUtil = (
   const selectUserSelectComponent = async (
     component: Readonly<AdaptorUserSelectComponent>,
     dummyUsers: number | readonly Partial<AdaptorUser>[],
-    overrideParam?: Readonly<Partial<AdaptorUserSelectInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorUserSelectInteraction>
   ) => {
     const customId = component.customId;
     const dummyUserNum = Array.isArray(dummyUsers)
@@ -307,7 +344,7 @@ export const createEmitInteractionTestUtil = (
   const selectRoleSelectComponent = async (
     component: Readonly<AdaptorRoleSelectComponent>,
     dummyRoles: number | readonly Partial<AdaptorRole>[],
-    overrideParam?: Readonly<Partial<AdaptorRoleSelectInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorRoleSelectInteraction>
   ) => {
     const customId = component.customId;
     const dummyRoleNum = Array.isArray(dummyRoles)
@@ -324,7 +361,7 @@ export const createEmitInteractionTestUtil = (
     component: Readonly<AdaptorChannelSelectComponent>,
     dummyChannels: readonly (Partial<AdaptorPartialChannel> &
       Pick<AdaptorPartialChannel, "type">)[],
-    overrideParam?: Readonly<Partial<AdaptorChannelSelectInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorChannelSelectInteraction>
   ) => {
     const customId = component.customId;
     assertSelectEmit(component, dummyChannels.length);
@@ -355,7 +392,7 @@ export const createEmitInteractionTestUtil = (
           type: "role";
         } & Partial<AdaptorRole>)
     )[],
-    overrideParam?: Readonly<Partial<AdaptorMentionableSelectInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorMentionableSelectInteraction>
   ) => {
     const customId = component.customId;
     assertSelectEmit(component, dummyMentionables.length);
@@ -372,7 +409,7 @@ export const createEmitInteractionTestUtil = (
   const confirmModal = async (
     responseData: Readonly<AdaptorInteractionResponseModalData>,
     fields: Readonly<Record<string, string>>,
-    overrideParam?: Readonly<Partial<AdaptorModalSubmitInteraction>>
+    overrideParam?: LazyOverrideParam<AdaptorModalSubmitInteraction>
   ) => {
     const customId = responseData.customId;
 
