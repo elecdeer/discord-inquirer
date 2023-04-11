@@ -38,6 +38,6 @@
   "devDependencies": {
     "@monorepo/eslint-config": "*",
     "@monorepo/tsconfig": "*",
-    "rimraf": "^4.1.4"
+    "rimraf": "^5.0.0"
   }
 }
