@@ -2,6 +2,6 @@
   "name": "@monorepo/tsconfig",
   "private": true,
   "devDependencies": {
-    "@tsconfig/node18": "^1.0.1"
+    "@tsconfig/node18": "^18.2.0"
   }
 }
