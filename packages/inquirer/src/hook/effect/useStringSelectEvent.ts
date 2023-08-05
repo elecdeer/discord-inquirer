@@ -16,8 +16,8 @@ export const useStringSelectEvent = (
   handle: (
     interaction: Readonly<AdaptorStringSelectInteraction>,
     values: readonly string[],
-    deferUpdate: () => Promise<void>
-  ) => Awaitable<void>
+    deferUpdate: () => Promise<void>,
+  ) => Awaitable<void>,
 ): void => {
   const adaptor = useAdaptor();
 

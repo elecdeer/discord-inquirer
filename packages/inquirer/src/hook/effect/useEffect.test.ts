@@ -59,7 +59,7 @@ describe("packages/inquirer/src/hook/useEffect", () => {
         ([value, objValue]) => useEffect(callback, [value, objValue]),
         {
           initialArgs: [0, objectValue],
-        }
+        },
       );
 
       expect(callback).toHaveBeenCalledOnce();

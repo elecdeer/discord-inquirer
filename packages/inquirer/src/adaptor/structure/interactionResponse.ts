@@ -89,20 +89,20 @@ export interface AdaptorInteractionResponseModalData {
     | [
         AdaptorModalActionRowComponent,
         AdaptorModalActionRowComponent,
-        AdaptorModalActionRowComponent
-      ]
-    | [
         AdaptorModalActionRowComponent,
-        AdaptorModalActionRowComponent,
-        AdaptorModalActionRowComponent,
-        AdaptorModalActionRowComponent
       ]
     | [
         AdaptorModalActionRowComponent,
         AdaptorModalActionRowComponent,
         AdaptorModalActionRowComponent,
         AdaptorModalActionRowComponent,
-        AdaptorModalActionRowComponent
+      ]
+    | [
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent,
+        AdaptorModalActionRowComponent,
       ];
 }
 

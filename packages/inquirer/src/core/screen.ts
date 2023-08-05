@@ -56,7 +56,7 @@ export type CommitResult =
 export const createScreen = (
   adaptor: DiscordAdaptor,
   target: MessageTarget,
-  config: Partial<ScreenConfig>
+  config: Partial<ScreenConfig>,
 ): Screen => {
   const { onClose, logger } = completeScreenConfig(config);
   const facade = messageFacade(adaptor);
@@ -71,7 +71,7 @@ export const createScreen = (
   } | null = null;
 
   const commit = async (
-    payload: MessageMutualPayload
+    payload: MessageMutualPayload,
   ): Promise<CommitResult> => {
     logger.log("debug", "screen.commit");
     logger.log("debug", payload);
@@ -110,7 +110,7 @@ export const createScreen = (
     } else {
       const difference = createMessagePayloadPatch(
         editor.latestPayload,
-        payload
+        payload,
       );
       if (difference !== null) {
         logger.log("debug", "there is a difference in payload, edit message");
@@ -197,7 +197,7 @@ export const createScreen = (
 
 export const createMessagePayloadPatch = (
   prev: MessageMutualPayload,
-  next: MessageMutualPayload
+  next: MessageMutualPayload,
 ): SetNullable<MessageMutualPayload> | null => {
   let result: SetNullable<MessageMutualPayload> | null = null;
 

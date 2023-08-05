@@ -27,7 +27,7 @@ export const Button = createCurriedBuilder<AdaptorButtonComponent>()({
 });
 
 export type NonLinkButtonComponentBuilder<
-  T extends Partial<AdaptorNonLinkButtonComponent>
+  T extends Partial<AdaptorNonLinkButtonComponent>,
 > = ConditionalCurriedBuilder<
   AdaptorNonLinkButtonComponent,
   T & { type: "button" },
@@ -49,7 +49,7 @@ export const Row = (
 };
 
 export type StringSelectComponentBuilder<
-  T extends Partial<AdaptorStringSelectComponent>
+  T extends Partial<AdaptorStringSelectComponent>,
 > = FulfilledCurriedBuilder<
   AdaptorStringSelectComponent,
   T & {
@@ -64,7 +64,7 @@ export const StringSelect =
   });
 
 export type UserSelectComponentBuilder<
-  T extends Partial<AdaptorUserSelectComponent>
+  T extends Partial<AdaptorUserSelectComponent>,
 > = FulfilledCurriedBuilder<
   AdaptorUserSelectComponent,
   T & {
@@ -78,7 +78,7 @@ export const UserSelect = createCurriedBuilder<AdaptorUserSelectComponent>()({
 });
 
 export type RoleSelectComponentBuilder<
-  T extends Partial<AdaptorRoleSelectComponent>
+  T extends Partial<AdaptorRoleSelectComponent>,
 > = FulfilledCurriedBuilder<
   AdaptorRoleSelectComponent,
   T & {
@@ -92,7 +92,7 @@ export const RoleSelect = createCurriedBuilder<AdaptorRoleSelectComponent>()({
 });
 
 export type MentionableSelectComponentBuilder<
-  T extends Partial<AdaptorMentionableSelectComponent>
+  T extends Partial<AdaptorMentionableSelectComponent>,
 > = FulfilledCurriedBuilder<
   AdaptorMentionableSelectComponent,
   T & {
@@ -107,7 +107,7 @@ export const MentionableSelect =
   });
 
 export type ChannelSelectComponentBuilder<
-  T extends Partial<AdaptorChannelSelectComponent>
+  T extends Partial<AdaptorChannelSelectComponent>,
 > = FulfilledCurriedBuilder<
   AdaptorChannelSelectComponent,
   T & {

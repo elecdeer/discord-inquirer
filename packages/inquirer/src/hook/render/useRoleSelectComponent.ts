@@ -18,7 +18,7 @@ export type UseRoleSelectComponentResult = [
     customId: string;
     minValues: number | undefined;
     maxValues: number | undefined;
-  }>
+  }>,
 ];
 
 export type UseRoleSingleSelectComponentResult = [
@@ -27,7 +27,7 @@ export type UseRoleSingleSelectComponentResult = [
     customId: string;
     minValues: 1 | undefined;
     maxValues: 1;
-  }>
+  }>,
 ];
 
 export type UseRoleSelectComponentParams = {

@@ -12,11 +12,11 @@ import type {
 } from "../../adaptor";
 
 export type ChannelSelectResultValue<
-  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
+  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes,
 > = AdaptorTypeSpecifiedChannel<ChannelTypes>;
 
 export type UseChannelSelectComponentParams<
-  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
+  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes,
 > = {
   channelTypes?: ChannelTypes[];
   onSelected?: (selected: ChannelSelectResultValue<ChannelTypes>[]) => void;
@@ -26,36 +26,36 @@ export type UseChannelSelectComponentParams<
 };
 
 export type UseChannelSelectComponentResult<
-  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
+  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes,
 > = [
   selectResult: ChannelSelectResultValue<ChannelTypes>[],
   ChannelSelect: ChannelSelectComponentBuilder<{
     customId: string;
     minValues: number | undefined;
     maxValues: number | undefined;
-  }>
+  }>,
 ];
 
 export type UseChannelSingleSelectComponentParams<
-  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
+  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes,
 > = {
   channelTypes?: ChannelTypes[];
   onSelected?: (
-    selected: ChannelSelectResultValue<ChannelTypes> | null
+    selected: ChannelSelectResultValue<ChannelTypes> | null,
   ) => void;
   minValues?: 1;
   filter?: (interaction: Readonly<AdaptorChannelSelectInteraction>) => boolean;
 };
 
 export type UseChannelSingleSelectComponentResult<
-  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
+  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes,
 > = [
   selectResult: ChannelSelectResultValue<ChannelTypes> | null,
   ChannelSelect: ChannelSelectComponentBuilder<{
     customId: string;
     minValues: 1 | undefined;
     maxValues: 1;
-  }>
+  }>,
 ];
 
 /**
@@ -68,7 +68,7 @@ export type UseChannelSingleSelectComponentResult<
  * @returns [selectResult, ChannelSelectComponentBuilder]
  */
 export const useChannelSelectComponent = <
-  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
+  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes,
 >({
   onSelected,
   maxValues,
@@ -95,12 +95,12 @@ export const useChannelSelectComponent = <
         (channel): channel is ChannelSelectResultValue<ChannelTypes> => {
           if (channelTypes === undefined) return true;
           return (channelTypes as string[]).includes(channel.type) ?? false;
-        }
+        },
       );
 
       setSelected(filteredChannels);
       markChanged();
-    }
+    },
   );
 
   return [
@@ -123,7 +123,7 @@ export const useChannelSelectComponent = <
  * @returns [selectResult, ChannelSelectComponentBuilder]
  */
 export const useChannelSingleSelectComponent = <
-  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes
+  ChannelTypes extends AdaptorChannelTypes = AdaptorChannelTypes,
 >({
   onSelected,
   channelTypes,

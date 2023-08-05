@@ -6,7 +6,7 @@ import { useState } from "./useState";
  * @param value 初期値
  */
 export const useRef = <T>(
-  value: T
+  value: T,
 ): {
   current: T;
 } => {

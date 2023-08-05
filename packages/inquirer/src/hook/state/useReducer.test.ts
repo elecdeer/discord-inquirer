@@ -8,7 +8,7 @@ describe("packages/inquirer/src/hook/useReducer", () => {
     test("actionによって状態が遷移する", async () => {
       const reducer = (
         state: number,
-        action: { type: "increment" | "decrement" }
+        action: { type: "increment" | "decrement" },
       ) => {
         switch (action.type) {
           case "increment":

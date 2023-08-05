@@ -20,7 +20,7 @@ import type {
 } from "discord-api-types/v10";
 
 export const transformAdaptorInteractionResponse = (
-  res: AdaptorInteractionResponse
+  res: AdaptorInteractionResponse,
 ): APIInteractionResponse => {
   switch (res.type) {
     case "channelMessageWithSource":
@@ -35,27 +35,27 @@ export const transformAdaptorInteractionResponse = (
 };
 
 export const transformAdaptorInteractionResponseReply = (
-  res: AdaptorInteractionResponseReply
+  res: AdaptorInteractionResponseReply,
 ): APIInteractionResponseChannelMessageWithSource => ({
   type: InteractionResponseType.ChannelMessageWithSource,
   data: transformers.adaptorMessagePayload(res.data),
 });
 
 export const transformAdaptorInteractionResponseDeferredReply = (
-  res: AdaptorInteractionResponseDeferredReply
+  res: AdaptorInteractionResponseDeferredReply,
 ): APIInteractionResponseDeferredChannelMessageWithSource => ({
   type: InteractionResponseType.DeferredChannelMessageWithSource,
   data: res.data && transformers.adaptorMessagePayload(res.data),
 });
 
 export const transformAdaptorInteractionResponseDeferredUpdate = (
-  _: AdaptorInteractionResponseDeferredUpdate
+  _: AdaptorInteractionResponseDeferredUpdate,
 ): APIInteractionResponseDeferredMessageUpdate => ({
   type: InteractionResponseType.DeferredMessageUpdate,
 });
 
 const transformAdaptorInteractionResponseModal = (
-  res: AdaptorInteractionResponseModal
+  res: AdaptorInteractionResponseModal,
 ): APIModalInteractionResponse => {
   return {
     type: InteractionResponseType.Modal,
@@ -63,14 +63,14 @@ const transformAdaptorInteractionResponseModal = (
       custom_id: res.data.customId,
       title: res.data.title,
       components: res.data.components.map(
-        transformers.adaptorModalActionRowComponent
+        transformers.adaptorModalActionRowComponent,
       ),
     },
   };
 };
 
 const transformAdaptorInteractionResponsePatch = (
-  res: AdaptorInteractionResponsePatch
+  res: AdaptorInteractionResponsePatch,
 ): RESTPatchAPIInteractionOriginalResponseJSONBody => {
   return transformers.adaptorMessagePayloadPatch(res);
 };

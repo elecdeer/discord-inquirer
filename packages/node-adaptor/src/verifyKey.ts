@@ -16,11 +16,11 @@ export const verifyKey = async (
   body: Buffer,
   signature: string,
   timestamp: string,
-  publicKey: string
+  publicKey: string,
 ) => {
   return await verifyAsync(
     signature,
     Buffer.from(timestamp + body.toString()),
-    publicKey
+    publicKey,
   );
 };

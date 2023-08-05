@@ -18,7 +18,7 @@ export type UseUserSelectComponentResult = [
     customId: string;
     minValues: number | undefined;
     maxValues: number | undefined;
-  }>
+  }>,
 ];
 
 export type UseUserSingleSelectComponentResult = [
@@ -27,7 +27,7 @@ export type UseUserSingleSelectComponentResult = [
     customId: string;
     minValues: 1 | undefined;
     maxValues: 1;
-  }>
+  }>,
 ];
 
 export type UseUserSelectComponentParams = {

@@ -29,7 +29,7 @@ export const editMessage =
     const channel = fetchTextChannel(client.channels, channelId);
     const res = await channel.messages.edit(
       messageId,
-      createMessageEditOption(payload)
+      createMessageEditOption(payload),
     );
     return res.id;
   };
@@ -43,7 +43,7 @@ export const deleteMessage =
 
 const fetchTextChannel = (
   channels: ChannelManager,
-  channelId: Snowflake
+  channelId: Snowflake,
 ): TextBasedChannel => {
   const channel = channels.cache.get(channelId);
   if (!channel) throw new Error("Channel not found");
@@ -56,7 +56,7 @@ const fetchTextChannel = (
 export const createMessageOption = (
   payload: AdaptorMessagePayload & {
     files?: MessageCreateOptions["files"];
-  }
+  },
 ): MessageCreateOptions => {
   return {
     content: payload.content,
@@ -77,7 +77,7 @@ export const createMessageOption = (
 export const createMessageEditOption = (
   payload: AdaptorMessagePayloadPatch & {
     files?: MessageCreateOptions["files"];
-  }
+  },
 ): MessageEditOptions => {
   return {
     content: payload.content,

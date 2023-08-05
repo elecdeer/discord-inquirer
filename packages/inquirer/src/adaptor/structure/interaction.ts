@@ -46,7 +46,7 @@ export interface AdaptorInteractionBase {
 }
 
 export interface AdaptorUserInvokedInteractionBase<
-  T extends "guild" | "other" = "guild" | "other"
+  T extends "guild" | "other" = "guild" | "other",
 > extends AdaptorInteractionBase {
   /**
    * Guild that the interaction was sent from
@@ -240,46 +240,46 @@ export interface AdaptorModalSubmitInteraction
 }
 
 export const isAdaptorPingInteraction = (
-  interaction: AdaptorInteraction
+  interaction: AdaptorInteraction,
 ): interaction is AdaptorPingInteraction => interaction.type === "ping";
 
 export const isAdaptorApplicationCommandInteraction = (
-  interaction: AdaptorInteraction
+  interaction: AdaptorInteraction,
 ): interaction is AdaptorApplicationCommandInteraction =>
   interaction.type === "applicationCommand";
 
 export const isAdaptorButtonInteraction = (
-  interaction: AdaptorInteraction
+  interaction: AdaptorInteraction,
 ): interaction is AdaptorButtonInteraction =>
   interaction.type === "messageComponent" &&
   interaction.data.componentType === "button";
 
 export const isAdaptorStringSelectInteraction = (
-  interaction: AdaptorInteraction
+  interaction: AdaptorInteraction,
 ): interaction is AdaptorStringSelectInteraction =>
   interaction.type === "messageComponent" &&
   interaction.data.componentType === "stringSelect";
 
 export const isAdaptorUserSelectInteraction = (
-  interaction: AdaptorInteraction
+  interaction: AdaptorInteraction,
 ): interaction is AdaptorUserSelectInteraction =>
   interaction.type === "messageComponent" &&
   interaction.data.componentType === "userSelect";
 
 export const isAdaptorRoleSelectInteraction = (
-  interaction: AdaptorInteraction
+  interaction: AdaptorInteraction,
 ): interaction is AdaptorRoleSelectInteraction =>
   interaction.type === "messageComponent" &&
   interaction.data.componentType === "roleSelect";
 
 export const isAdaptorMentionableSelectInteraction = (
-  interaction: AdaptorInteraction
+  interaction: AdaptorInteraction,
 ): interaction is AdaptorMentionableSelectInteraction =>
   interaction.type === "messageComponent" &&
   interaction.data.componentType === "mentionableSelect";
 
 export const isAdaptorChannelSelectInteraction = (
-  interaction: AdaptorInteraction
+  interaction: AdaptorInteraction,
 ): interaction is AdaptorChannelSelectInteraction =>
   interaction.type === "messageComponent" &&
   interaction.data.componentType === "channelSelect";
@@ -294,11 +294,11 @@ export interface AdaptorApplicationCommandAutoCompleteInteraction
 }
 
 export const isAdaptorApplicationCommandAutoCompleteInteraction = (
-  interaction: AdaptorInteraction
+  interaction: AdaptorInteraction,
 ): interaction is AdaptorApplicationCommandAutoCompleteInteraction =>
   interaction.type === "applicationCommandAutoComplete";
 
 export const isAdaptorModalSubmitInteraction = (
-  interaction: AdaptorInteraction
+  interaction: AdaptorInteraction,
 ): interaction is AdaptorModalSubmitInteraction =>
   interaction.type === "modalSubmit";

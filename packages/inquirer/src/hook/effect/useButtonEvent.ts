@@ -16,8 +16,8 @@ export const useButtonEvent = (
   customId: string,
   handle: (
     interaction: Readonly<AdaptorButtonInteraction>,
-    deferUpdate: () => Promise<void>
-  ) => Awaitable<void>
+    deferUpdate: () => Promise<void>,
+  ) => Awaitable<void>,
 ): void => {
   const adaptor = useAdaptor();
 

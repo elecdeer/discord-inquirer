@@ -19,7 +19,7 @@ const stockValue = stockHookValue(hookType);
  * @param initial 状態の初期値あるいは初期値を返す関数
  */
 export const useState = <T>(
-  initial: Lazy<T>
+  initial: Lazy<T>,
 ): [T, (value: Lazy<T, T>) => void] => {
   const ctx = useHookContext();
   const current = takeIndex(ctx);

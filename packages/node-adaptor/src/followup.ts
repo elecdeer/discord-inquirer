@@ -13,7 +13,7 @@ export const sendFollowUp = (fetcher: ApiFetcher, applicationId: string) => {
     const res = await fetcher<APIMessage>(
       "POST",
       `/webhooks/${applicationId}/${token}`,
-      body
+      body,
     );
     return res.id;
   };
@@ -23,13 +23,13 @@ export const editFollowup = (fetcher: ApiFetcher, applicationId: string) => {
   return async (
     messageId: string,
     token: string,
-    payload: AdaptorMessagePayloadPatch
+    payload: AdaptorMessagePayloadPatch,
   ) => {
     const body = transformers.adaptorMessagePayloadPatch(payload);
     const res = await fetcher<APIMessage>(
       "PATCH",
       `/webhooks/${applicationId}/${token}/messages/${messageId}`,
-      body
+      body,
     );
     return res.id;
   };
@@ -39,7 +39,7 @@ export const deleteFollowup = (fetcher: ApiFetcher, applicationId: string) => {
   return async (messageId: string, token: string) => {
     await fetcher(
       "DELETE",
-      `/webhooks/${applicationId}/${token}/messages/${messageId}`
+      `/webhooks/${applicationId}/${token}/messages/${messageId}`,
     );
   };
 };

@@ -21,7 +21,7 @@ adaptor.subscribeInteraction(async (interaction) => {
   if (!isAdaptorApplicationCommandInteraction(interaction)) return;
   logger.log(
     "debug",
-    `interaction received type:${interaction.type} id:${interaction.id} token:${interaction.token}`
+    `interaction received type:${interaction.type} id:${interaction.id} token:${interaction.token}`,
   );
   logger.log("trace", interaction);
 

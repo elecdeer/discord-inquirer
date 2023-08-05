@@ -34,13 +34,13 @@ type LazyOverrideParam<T> = Lazy<Readonly<Partial<T>>, Readonly<T>>;
 export const createEmitInteractionTestUtil = (
   emitInteraction: (interaction: AdaptorInteraction) => Promise<void>,
   act: <T>(cb: () => Awaitable<T>, messageId?: string) => Promise<T>,
-  randomSource: RandomSource
+  randomSource: RandomSource,
 ) => {
   const faker = adaptorFaker(randomSource);
 
   const emitButtonInteraction = async (
     customId: Snowflake,
-    overrideParam?: LazyOverrideParam<AdaptorButtonInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorButtonInteraction>,
   ): Promise<AdaptorButtonInteraction> => {
     const mockInteraction: AdaptorButtonInteraction = {
       ...faker.userInvokedInteractionBase(),
@@ -62,7 +62,7 @@ export const createEmitInteractionTestUtil = (
   const emitStringSelectInteraction = async (
     customId: Snowflake,
     values: readonly string[],
-    overrideParam?: LazyOverrideParam<AdaptorStringSelectInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorStringSelectInteraction>,
   ): Promise<AdaptorStringSelectInteraction> => {
     const mockInteraction: AdaptorStringSelectInteraction = {
       ...faker.userInvokedInteractionBase(),
@@ -86,13 +86,13 @@ export const createEmitInteractionTestUtil = (
   const emitUserSelectInteraction = async (
     customId: Snowflake,
     dummyUsers: number | readonly Partial<AdaptorUser>[],
-    overrideParam?: LazyOverrideParam<AdaptorUserSelectInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorUserSelectInteraction>,
   ): Promise<AdaptorUserSelectInteraction> => {
     const userList = Array.isArray(dummyUsers)
       ? dummyUsers.map((user) => faker.user(user))
       : [...Array(dummyUsers)].map(() => faker.user());
     const members = Object.fromEntries(
-      userList.map((user) => [user.id, faker.partialMember()])
+      userList.map((user) => [user.id, faker.partialMember()]),
     );
     const users = Object.fromEntries(userList.map((user) => [user.id, user]));
 
@@ -122,7 +122,7 @@ export const createEmitInteractionTestUtil = (
   const emitRoleSelectInteraction = async (
     customId: Snowflake,
     dummyRole: number | readonly Partial<AdaptorRole>[],
-    overrideParam?: LazyOverrideParam<AdaptorRoleSelectInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorRoleSelectInteraction>,
   ): Promise<AdaptorRoleSelectInteraction> => {
     const roleList = Array.isArray(dummyRole)
       ? dummyRole.map((role) => faker.role(role))
@@ -155,7 +155,7 @@ export const createEmitInteractionTestUtil = (
     customId: Snowflake,
     dummyChannelTypes: readonly (Partial<AdaptorPartialChannel> &
       Pick<AdaptorPartialChannel, "type">)[],
-    overrideParam?: LazyOverrideParam<AdaptorChannelSelectInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorChannelSelectInteraction>,
   ): Promise<AdaptorChannelSelectInteraction> => {
     const channelList = dummyChannelTypes.map((channel) => {
       if (
@@ -175,7 +175,7 @@ export const createEmitInteractionTestUtil = (
       }
     });
     const channels = Object.fromEntries(
-      channelList.map((channel) => [channel.id, channel])
+      channelList.map((channel) => [channel.id, channel]),
     );
 
     const mockInteraction: AdaptorChannelSelectInteraction = {
@@ -212,7 +212,7 @@ export const createEmitInteractionTestUtil = (
           } & Partial<AdaptorRole>)
       )[]
     >,
-    overrideParam?: LazyOverrideParam<AdaptorMentionableSelectInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorMentionableSelectInteraction>,
   ): Promise<AdaptorMentionableSelectInteraction> => {
     const userList = dummyMentionables
       .filter((mentionable) => mentionable.type === "user")
@@ -225,7 +225,7 @@ export const createEmitInteractionTestUtil = (
     const users = Object.fromEntries(userList.map((user) => [user.id, user]));
     const roles = Object.fromEntries(roleList.map((role) => [role.id, role]));
     const members = Object.fromEntries(
-      userList.map((user) => [user.id, faker.partialMember()])
+      userList.map((user) => [user.id, faker.partialMember()]),
     );
 
     const mockInteraction: AdaptorMentionableSelectInteraction = {
@@ -255,7 +255,7 @@ export const createEmitInteractionTestUtil = (
   const emitModalInteraction = async (
     customId: Snowflake,
     fields: Readonly<Record<string, string>>,
-    overrideParam?: LazyOverrideParam<AdaptorModalSubmitInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorModalSubmitInteraction>,
   ): Promise<AdaptorModalSubmitInteraction> => {
     const mockInteraction: AdaptorModalSubmitInteraction = {
       ...faker.userInvokedInteractionBase(),
@@ -277,7 +277,7 @@ export const createEmitInteractionTestUtil = (
 
   const clickButtonComponent = async (
     component: AdaptorNonLinkButtonComponent,
-    overrideParam?: LazyOverrideParam<AdaptorButtonInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorButtonInteraction>,
   ): Promise<AdaptorButtonInteraction> => {
     const customId = component.customId;
     if (component.disabled) {
@@ -292,7 +292,7 @@ export const createEmitInteractionTestUtil = (
       maxValues?: number;
       minValues?: number;
     }>,
-    selectNum: number
+    selectNum: number,
   ): void => {
     if (component.disabled) {
       throw new InvalidInteractionError("select component is disabled");
@@ -308,7 +308,7 @@ export const createEmitInteractionTestUtil = (
   const selectStringSelectComponent = async (
     component: Readonly<AdaptorStringSelectComponent>,
     values: string[],
-    overrideParam?: LazyOverrideParam<AdaptorStringSelectInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorStringSelectInteraction>,
   ): Promise<AdaptorStringSelectInteraction> => {
     const customId = component.customId;
     assertSelectEmit(component, values.length);
@@ -317,20 +317,20 @@ export const createEmitInteractionTestUtil = (
     values.forEach((value) => {
       if (!capableValues.includes(value)) {
         throw new InvalidInteractionError(
-          `not includes in component.options: ${value}`
+          `not includes in component.options: ${value}`,
         );
       }
     });
 
     return act(() =>
-      emitStringSelectInteraction(customId, values, overrideParam)
+      emitStringSelectInteraction(customId, values, overrideParam),
     );
   };
 
   const selectUserSelectComponent = async (
     component: Readonly<AdaptorUserSelectComponent>,
     dummyUsers: number | readonly Partial<AdaptorUser>[],
-    overrideParam?: LazyOverrideParam<AdaptorUserSelectInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorUserSelectInteraction>,
   ): Promise<AdaptorUserSelectInteraction> => {
     const customId = component.customId;
     const dummyUserNum = Array.isArray(dummyUsers)
@@ -339,14 +339,14 @@ export const createEmitInteractionTestUtil = (
     assertSelectEmit(component, dummyUserNum);
 
     return act(() =>
-      emitUserSelectInteraction(customId, dummyUsers, overrideParam)
+      emitUserSelectInteraction(customId, dummyUsers, overrideParam),
     );
   };
 
   const selectRoleSelectComponent = async (
     component: Readonly<AdaptorRoleSelectComponent>,
     dummyRoles: number | readonly Partial<AdaptorRole>[],
-    overrideParam?: LazyOverrideParam<AdaptorRoleSelectInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorRoleSelectInteraction>,
   ): Promise<AdaptorRoleSelectInteraction> => {
     const customId = component.customId;
     const dummyRoleNum = Array.isArray(dummyRoles)
@@ -355,7 +355,7 @@ export const createEmitInteractionTestUtil = (
     assertSelectEmit(component, dummyRoleNum);
 
     return act(() =>
-      emitRoleSelectInteraction(customId, dummyRoles, overrideParam)
+      emitRoleSelectInteraction(customId, dummyRoles, overrideParam),
     );
   };
 
@@ -363,7 +363,7 @@ export const createEmitInteractionTestUtil = (
     component: Readonly<AdaptorChannelSelectComponent>,
     dummyChannels: readonly (Partial<AdaptorPartialChannel> &
       Pick<AdaptorPartialChannel, "type">)[],
-    overrideParam?: LazyOverrideParam<AdaptorChannelSelectInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorChannelSelectInteraction>,
   ): Promise<AdaptorChannelSelectInteraction> => {
     const customId = component.customId;
     assertSelectEmit(component, dummyChannels.length);
@@ -373,14 +373,14 @@ export const createEmitInteractionTestUtil = (
       dummyChannels.forEach(({ type }) => {
         if (!capableChannelTypes.includes(type)) {
           throw new InvalidInteractionError(
-            `not includes in component.channelTypes: ${type}`
+            `not includes in component.channelTypes: ${type}`,
           );
         }
       });
     }
 
     return act(() =>
-      emitChannelSelectInteraction(customId, dummyChannels, overrideParam)
+      emitChannelSelectInteraction(customId, dummyChannels, overrideParam),
     );
   };
 
@@ -396,7 +396,7 @@ export const createEmitInteractionTestUtil = (
           } & Partial<AdaptorRole>)
       )[]
     >,
-    overrideParam?: LazyOverrideParam<AdaptorMentionableSelectInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorMentionableSelectInteraction>,
   ): Promise<AdaptorMentionableSelectInteraction> => {
     const customId = component.customId;
     assertSelectEmit(component, dummyMentionables.length);
@@ -405,15 +405,15 @@ export const createEmitInteractionTestUtil = (
       emitMentionableSelectInteraction(
         customId,
         dummyMentionables,
-        overrideParam
-      )
+        overrideParam,
+      ),
     );
   };
 
   const confirmModal = async (
     responseData: Readonly<AdaptorInteractionResponseModalData>,
     fields: Readonly<Record<string, string>>,
-    overrideParam?: LazyOverrideParam<AdaptorModalSubmitInteraction>
+    overrideParam?: LazyOverrideParam<AdaptorModalSubmitInteraction>,
   ): Promise<AdaptorModalSubmitInteraction> => {
     const customId = responseData.customId;
 
@@ -426,12 +426,12 @@ export const createEmitInteractionTestUtil = (
       }
       if (elem.minLength !== undefined && value.length < elem.minLength) {
         throw new InvalidInteractionError(
-          `too short value: ${value} customId: ${elemCustomId}`
+          `too short value: ${value} customId: ${elemCustomId}`,
         );
       }
       if (elem.maxLength !== undefined && value.length > elem.maxLength) {
         throw new InvalidInteractionError(
-          `too long value: ${value} customId: ${elemCustomId}`
+          `too long value: ${value} customId: ${elemCustomId}`,
         );
       }
     });
@@ -441,7 +441,7 @@ export const createEmitInteractionTestUtil = (
       .forEach((elem) => {
         if (fields[elem.customId] === undefined) {
           throw new InvalidInteractionError(
-            `required element not found: ${elem.customId}`
+            `required element not found: ${elem.customId}`,
           );
         }
       });

@@ -19,7 +19,7 @@ client.on("ready", (readyClient) => {
   readyClient.on("interactionCreate", async (interaction) => {
     logger.log(
       "debug",
-      `interaction received type:${interaction.type} id:${interaction.id} token:${interaction.token}`
+      `interaction received type:${interaction.type} id:${interaction.id} token:${interaction.token}`,
     );
     logger.log("trace", interaction);
     if (!interaction.isChatInputCommand()) return;
@@ -28,7 +28,7 @@ client.on("ready", (readyClient) => {
     await openPrompt(
       adaptor,
       interaction,
-      interaction.options.getSubcommand(true)
+      interaction.options.getSubcommand(true),
     );
   });
 });

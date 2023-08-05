@@ -10,7 +10,7 @@ import type { Prompt, Logger } from "discord-inquirer";
 const weatherFetcher =
   (logger: Logger) =>
   async (
-    cityCode: string
+    cityCode: string,
   ): Promise<{
     title: string;
     date: string;
@@ -18,7 +18,7 @@ const weatherFetcher =
   }> => {
     logger.log("debug", `fetching weather for ${cityCode}`);
     const rawData = await fetch(
-      `https://weather.tsukumijima.net/api/forecast?city=${cityCode}`
+      `https://weather.tsukumijima.net/api/forecast?city=${cityCode}`,
     );
 
     const data = await rawData.json();
@@ -58,7 +58,7 @@ export const fetchWeatherPrompt = (() => {
 
   const { isLoading, data } = useFetch(
     selected?.payload,
-    weatherFetcher(logger)
+    weatherFetcher(logger),
   );
 
   const description = () => {
@@ -83,7 +83,7 @@ export const fetchWeatherPrompt = (() => {
       Row(
         SelectComponent({
           placeholder: "Select a city",
-        })()
+        })(),
       ),
     ],
   };

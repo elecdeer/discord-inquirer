@@ -29,7 +29,7 @@ export const editInteractionResponse =
     const webhook = await client.fetchWebhook(client.application.id, token);
     const message = await webhook.editMessage(
       "@original",
-      createMessageEditOption(payload)
+      createMessageEditOption(payload),
     );
     return message.id;
   };

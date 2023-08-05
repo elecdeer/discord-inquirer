@@ -16,7 +16,7 @@ import type {
 } from "discord-api-types/v10";
 
 const transformAdaptorMessagePayload = (
-  payload: AdaptorMessagePayload
+  payload: AdaptorMessagePayload,
 ): RESTPostAPIChannelMessageJSONBody => {
   return {
     ...payload,
@@ -35,7 +35,7 @@ const transformAdaptorMessagePayload = (
 };
 
 const transformAdaptorMessagePayloadPatch = (
-  payload: AdaptorMessagePayloadPatch
+  payload: AdaptorMessagePayloadPatch,
 ): RESTPatchAPIChannelMessageJSONBody => {
   return {
     ...payload,
@@ -50,7 +50,7 @@ const transformAdaptorMessagePayloadPatch = (
 };
 
 const transformAdaptorAllowedMentions = (
-  allowedMentions: AdaptorAllowedMentions
+  allowedMentions: AdaptorAllowedMentions,
 ): APIAllowedMentions => {
   const parse: AllowedMentionsTypes[] = [];
 
@@ -77,7 +77,7 @@ const transformAdaptorAllowedMentions = (
 };
 
 const transformAdaptorMessageReference = (
-  ref: AdaptorMessageReference
+  ref: AdaptorMessageReference,
 ): APIMessageReferenceSend => {
   return {
     ...ref,

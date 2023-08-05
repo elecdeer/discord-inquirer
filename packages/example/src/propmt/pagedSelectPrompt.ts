@@ -61,7 +61,7 @@ export const pagedSelectPrompt = (() => {
           disabled: true,
         })(),
         NextButton({ style: "primary", label: "next" })(),
-        ReverseSetButton({ style: "success", label: "reverse set" })()
+        ReverseSetButton({ style: "success", label: "reverse set" })(),
       ),
     ],
   };

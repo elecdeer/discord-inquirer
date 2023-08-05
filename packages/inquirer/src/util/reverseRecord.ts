@@ -3,7 +3,7 @@
  * 元のkeyがstring型かつnumberに変換可能である場合、変換後はnumberになる
  */
 export const reverseRecord = <T extends Record<PropertyKey, PropertyKey>>(
-  record: T
+  record: T,
 ): ReversedRecord<T> => {
   const reversed = Object.fromEntries(
     Reflect.ownKeys(record).map((key) => {
@@ -11,7 +11,7 @@ export const reverseRecord = <T extends Record<PropertyKey, PropertyKey>>(
       const numberedKey =
         typeof key === "string" && isFinite(Number(key)) ? Number(key) : key;
       return [value, numberedKey];
-    })
+    }),
   );
   return reversed as ReversedRecord<T>;
 };

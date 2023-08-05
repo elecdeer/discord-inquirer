@@ -11,7 +11,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
           useCollection([
             [1, { value: "1" }],
             [2, { value: "2" }],
-          ])
+          ]),
         );
 
         await act(() => {
@@ -155,7 +155,7 @@ describe("packages/inquirer/src/hook/useCollection", () => {
 
         expect(result.current.get(3)).toBeUndefined();
         expect(result.current.values()).toEqual(
-          expect.arrayContaining([{ value: "1" }, { value: "2" }])
+          expect.arrayContaining([{ value: "1" }, { value: "2" }]),
         );
       });
     });

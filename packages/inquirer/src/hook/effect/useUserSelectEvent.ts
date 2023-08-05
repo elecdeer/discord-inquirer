@@ -24,8 +24,8 @@ export const useUserSelectEvent = (
   handle: (
     interaction: Readonly<AdaptorUserSelectInteraction>,
     users: readonly UserSelectResultValue[],
-    deferUpdate: () => Promise<void>
-  ) => Awaitable<void>
+    deferUpdate: () => Promise<void>,
+  ) => Awaitable<void>,
 ): void => {
   const adaptor = useAdaptor();
 

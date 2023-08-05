@@ -22,5 +22,5 @@ export const logger = createLogger(
     if (type === "debug") console.log(inspectMsgWithPrefix);
     if (type === "warn") console.warn(inspectMsgWithPrefix);
     if (type === "error") console.error(inspectMsgWithPrefix);
-  }
+  },
 );

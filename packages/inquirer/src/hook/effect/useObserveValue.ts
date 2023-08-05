@@ -12,7 +12,7 @@ import type { Awaitable } from "../../util/types";
  */
 export const useObserveValue = <T>(
   value: T,
-  onChanged: ((value: T) => Awaitable<void>) | undefined
+  onChanged: ((value: T) => Awaitable<void>) | undefined,
 ) => {
   const valueChanged = useRef(false);
   useEffect(() => {

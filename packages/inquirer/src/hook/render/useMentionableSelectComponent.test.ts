@@ -10,7 +10,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
   describe("useMentionableSelectComponent()", () => {
     test("初期状態ではどのオプションも選択されていない", async () => {
       const { result } = await renderHook(() =>
-        useMentionableSelectComponent()
+        useMentionableSelectComponent(),
       );
 
       expect(result.current[0]).toEqual([]);
@@ -21,7 +21,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
       const { result, interactionHelper } = await renderHook(() =>
         useMentionableSelectComponent({
           onSelected: handle,
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -52,7 +52,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
 
     test("オプションが選択されると選択状態が更新される", async () => {
       const { result, interactionHelper } = await renderHook(() =>
-        useMentionableSelectComponent()
+        useMentionableSelectComponent(),
       );
 
       const component = result.current[1]();
@@ -84,7 +84,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
         useMentionableSelectComponent({
           minValues: 1,
           maxValues: 2,
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -92,7 +92,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
         expect.objectContaining({
           minValues: 1,
           maxValues: 2,
-        })
+        }),
       );
     });
 
@@ -103,7 +103,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
         useMentionableSelectComponent({
           onSelected: handle,
           filter: (interaction) => interaction.user.id === "foo",
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -120,7 +120,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
 
       await interactionHelper.selectMentionableSelectComponent(
         component,
-        dummyMentionables
+        dummyMentionables,
       );
 
       expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
@@ -134,7 +134,7 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
             ...base.user,
             id: "foo",
           },
-        })
+        }),
       );
 
       expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
@@ -145,14 +145,14 @@ describe("packages/inquirer/src/hook/render/useMentionableSelectComponent", () =
   describe("useMentionableSingleSelectComponent()", () => {
     test("最大選択数が1のコンポーネントが生成される", async () => {
       const { result } = await renderHook(() =>
-        useMentionableSingleSelectComponent()
+        useMentionableSingleSelectComponent(),
       );
 
       const component = result.current[1]();
       expect(component).toEqual(
         expect.objectContaining({
           maxValues: 1,
-        })
+        }),
       );
     });
   });

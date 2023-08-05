@@ -17,7 +17,7 @@ export const createInteractionServer = (option: InteractionServerOption) => {
   const eventFlow = createEventFlow<{
     interaction: APIInteraction;
     sendResponse: (
-      interactionResponse: APIInteractionResponse
+      interactionResponse: APIInteractionResponse,
     ) => Promise<void>;
   }>();
 
@@ -42,7 +42,7 @@ export const createInteractionServer = (option: InteractionServerOption) => {
       body,
       signature,
       timestamp,
-      option.discordPublicKey
+      option.discordPublicKey,
     );
 
     if (!isValidRequest) {

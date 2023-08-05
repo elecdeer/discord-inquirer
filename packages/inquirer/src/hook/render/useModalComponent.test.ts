@@ -18,14 +18,14 @@ describe("packages/inquirer/src/hook/render/useModalComponent", () => {
               label: "foo",
             },
           ],
-        })
+        }),
       );
 
       const component = result.current[1]({
         style: "primary",
       })();
       const interaction = await interactionHelper.clickButtonComponent(
-        component
+        component,
       );
 
       expect(adaptorMock.sendInteractionResponse).toBeCalledWith(
@@ -50,7 +50,7 @@ describe("packages/inquirer/src/hook/render/useModalComponent", () => {
               },
             ],
           },
-        } satisfies AdaptorInteractionResponse
+        } satisfies AdaptorInteractionResponse,
       );
     });
 
@@ -66,7 +66,7 @@ describe("packages/inquirer/src/hook/render/useModalComponent", () => {
             },
           ],
           filter: (interaction) => interaction.user.id === "foo",
-        })
+        }),
       );
 
       const component = result.current[1]({

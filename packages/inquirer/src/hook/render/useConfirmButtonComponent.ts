@@ -34,7 +34,7 @@ export type UseConfirmButtonResult<T> = [
   result: ValidateResultState<T>,
   ConfirmButton: NonLinkButtonComponentBuilder<{
     customId: string;
-  }>
+  }>,
 ];
 
 export type UseConfirmButtonParams<T> = {

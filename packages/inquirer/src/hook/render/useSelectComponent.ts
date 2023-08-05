@@ -38,7 +38,7 @@ export type UseSelectComponentResult<T> = [
     minValues: number | undefined;
     maxValues: number | undefined;
   }>,
-  stateAccessor: UseSelectResult
+  stateAccessor: UseSelectResult,
 ];
 
 export type UseSingleSelectComponentResult<T> = [
@@ -49,7 +49,7 @@ export type UseSingleSelectComponentResult<T> = [
     minValues: number | undefined;
     maxValues: 1;
   }>,
-  stateAccessor: UseSelectResult
+  stateAccessor: UseSelectResult,
 ];
 
 export type UseSelectComponentParams<T> = {
@@ -107,7 +107,7 @@ export const useSelectComponent = <T>({
         default: stateAccessor.get(item.key),
         description: item.description,
         emoji: item.emoji,
-      } satisfies AdaptorSelectOption)
+      }) satisfies AdaptorSelectOption,
   );
 
   const renderComponent = StringSelect({
@@ -130,7 +130,7 @@ export type UseSelectStateParam = {
     key: string,
     prev: boolean,
     next: boolean,
-    selectedKeys: readonly string[]
+    selectedKeys: readonly string[],
   ) => boolean;
   filter?: (interaction: AdaptorStringSelectInteraction) => boolean;
 };
@@ -150,7 +150,7 @@ export const useSelectState = ({
   filter = (_) => true,
 }: UseSelectStateParam): UseSelectResult => {
   const { setEach, get, set } = useCollection<string, boolean>(
-    options.map((item) => [item.key, item.default ?? false])
+    options.map((item) => [item.key, item.default ?? false]),
   );
 
   const accessor = {
@@ -184,14 +184,14 @@ export const useSelectState = ({
       if (updated) {
         await deferUpdate();
       }
-    }
+    },
   );
 
   return accessor;
 };
 
 const completePartialOptions = <T>(
-  items: readonly PartialSelectItem<T>[]
+  items: readonly PartialSelectItem<T>[],
 ): SelectItemResult<T>[] => {
   return items.map((item, index) => {
     return {

@@ -9,7 +9,7 @@ export const createRenderer = <T>(
   prompt: () => T,
   commitWithEffect: (value: T) => Promise<Snowflake>,
   adaptor: DiscordAdaptor,
-  logger: Logger
+  logger: Logger,
 ) => {
   const scheduler = createScheduler((work) => {
     return () => {

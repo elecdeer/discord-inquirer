@@ -29,7 +29,7 @@ export const modalPrompt: Prompt<{
         Button({
           style: "success",
           label: "open modal",
-        })()
+        })(),
       ),
     ],
   };

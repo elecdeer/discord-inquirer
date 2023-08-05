@@ -21,7 +21,7 @@ const stockValue = stockHookValue(hookType);
  */
 export const useEffect = (
   callback: (messageId: Snowflake) => void | (() => void),
-  deps?: readonly unknown[]
+  deps?: readonly unknown[],
 ): void => {
   const ctx = useHookContext();
 

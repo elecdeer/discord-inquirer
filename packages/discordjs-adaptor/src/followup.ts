@@ -17,7 +17,7 @@ export const editFollowUp =
     const webhook = await client.fetchWebhook(client.application.id, token);
     const message = await webhook.editMessage(
       messageId,
-      createMessageEditOption(payload)
+      createMessageEditOption(payload),
     );
     return message.id;
   };

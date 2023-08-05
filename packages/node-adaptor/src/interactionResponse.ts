@@ -17,7 +17,7 @@ import type {
 import type { APIInteraction } from "discord.js";
 
 export const createInteractionAdaptor = (
-  options: InteractionServerOption
+  options: InteractionServerOption,
 ): Pick<DiscordAdaptor, "subscribeInteraction" | "sendInteractionResponse"> => {
   const interactionFlow = createInteractionServer(options);
 
@@ -26,7 +26,7 @@ export const createInteractionAdaptor = (
     {
       interaction: APIInteraction;
       sendResponse: (
-        interactionResponse: APIInteractionResponse
+        interactionResponse: APIInteractionResponse,
       ) => Promise<void>;
     }
   >();
@@ -43,7 +43,7 @@ export const createInteractionAdaptor = (
     });
 
   const adaptorInteractionFlow = interactionFlow.map(({ interaction }) =>
-    transformers.interaction(interaction)
+    transformers.interaction(interaction),
   );
 
   return {
@@ -68,7 +68,7 @@ export const getInteractionResponse =
   (fetcher: ApiFetcher, applicationId: string) => async (token: string) => {
     const res = await fetcher<APIMessage>(
       "GET",
-      `/webhooks/${applicationId}/${token}/messages/@original`
+      `/webhooks/${applicationId}/${token}/messages/@original`,
     );
     return res.id;
   };
@@ -80,7 +80,7 @@ export const editInteractionResponse =
     const res = await fetcher<APIMessage>(
       "PATCH",
       `/webhooks/${applicationId}/${token}/messages/@original`,
-      body
+      body,
     );
     return res.id;
   };
@@ -89,6 +89,6 @@ export const deleteInteractionResponse =
   (fetcher: ApiFetcher, applicationId: string) => async (token: string) => {
     await fetcher(
       "DELETE",
-      `/webhooks/${applicationId}/${token}/messages/@original`
+      `/webhooks/${applicationId}/${token}/messages/@original`,
     );
   };

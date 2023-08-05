@@ -8,13 +8,13 @@ import type {
 } from "./types";
 
 export const createEventFlow = <
-  THandlerParam = void
+  THandlerParam = void,
 >(): IEventFlow<THandlerParam> => {
   return createEventFlowSource<THandlerParam>();
 };
 
 const createEventFlowSource = <T>(
-  sourceFlow?: IEventFlow<unknown>
+  sourceFlow?: IEventFlow<unknown>,
 ): IEventFlow<T> => {
   const handlers: Set<Handler<T>> = new Set();
   const branchFlows: IEventFlowHandler<unknown>[] = [];

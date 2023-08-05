@@ -11,7 +11,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
           validate: () => ({
             ok: true,
           }),
-        })
+        }),
       );
 
       expect(result.current[0]).toEqual({
@@ -28,7 +28,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
       const { result, interactionHelper } = await renderHook(() =>
         useConfirmButtonComponent({
           validate: handle,
-        })
+        }),
       );
 
       const component = result.current[1]({
@@ -57,13 +57,13 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
           }),
         {
           initialArgs: false,
-        }
+        },
       );
 
       await interactionHelper.clickButtonComponent(
         result.current[1]({
           style: "success",
-        })()
+        })(),
       );
 
       expect(result.current[0]).toEqual({
@@ -78,7 +78,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
       await interactionHelper.clickButtonComponent(
         result.current[1]({
           style: "success",
-        })()
+        })(),
       );
 
       expect(result.current[0]).toEqual({
@@ -96,7 +96,7 @@ describe("packages/inquirer/src/hook/render/useConfirmButtonComponent", () => {
           }),
           onConfirm: handle,
           filter: (interaction) => interaction.user.id === "foo",
-        })
+        }),
       );
 
       const component = result.current[1]({

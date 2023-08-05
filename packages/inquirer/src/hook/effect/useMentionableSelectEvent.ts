@@ -32,8 +32,8 @@ export const useMentionableSelectEvent = (
   handle: (
     interaction: Readonly<AdaptorMentionableSelectInteraction>,
     userOrRoles: readonly MentionableSelectValue[],
-    deferUpdate: () => Promise<void>
-  ) => Awaitable<void>
+    deferUpdate: () => Promise<void>,
+  ) => Awaitable<void>,
 ): void => {
   const adaptor = useAdaptor();
 
@@ -68,7 +68,7 @@ export const useMentionableSelectEvent = (
           return undefined;
         })
         .filter(
-          (value): value is MentionableSelectValue => value !== undefined
+          (value): value is MentionableSelectValue => value !== undefined,
         );
 
       await handle(interaction, values, deferUpdate);

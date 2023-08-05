@@ -50,7 +50,7 @@ export type HookCycle = {
 export const createHookCycle = (
   adaptor: DiscordAdaptor,
   logger: Logger,
-  dispatch: () => void
+  dispatch: () => void,
 ): HookCycle => {
   const context: HookContext = {
     index: 0,
@@ -127,7 +127,7 @@ export const takeValue = <T>(ctx: HookContext, index: number): T => {
 
 export const isDepsChanged = (
   prevDeps: readonly unknown[] | undefined,
-  deps: readonly unknown[] | undefined
+  deps: readonly unknown[] | undefined,
 ) => {
   return (
     prevDeps === undefined ||
