@@ -21,7 +21,10 @@ export const createInteractionServer = (option: InteractionServerOption) => {
     ) => Promise<void>;
   }>();
 
-  const server = http.createServer(async (req, res) => {
+  const handleResponse = async (
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+  ) => {
     const rejectRequest = () => {
       res.writeHead(401);
       res.end("Invalid request signature");
@@ -64,6 +67,9 @@ export const createInteractionServer = (option: InteractionServerOption) => {
       interaction,
       sendResponse: response,
     });
+  };
+  const server = http.createServer((req, res) => {
+    void handleResponse(req, res);
   });
 
   server.listen(option.port ?? 80, () => {
@@ -77,7 +83,7 @@ const parseBody = (req: http.IncomingMessage) =>
   new Promise<Buffer>((resolve) => {
     const chunks: Buffer[] = [];
     req.on("data", (chunk) => {
-      chunks.push(chunk);
+      chunks.push(chunk as Buffer);
     });
     req.on("end", () => {
       resolve(Buffer.concat(chunks));
