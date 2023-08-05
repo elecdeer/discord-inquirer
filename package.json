@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
   "devDependencies": {
-    "@changesets/cli": "^2.26.1",
+    "@changesets/cli": "^2.26.2",
     "@rollup/plugin-typescript": "^11.1.1",
     "rollup": "^3.20.2",
     "turbo": "^1.10.12",
