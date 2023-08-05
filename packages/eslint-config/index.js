@@ -1,6 +1,6 @@
-const prettier = require("eslint-config-prettier");
 const tsPlugin = require("@typescript-eslint/eslint-plugin");
 const tsParser = require("@typescript-eslint/parser");
+const prettier = require("eslint-config-prettier");
 const importPlugin = require("eslint-plugin-import");
 
 const eslintConfig = [
@@ -48,7 +48,7 @@ const eslintConfig = [
       parser: tsParser,
       parserOptions: {
         sourceType: "module",
-        project: "tsconfig.json",
+        project: true, // コードから最も近いtsconfig.json
       },
     },
     plugins: {
@@ -66,6 +66,7 @@ const eslintConfig = [
       ...tsPlugin.configs["recommended-type-checked"].rules,
       ...tsPlugin.configs["stylistic-type-checked"].rules,
       // recommended overrides
+      "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {

@@ -16,7 +16,7 @@ export const createEventFlow = <
 const createEventFlowSource = <T>(
   sourceFlow?: IEventFlow<unknown>,
 ): IEventFlow<T> => {
-  const handlers: Set<Handler<T>> = new Set();
+  const handlers = new Set<Handler<T>>();
   const branchFlows: IEventFlowHandler<unknown>[] = [];
 
   return {
