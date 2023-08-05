@@ -32,7 +32,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       const { result } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
-        })
+        }),
       );
 
       expect(result.current.result.length).toBe(6);
@@ -45,7 +45,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           expect.objectContaining({ key: "2-0", selected: false }),
           expect.objectContaining({ key: "2-1", selected: true }),
           expect.objectContaining({ key: "2-2", selected: false }),
-        ])
+        ]),
       );
     });
 
@@ -57,7 +57,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       const { result, act } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
-        })
+        }),
       );
 
       expect(result.current.Select().options).toEqual([
@@ -116,7 +116,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       const { result, act, interactionHelper } = await renderHook(() =>
         usePagedSelectComponent({
           optionsResolver: () => options,
-        })
+        }),
       );
       await act(() => {
         result.current.setPage(2);
@@ -154,7 +154,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           expect.objectContaining({ key: "2-0", selected: false }),
           expect.objectContaining({ key: "2-1", selected: false }),
           expect.objectContaining({ key: "2-2", selected: true }),
-        ])
+        ]),
       );
     });
 
@@ -168,7 +168,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           onSelected: onSelected,
           minValues: 2,
           maxValues: 4,
-        })
+        }),
       );
 
       //page 0
@@ -177,7 +177,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         result.current
           .Select()
           .options.filter((option) => option.label === "0-0")
-          .map((option) => option.value)
+          .map((option) => option.value),
       );
 
       //まだ選択数が足りないのでonSelectedは呼ばれない
@@ -192,7 +192,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         result.current
           .Select()
           .options.filter((option) => option.label === "1-1")
-          .map((option) => option.value)
+          .map((option) => option.value),
       );
 
       expect(onSelected).toBeCalledTimes(1);
@@ -205,7 +205,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           expect.objectContaining({ key: "2-0", selected: false }),
           expect.objectContaining({ key: "2-1", selected: false }),
           expect.objectContaining({ key: "2-2", selected: false }),
-        ])
+        ]),
       );
 
       onSelected.mockClear();
@@ -220,9 +220,9 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         result.current
           .Select()
           .options.filter(
-            (option) => option.label === "2-0" || option.label === "2-2"
+            (option) => option.label === "2-0" || option.label === "2-2",
           )
-          .map((option) => option.value)
+          .map((option) => option.value),
       );
 
       expect(onSelected).toBeCalledTimes(1);
@@ -235,7 +235,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           expect.objectContaining({ key: "2-0", selected: true }),
           expect.objectContaining({ key: "2-1", selected: false }),
           expect.objectContaining({ key: "2-2", selected: true }),
-        ])
+        ]),
       );
     });
 
@@ -247,7 +247,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           optionsResolver: () => options,
           maxValues: 3,
           showSelectedAlways: true,
-        })
+        }),
       );
 
       //page 0
@@ -256,9 +256,9 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         result.current
           .Select()
           .options.filter(
-            (option) => option.label === "0-0" || option.label === "0-1"
+            (option) => option.label === "0-0" || option.label === "0-1",
           )
-          .map((option) => option.value)
+          .map((option) => option.value),
       );
 
       await act(() => {
@@ -287,12 +287,12 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
       const values = result.current
         .Select()
         .options.filter(
-          (option) => option.label === "0-1" || option.label === "2-0"
+          (option) => option.label === "0-1" || option.label === "2-0",
         )
         .map((option) => option.value);
       await interactionHelper.selectStringSelectComponent(
         result.current.Select(),
-        values
+        values,
       );
 
       expect(result.current.Select().options).toEqual([
@@ -321,7 +321,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         usePagedSelectComponent({
           optionsResolver: () => options,
           pageTorus: false,
-        })
+        }),
       );
 
       await act(() => {
@@ -350,7 +350,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
         usePagedSelectComponent({
           optionsResolver: () => options,
           pageTorus: true,
-        })
+        }),
       );
 
       await act(() => {
@@ -381,12 +381,12 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
           optionsResolver: () => options,
           onSelected: handleSelected,
           filter: (interaction) => interaction.user.id === "foo",
-        })
+        }),
       );
 
       await interactionHelper.selectStringSelectComponent(
         result.current.Select(),
-        [result.current.Select().options[0].value]
+        [result.current.Select().options[0].value],
       );
 
       expect(handleSelected).not.toHaveBeenCalled();
@@ -400,7 +400,7 @@ describe("packages/inquirer/src/hook/render/usePagedSelectComponent", () => {
             ...base.user,
             id: "foo",
           },
-        })
+        }),
       );
 
       expect(handleSelected).toHaveBeenCalled();

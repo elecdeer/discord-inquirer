@@ -26,7 +26,7 @@ export const adaptorFaker = (next: RandomSource) => {
 };
 
 export const createAdaptorPartialNonThreadChannelFaker = (
-  next: RandomSource
+  next: RandomSource,
 ) => {
   const random = createRandomHelper(next);
   return (data?: Partial<Omit<AdaptorPartialThreadChannel, "type">>) => {
@@ -44,7 +44,7 @@ export const createAdaptorPartialThreadChannelFaker = (next: RandomSource) => {
     const randomDate = () => {
       return random.nextDate(
         new Date("2010-01-01T00:00:00.000Z"),
-        new Date("2030-12-31T23:59:59.999Z")
+        new Date("2030-12-31T23:59:59.999Z"),
       );
     };
 
@@ -93,7 +93,7 @@ export const createAdaptorMemberFaker = (next: RandomSource) => {
       roles: [],
       joinedAt: random.nextDate(
         new Date("2010-01-01T00:00:00.000Z"),
-        new Date("2030-12-31T23:59:59.999Z")
+        new Date("2030-12-31T23:59:59.999Z"),
       ),
       premiumSince: null,
       flag: {

@@ -25,7 +25,7 @@ export const createNodeAdaptor = (options: {
 
   const fetcher = apiFetcher(
     options.apiRoute ?? "https://discord.com/api/v10",
-    options.botToken
+    options.botToken,
   );
 
   return {
@@ -35,15 +35,15 @@ export const createNodeAdaptor = (options: {
     sendInteractionResponse: sendInteractionResponse,
     getInteractionResponse: getInteractionResponse(
       fetcher,
-      options.applicationId
+      options.applicationId,
     ),
     editInteractionResponse: editInteractionResponse(
       fetcher,
-      options.applicationId
+      options.applicationId,
     ),
     deleteInteractionResponse: deleteInteractionResponse(
       fetcher,
-      options.applicationId
+      options.applicationId,
     ),
     sendFollowUp: sendFollowUp(fetcher, options.applicationId),
     editFollowup: editFollowup(fetcher, options.applicationId),

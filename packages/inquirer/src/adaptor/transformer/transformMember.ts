@@ -7,7 +7,7 @@ import type { AdaptorPartialMember } from "../structure";
 import type { APIInteractionDataResolvedGuildMember } from "discord-api-types/v10";
 
 const transformPartialMember = (
-  member: APIInteractionDataResolvedGuildMember
+  member: APIInteractionDataResolvedGuildMember,
 ): AdaptorPartialMember => {
   return {
     nick: member.nick ?? null,
@@ -20,7 +20,7 @@ const transformPartialMember = (
     permissions:
       nullishThrough(transformers.permissionFlags)(member.permissions) ?? null,
     communicationDisabledUntil: transformNullishDateString(
-      member.communication_disabled_until
+      member.communication_disabled_until,
     ),
   };
 };

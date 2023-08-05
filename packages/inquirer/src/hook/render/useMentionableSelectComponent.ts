@@ -18,7 +18,7 @@ export type UseMentionableSelectComponentResult = [
     customId: string;
     minValues: number | undefined;
     maxValues: number | undefined;
-  }>
+  }>,
 ];
 
 export type UseMentionableSingleSelectComponentResult = [
@@ -27,7 +27,7 @@ export type UseMentionableSingleSelectComponentResult = [
     customId: string;
     minValues: 1 | undefined;
     maxValues: 1;
-  }>
+  }>,
 ];
 
 export type UseMentionableSelectComponentParams = {
@@ -35,7 +35,7 @@ export type UseMentionableSelectComponentParams = {
   minValues?: number;
   maxValues?: number;
   filter?: (
-    interaction: Readonly<AdaptorMentionableSelectInteraction>
+    interaction: Readonly<AdaptorMentionableSelectInteraction>,
   ) => boolean;
 };
 
@@ -43,7 +43,7 @@ export type UseMentionableSingleSelectComponentParams = {
   onSelected?: (selected: MentionableSelectValue | null) => void;
   minValues?: 1;
   filter?: (
-    interaction: Readonly<AdaptorMentionableSelectInteraction>
+    interaction: Readonly<AdaptorMentionableSelectInteraction>,
   ) => boolean;
 };
 
@@ -74,7 +74,7 @@ export const useMentionableSelectComponent = ({
 
       setSelected([...userOrRoles]);
       markChanged();
-    }
+    },
   );
 
   return [

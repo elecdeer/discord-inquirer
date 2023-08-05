@@ -182,7 +182,7 @@ export const usePagedSelectComponent = <T>({
             default: opt.selected,
             description: opt.description,
             emoji: opt.emoji,
-          } satisfies AdaptorSelectOption)
+          }) satisfies AdaptorSelectOption,
       ),
       minValues: pageMinValues,
       maxValues: pageMaxValues(),
@@ -252,7 +252,7 @@ export const closeSplitter =
     const pageNum = Math.ceil(option.length / maxOptionNumPerPage);
     for (let i = 0; i < pageNum; i++) {
       result.push(
-        option.slice(i * maxOptionNumPerPage, (i + 1) * maxOptionNumPerPage)
+        option.slice(i * maxOptionNumPerPage, (i + 1) * maxOptionNumPerPage),
       );
     }
     return result;

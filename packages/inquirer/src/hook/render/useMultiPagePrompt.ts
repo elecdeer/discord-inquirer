@@ -5,7 +5,7 @@ import type { Prompt } from "../../core/inquire";
 
 export type UseMultiPagePromptResult<
   TPagesKeys extends string | number | symbol,
-  TAnswer extends Record<string, unknown>
+  TAnswer extends Record<string, unknown>,
 > = {
   setPage: (page: TPagesKeys) => void;
   result: ReturnType<Prompt<TAnswer>>;
@@ -20,16 +20,16 @@ export type UseMultiPagePromptResult<
  */
 export const useMultiPagePrompt = <
   TPagesKeys extends string | number | symbol,
-  TAnswer extends Record<string, unknown>
+  TAnswer extends Record<string, unknown>,
 >(
   renderPages: [TPagesKeys, () => ReturnType<Prompt<TAnswer>>][],
-  defaultPage: TPagesKeys
+  defaultPage: TPagesKeys,
 ): UseMultiPagePromptResult<TPagesKeys, TAnswer> => {
   const [page, setPage] = useState<TPagesKeys>(defaultPage);
 
   //表示されていないページも含めて全てのページをレンダリングする
   const resultMap = new Map<TPagesKeys, MessageMutualPayload>(
-    renderPages.map(([key, render]) => [key, render()])
+    renderPages.map(([key, render]) => [key, render()]),
   );
 
   if (!resultMap.has(page)) throw new Error("Invalid page");

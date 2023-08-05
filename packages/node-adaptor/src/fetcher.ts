@@ -1,7 +1,7 @@
 export type ApiFetcher = <T>(
   method: "GET" | "POST" | "PATCH" | "DELETE" | string,
   path: string,
-  body?: object
+  body?: object,
 ) => Promise<T>;
 
 export const apiFetcher =

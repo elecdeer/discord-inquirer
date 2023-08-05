@@ -12,7 +12,7 @@ export const createLogger = (
     context: string;
     contextDepth: number;
     message: unknown;
-  }) => void
+  }) => void,
 ): Logger => {
   const contextStack: string[] = [];
 
@@ -56,5 +56,5 @@ export const defaultLogger: Logger = createLogger(
       default:
         throw new Error("unknown type");
     }
-  }
+  },
 );

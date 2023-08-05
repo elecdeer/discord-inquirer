@@ -41,14 +41,14 @@ import type {
 } from "discord-api-types/v10";
 
 const transformAdaptorActionRowComponent = (
-  component: AdaptorMessageActionRowComponent
+  component: AdaptorMessageActionRowComponent,
 ): APIActionRowComponent<APIMessageActionRowComponent> => ({
   type: ComponentType.ActionRow,
   components: component.components.map(transformers.adaptorComponent),
 });
 
 const transformAdaptorComponent = (
-  component: AdaptorMessageComponent
+  component: AdaptorMessageComponent,
 ): APIMessageActionRowComponent => {
   switch (component.type) {
     case "button":
@@ -67,18 +67,18 @@ const transformAdaptorComponent = (
 };
 
 const transformAdaptorModalActionRowComponent = (
-  component: AdaptorModalActionRowComponent
+  component: AdaptorModalActionRowComponent,
 ): APIActionRowComponent<APIModalActionRowComponent> => {
   return {
     type: ComponentType.ActionRow,
     components: component.components.map(
-      transformers.adaptorTextInputComponent
+      transformers.adaptorTextInputComponent,
     ),
   };
 };
 
 const transformAdaptorEmoji = (
-  emoji: AdaptorPartialEmoji
+  emoji: AdaptorPartialEmoji,
 ): APIMessageComponentEmoji => ({
   id: emoji.id ?? undefined,
   name: emoji.name ?? undefined,
@@ -86,7 +86,7 @@ const transformAdaptorEmoji = (
 });
 
 const transformAdaptorButtonComponent = (
-  component: AdaptorButtonComponent
+  component: AdaptorButtonComponent,
 ): APIButtonComponent => {
   if (component.style === "link") {
     return {
@@ -110,7 +110,7 @@ const transformAdaptorButtonComponent = (
 };
 
 const transformAdaptorSelectComponentBase = (
-  component: AdaptorSelectComponentBase
+  component: AdaptorSelectComponentBase,
 ): Omit<APIBaseSelectMenuComponent<never>, "type"> => ({
   custom_id: component.customId,
   placeholder: component.placeholder,
@@ -120,7 +120,7 @@ const transformAdaptorSelectComponentBase = (
 });
 
 const transformAdaptorStringSelectComponent = (
-  component: AdaptorStringSelectComponent
+  component: AdaptorStringSelectComponent,
 ): APIStringSelectComponent => ({
   type: ComponentType.StringSelect,
   options: component.options.map(transformers.adaptorSelectOption),
@@ -128,7 +128,7 @@ const transformAdaptorStringSelectComponent = (
 });
 
 const transformAdaptorSelectOption = (
-  option: AdaptorSelectOption
+  option: AdaptorSelectOption,
 ): APISelectMenuOption => ({
   label: option.label,
   value: option.value,
@@ -138,42 +138,42 @@ const transformAdaptorSelectOption = (
 });
 
 const transformAdaptorUserSelectComponent = (
-  component: AdaptorUserSelectComponent
+  component: AdaptorUserSelectComponent,
 ): APIUserSelectComponent => ({
   type: ComponentType.UserSelect,
   ...transformers.adaptorSelectComponentBase(component),
 });
 
 const transformAdaptorRoleSelectComponent = (
-  component: AdaptorRoleSelectComponent
+  component: AdaptorRoleSelectComponent,
 ): APIRoleSelectComponent => ({
   type: ComponentType.RoleSelect,
   ...transformers.adaptorSelectComponentBase(component),
 });
 
 const transformAdaptorMentionableSelectComponent = (
-  component: AdaptorMentionableSelectComponent
+  component: AdaptorMentionableSelectComponent,
 ): APIMentionableSelectComponent => ({
   type: ComponentType.MentionableSelect,
   ...transformers.adaptorSelectComponentBase(component),
 });
 
 const transformAdaptorChannelSelectComponent = (
-  component: AdaptorChannelSelectComponent
+  component: AdaptorChannelSelectComponent,
 ): APIChannelSelectComponent => ({
   type: ComponentType.ChannelSelect,
   channel_types: component.channelTypes?.map((item) =>
-    transformers.adaptorChannelType(item)
+    transformers.adaptorChannelType(item),
   ),
   ...transformers.adaptorSelectComponentBase(component),
 });
 
 const transformAdaptorChannelType = (
-  channelType: AdaptorChannelTypes
+  channelType: AdaptorChannelTypes,
 ): ChannelType => channelTypesMap[channelType];
 
 const transformAdaptorTextInputComponent = (
-  component: AdaptorTextInputComponent
+  component: AdaptorTextInputComponent,
 ): APITextInputComponent => ({
   type: ComponentType.TextInput,
   custom_id: component.customId,

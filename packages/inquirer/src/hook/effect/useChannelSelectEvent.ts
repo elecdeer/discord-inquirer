@@ -22,8 +22,8 @@ export const useChannelSelectEvent = (
   handle: (
     interaction: Readonly<AdaptorChannelSelectInteraction>,
     channels: readonly AdaptorPartialChannel[],
-    deferUpdate: () => Promise<void>
-  ) => Awaitable<void>
+    deferUpdate: () => Promise<void>,
+  ) => Awaitable<void>,
 ): void => {
   const adaptor = useAdaptor();
 
@@ -39,7 +39,7 @@ export const useChannelSelectEvent = (
       };
 
       const channels = interaction.data.values.map(
-        (id) => interaction.data.resolved.channels[id]
+        (id) => interaction.data.resolved.channels[id],
       );
 
       await handle(interaction, channels, deferUpdate);

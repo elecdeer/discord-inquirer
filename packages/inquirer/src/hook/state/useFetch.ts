@@ -45,7 +45,7 @@ export type UseFetchResult<TData> = FetchState<TData> & {
 export const useFetchExternalCache = <TKey, TData>(
   key: Lazy<TKey | undefined | null>,
   fetcher: (args: TKey) => Promise<TData>,
-  cache: UseFetchCache<CacheValue<TData>>
+  cache: UseFetchCache<CacheValue<TData>>,
 ): UseFetchResult<TData> => {
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState<CacheValue<TData> | undefined>(undefined);
@@ -79,7 +79,7 @@ export const useFetchExternalCache = <TKey, TData>(
         if (cacheKey !== prevCacheKey.current) return;
         setIsLoading(false);
         setValue(value);
-      }
+      },
     );
   };
 
@@ -145,7 +145,7 @@ export const useFetchExternalCache = <TKey, TData>(
  */
 export const useFetch = <TKey, TData>(
   key: Lazy<TKey | undefined | null>,
-  fetcher: (args: TKey) => Promise<TData>
+  fetcher: (args: TKey) => Promise<TData>,
 ): UseFetchResult<TData> => {
   const cacheRef = useRef(new Map<string, CacheValue<TData>>());
 

@@ -8,20 +8,20 @@ describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
       const { interactionHelper } = await renderHook(() =>
-        useChannelSelectEvent("customId", handle)
+        useChannelSelectEvent("customId", handle),
       );
 
       const interaction = await interactionHelper.emitChannelSelectInteraction(
         "customId",
-        [{ type: "guildText" }, { type: "publicThread" }]
+        [{ type: "guildText" }, { type: "publicThread" }],
       );
 
       expect(handle).toBeCalledWith(
         interaction,
         expect.arrayContaining(
-          Object.values(interaction.data.resolved.channels)
+          Object.values(interaction.data.resolved.channels),
         ),
-        expect.anything()
+        expect.anything(),
       );
       expect(handle).toBeCalledTimes(1);
     });
@@ -29,12 +29,12 @@ describe("packages/inquirer/src/hook/effect/useChannelSelectEvent", () => {
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", async () => {
       const handle = vi.fn();
       const { interactionHelper } = await renderHook(() =>
-        useChannelSelectEvent("customId", handle)
+        useChannelSelectEvent("customId", handle),
       );
 
       await interactionHelper.emitChannelSelectInteraction(
         "unmatchedCustomId",
-        [{ type: "guildText" }, { type: "publicThread" }]
+        [{ type: "guildText" }, { type: "publicThread" }],
       );
       await interactionHelper.emitButtonInteraction("customId");
 

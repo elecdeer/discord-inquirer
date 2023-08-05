@@ -19,7 +19,7 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
       const { result, interactionHelper } = await renderHook(() =>
         useUserSelectComponent({
           onSelected: handle,
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -46,7 +46,7 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
 
     test("オプションが選択されると選択状態が更新される", async () => {
       const { result, interactionHelper } = await renderHook(() =>
-        useUserSelectComponent()
+        useUserSelectComponent(),
       );
 
       const component = result.current[1]();
@@ -74,7 +74,7 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
         useUserSelectComponent({
           minValues: 1,
           maxValues: 2,
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -82,7 +82,7 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
         expect.objectContaining({
           minValues: 1,
           maxValues: 2,
-        })
+        }),
       );
     });
 
@@ -92,7 +92,7 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
         useUserSelectComponent({
           onSelected: handle,
           filter: (interaction) => interaction.user.id === "foo",
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -117,7 +117,7 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
             ...base.user,
             id: "foo",
           },
-        })
+        }),
       );
       expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
       expect(handle).toHaveBeenCalled();
@@ -132,7 +132,7 @@ describe("packages/inquirer/src/hook/render/useUserSelectComponent", () => {
       expect(component).toEqual(
         expect.objectContaining({
           maxValues: 1,
-        })
+        }),
       );
     });
   });

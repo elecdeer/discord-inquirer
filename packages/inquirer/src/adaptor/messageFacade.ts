@@ -50,26 +50,26 @@ export type MessageFacade = {
   deferReply: (
     interactionId: Snowflake,
     token: string,
-    ephemeral?: boolean
+    ephemeral?: boolean,
   ) => Promise<void>;
   openModal: (
     interactionId: Snowflake,
     token: string,
-    payload: AdaptorInteractionResponseModalData
+    payload: AdaptorInteractionResponseModalData,
   ) => Promise<void>;
   send: (
     target: MessageTarget,
-    payload: AdaptorMessagePayload
+    payload: AdaptorMessagePayload,
   ) => Promise<SendResult>;
   deferUpdate: (interactionId: Snowflake, token: string) => Promise<void>;
 };
 
 export const messageFacade: (adaptor: DiscordAdaptor) => MessageFacade = (
-  adaptor: DiscordAdaptor
+  adaptor: DiscordAdaptor,
 ) => {
   const sendChannel = async (
     target: ChannelTarget,
-    payload: MessageMutualPayload
+    payload: MessageMutualPayload,
   ): Promise<SendResult> => {
     const channelId = target.channelId;
     const messageId = await adaptor.sendMessage(channelId, payload);
@@ -87,7 +87,7 @@ export const messageFacade: (adaptor: DiscordAdaptor) => MessageFacade = (
 
   const sendReply = async (
     target: ReplyTarget,
-    payload: MessageMutualPayload
+    payload: MessageMutualPayload,
   ): Promise<SendResult> => {
     const { channelId, messageId } = target;
 
@@ -111,7 +111,7 @@ export const messageFacade: (adaptor: DiscordAdaptor) => MessageFacade = (
 
   const sendInteraction = async (
     target: InteractionTarget,
-    payload: MessageMutualPayload
+    payload: MessageMutualPayload,
   ): Promise<SendResult> => {
     const { interactionId, token, ephemeral } = target;
     await adaptor.sendInteractionResponse(interactionId, token, {
@@ -139,7 +139,7 @@ export const messageFacade: (adaptor: DiscordAdaptor) => MessageFacade = (
 
   const sendInteractionFollowup = async (
     target: InteractionFollowupTarget,
-    payload: MessageMutualPayload
+    payload: MessageMutualPayload,
   ): Promise<SendResult> => {
     const { token, ephemeral } = target;
     const messageId = await adaptor.sendFollowUp(token, {
@@ -161,7 +161,7 @@ export const messageFacade: (adaptor: DiscordAdaptor) => MessageFacade = (
   return {
     send: (
       target: MessageTarget,
-      payload: AdaptorMessagePayload
+      payload: AdaptorMessagePayload,
     ): Promise<SendResult> => {
       switch (target.type) {
         case "channel":
@@ -177,7 +177,7 @@ export const messageFacade: (adaptor: DiscordAdaptor) => MessageFacade = (
     deferReply: (
       interactionId: Snowflake,
       token: string,
-      ephemeral?: boolean
+      ephemeral?: boolean,
     ) => {
       return adaptor.sendInteractionResponse(interactionId, token, {
         type: "deferredChannelMessageWithSource",
@@ -194,7 +194,7 @@ export const messageFacade: (adaptor: DiscordAdaptor) => MessageFacade = (
     openModal: (
       interactionId: Snowflake,
       token: string,
-      payload: AdaptorInteractionResponseModalData
+      payload: AdaptorInteractionResponseModalData,
     ) => {
       return adaptor.sendInteractionResponse(interactionId, token, {
         type: "modal",

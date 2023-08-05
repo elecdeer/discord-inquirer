@@ -61,7 +61,7 @@ export const dispatchExamplePrompt = ((answer, close) => {
       Row(
         PlusButton({ style: "primary", label: "+1" })(),
         PlusTwoButton({ style: "primary", label: "+2" })(),
-        PlusPlusButton({ style: "primary", label: "+1 +1" })()
+        PlusPlusButton({ style: "primary", label: "+1 +1" })(),
       ),
       Row(CloseButton({ style: "danger", label: "close" })()),
     ],

@@ -8,12 +8,12 @@ describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
       const { interactionHelper } = await renderHook(() =>
-        useUserSelectEvent("customId", handle)
+        useUserSelectEvent("customId", handle),
       );
 
       const interaction = await interactionHelper.emitUserSelectInteraction(
         "customId",
-        2
+        2,
       );
 
       expect(handle).toBeCalledWith(
@@ -30,7 +30,7 @@ describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
               interaction.data.resolved.members[interaction.data.values[1]],
           },
         ]),
-        expect.anything()
+        expect.anything(),
       );
       expect(handle).toBeCalledTimes(1);
     });
@@ -38,7 +38,7 @@ describe("packages/inquirer/src/hook/effect/useUserSelectEvent", () => {
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", async () => {
       const handle = vi.fn();
       const { interactionHelper } = await renderHook(() =>
-        useUserSelectEvent("customId", handle)
+        useUserSelectEvent("customId", handle),
       );
 
       await interactionHelper.emitUserSelectInteraction("unmatchedCustomId", 2);

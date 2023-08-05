@@ -19,7 +19,7 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
       const { result, interactionHelper } = await renderHook(() =>
         useRoleSelectComponent({
           onSelected: handle,
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -46,7 +46,7 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
 
     test("オプションが選択されると選択状態が更新される", async () => {
       const { result, interactionHelper } = await renderHook(() =>
-        useRoleSelectComponent()
+        useRoleSelectComponent(),
       );
 
       const component = result.current[1]();
@@ -74,7 +74,7 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
         useRoleSelectComponent({
           minValues: 1,
           maxValues: 2,
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -82,7 +82,7 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
         expect.objectContaining({
           minValues: 1,
           maxValues: 2,
-        })
+        }),
       );
     });
 
@@ -92,7 +92,7 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
         useRoleSelectComponent({
           onSelected: handle,
           filter: (interaction) => interaction.user.id === "foo",
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -117,7 +117,7 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
             ...base.user,
             id: "foo",
           },
-        })
+        }),
       );
       expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
       expect(handle).toHaveBeenCalled();
@@ -132,7 +132,7 @@ describe("packages/inquirer/src/hook/render/useRoleSelectComponent", () => {
       expect(component).toEqual(
         expect.objectContaining({
           maxValues: 1,
-        })
+        }),
       );
     });
   });

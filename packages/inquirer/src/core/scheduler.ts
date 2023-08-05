@@ -4,7 +4,7 @@ const maxQueueSize = 50;
 
 export const createScheduler = (
   workScheduler: (work: () => void) => () => void,
-  logger: Logger
+  logger: Logger,
 ) => {
   let dispatchCount = 0;
   let commitCount = 0;

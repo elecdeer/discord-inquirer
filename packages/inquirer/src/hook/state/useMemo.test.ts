@@ -10,7 +10,7 @@ describe("packages/inquirer/src/hook/useMemo", () => {
         (args) => useMemo(() => args, []),
         {
           initialArgs: 3,
-        }
+        },
       );
 
       expect(result.current).toBe(3);
@@ -29,7 +29,7 @@ describe("packages/inquirer/src/hook/useMemo", () => {
         (args) => useMemo(() => args, deps),
         {
           initialArgs: 3,
-        }
+        },
       );
 
       expect(result.current).toBe(3);
@@ -47,7 +47,7 @@ describe("packages/inquirer/src/hook/useMemo", () => {
         (deps) => useMemo(factory, deps),
         {
           initialArgs: [1, "bar"],
-        }
+        },
       );
       expect(factory).toHaveBeenCalledOnce();
       factory.mockClear();

@@ -23,7 +23,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
               label: "label",
             },
           ],
-        })
+        }),
       );
 
       const [_, open] = result.current;
@@ -52,7 +52,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
               },
             ],
           },
-        } satisfies AdaptorInteractionResponse
+        } satisfies AdaptorInteractionResponse,
       );
     });
 
@@ -83,7 +83,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
           }),
         {
           adaptor: adaptorMock,
-        }
+        },
       );
 
       const [resultInitial, open] = result.current;
@@ -102,7 +102,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
           {
             [sentInteractionResponse!.data.components[0].components[0]
               .customId]: "value",
-          }
+          },
         );
 
         //modalSubmitに対してdeferredUpdateが返信される
@@ -111,7 +111,7 @@ describe("packages/inquirer/src/hook/effect/useModal", () => {
           interaction.token,
           {
             type: "deferredUpdateMessage",
-          } satisfies AdaptorInteractionResponseDeferredUpdate
+          } satisfies AdaptorInteractionResponseDeferredUpdate,
         );
       });
 

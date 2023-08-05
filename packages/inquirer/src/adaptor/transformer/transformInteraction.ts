@@ -39,7 +39,7 @@ import type {
 } from "discord-api-types/v10";
 
 const transformInteraction = (
-  interaction: APIInteraction
+  interaction: APIInteraction,
 ): AdaptorInteraction => {
   switch (interaction.type) {
     case InteractionType.Ping:
@@ -50,7 +50,7 @@ const transformInteraction = (
       return transformers.messageComponentInteraction(interaction);
     case InteractionType.ApplicationCommandAutocomplete:
       return transformers.applicationCommandAutocompleteInteraction(
-        interaction
+        interaction,
       );
     case InteractionType.ModalSubmit:
       return transformers.modalSubmitInteraction(interaction);
@@ -58,7 +58,7 @@ const transformInteraction = (
 };
 
 const transformInteractionBase = (
-  interaction: APIInteraction
+  interaction: APIInteraction,
 ): AdaptorInteractionBase => {
   return {
     id: interaction.id,
@@ -73,7 +73,7 @@ const transformUserInvokedInteractionBase = (
     | APIApplicationCommandInteraction
     | APIMessageComponentInteraction
     | APIApplicationCommandAutocompleteInteraction
-    | APIModalSubmitInteraction
+    | APIModalSubmitInteraction,
 ): AdaptorUserInvokedInteractionBase => {
   assert(interaction.channel_id !== undefined);
 
@@ -89,7 +89,7 @@ const transformUserInvokedInteractionBase = (
     user: transformers.user(apiUser),
     appPermissions:
       nullishThrough(transformers.permissionFlags)(
-        interaction.app_permissions
+        interaction.app_permissions,
       ) ?? null,
     locale: interaction.locale ?? null,
     guildLocale: interaction.guild_locale ?? null,
@@ -97,7 +97,7 @@ const transformUserInvokedInteractionBase = (
 };
 
 const transformPingInteraction = (
-  interaction: APIPingInteraction
+  interaction: APIPingInteraction,
 ): AdaptorPingInteraction => {
   return {
     type: "ping",
@@ -106,7 +106,7 @@ const transformPingInteraction = (
 };
 
 const transformApplicationCommandInteraction = (
-  interaction: APIApplicationCommandInteraction
+  interaction: APIApplicationCommandInteraction,
 ): AdaptorApplicationCommandInteraction => {
   if (interaction.data.type === ApplicationCommandType.ChatInput) {
     return {
@@ -118,28 +118,28 @@ const transformApplicationCommandInteraction = (
         name: interaction.data.name,
         options:
           interaction.data.options?.map(
-            transformers.applicationCommandInteractionOption
+            transformers.applicationCommandInteractionOption,
           ) ?? [],
         resolved: {
           users:
             nullishThrough(transformResolvedUsers)(
-              interaction.data.resolved?.users
+              interaction.data.resolved?.users,
             ) ?? {},
           members:
             nullishThrough(transformResolvedMembers)(
-              interaction.data.resolved?.members
+              interaction.data.resolved?.members,
             ) ?? {},
           roles:
             nullishThrough(transformResolvedRoles)(
-              interaction.data.resolved?.roles
+              interaction.data.resolved?.roles,
             ) ?? {},
           channels:
             nullishThrough(transformResolvedChannels)(
-              interaction.data.resolved?.channels
+              interaction.data.resolved?.channels,
             ) ?? {},
           attachments:
             nullishThrough(transformResolvedAttachments)(
-              interaction.data.resolved?.attachments
+              interaction.data.resolved?.attachments,
             ) ?? {},
         },
         guildId: interaction.guild_id ?? null,
@@ -160,11 +160,11 @@ const transformApplicationCommandInteraction = (
         resolved: {
           users:
             nullishThrough(transformResolvedUsers)(
-              interaction.data.resolved?.users
+              interaction.data.resolved?.users,
             ) ?? {},
           members:
             nullishThrough(transformResolvedMembers)(
-              interaction.data.resolved?.members
+              interaction.data.resolved?.members,
             ) ?? {},
           roles: {},
           channels: {},
@@ -202,7 +202,7 @@ const transformApplicationCommandInteraction = (
 };
 
 const transformApplicationCommandInteractionOptionWithoutSub = (
-  option: APIApplicationCommandInteractionDataBasicOption
+  option: APIApplicationCommandInteractionDataBasicOption,
 ): Exclude<
   AdaptorApplicationCommandInteractionOption,
   | AdaptorApplicationCommandInteractionOptionSubCommand
@@ -266,7 +266,7 @@ const transformApplicationCommandInteractionOptionWithoutSub = (
 };
 
 const transformApplicationCommandInteractionOption = (
-  option: APIApplicationCommandInteractionDataOption
+  option: APIApplicationCommandInteractionDataOption,
 ): AdaptorApplicationCommandInteractionOption => {
   if (option.type === ApplicationCommandOptionType.Subcommand) {
     return {
@@ -274,7 +274,7 @@ const transformApplicationCommandInteractionOption = (
       name: option.name,
       options:
         option.options?.map(
-          transformApplicationCommandInteractionOptionWithoutSub
+          transformApplicationCommandInteractionOptionWithoutSub,
         ) ?? [],
     };
   }
@@ -289,7 +289,7 @@ const transformApplicationCommandInteractionOption = (
           name: item.name,
           options:
             item.options?.map(
-              transformApplicationCommandInteractionOptionWithoutSub
+              transformApplicationCommandInteractionOptionWithoutSub,
             ) ?? [],
         })) ?? [],
     };
@@ -299,7 +299,7 @@ const transformApplicationCommandInteractionOption = (
 };
 
 const transformMessageComponentInteraction = (
-  interaction: APIMessageComponentInteraction
+  interaction: APIMessageComponentInteraction,
 ): AdaptorInteraction => {
   const base = {
     ...transformers.userInvokedInteractionBase(interaction),
@@ -338,11 +338,11 @@ const transformMessageComponentInteraction = (
         resolved: {
           users:
             nullishThrough(transformResolvedUsers)(
-              interaction.data.resolved.users
+              interaction.data.resolved.users,
             ) ?? {},
           members:
             nullishThrough(transformResolvedMembers)(
-              interaction.data.resolved.members
+              interaction.data.resolved.members,
             ) ?? {},
         },
       },
@@ -360,7 +360,7 @@ const transformMessageComponentInteraction = (
         resolved: {
           roles:
             nullishThrough(transformResolvedRoles)(
-              interaction.data.resolved.roles
+              interaction.data.resolved.roles,
             ) ?? {},
         },
       },
@@ -378,15 +378,15 @@ const transformMessageComponentInteraction = (
         resolved: {
           users:
             nullishThrough(transformResolvedUsers)(
-              interaction.data.resolved.users
+              interaction.data.resolved.users,
             ) ?? {},
           members:
             nullishThrough(transformResolvedMembers)(
-              interaction.data.resolved.members
+              interaction.data.resolved.members,
             ) ?? {},
           roles:
             nullishThrough(transformResolvedRoles)(
-              interaction.data.resolved.roles
+              interaction.data.resolved.roles,
             ) ?? {},
         },
       },
@@ -404,7 +404,7 @@ const transformMessageComponentInteraction = (
         resolved: {
           channels:
             nullishThrough(transformResolvedChannels)(
-              interaction.data.resolved.channels
+              interaction.data.resolved.channels,
             ) ?? {},
         },
       },
@@ -415,7 +415,7 @@ const transformMessageComponentInteraction = (
 };
 
 const transformApplicationCommandAutocompleteInteraction = (
-  interaction: APIApplicationCommandAutocompleteInteraction
+  interaction: APIApplicationCommandAutocompleteInteraction,
 ): AdaptorApplicationCommandAutoCompleteInteraction => {
   return {
     type: "applicationCommandAutoComplete",
@@ -425,7 +425,7 @@ const transformApplicationCommandAutocompleteInteraction = (
 };
 
 const transformModalSubmitInteraction = (
-  interaction: APIModalSubmitInteraction
+  interaction: APIModalSubmitInteraction,
 ): AdaptorModalSubmitInteraction => {
   const fields: Record<string, string> = {};
 
@@ -450,7 +450,7 @@ const transformResolvedUsers = (record: Record<Snowflake, APIUser>) => {
 };
 
 const transformResolvedMembers = (
-  record: Record<Snowflake, APIInteractionDataResolvedGuildMember>
+  record: Record<Snowflake, APIInteractionDataResolvedGuildMember>,
 ) => {
   return transformRecordValue(transformers.partialMember)(record);
 };
@@ -460,13 +460,13 @@ const transformResolvedRoles = (record: Record<Snowflake, APIRole>) => {
 };
 
 const transformResolvedChannels = (
-  record: Record<Snowflake, APIInteractionDataResolvedChannel>
+  record: Record<Snowflake, APIInteractionDataResolvedChannel>,
 ) => {
   return transformRecordValue(transformers.channel)(record);
 };
 
 const transformResolvedAttachments = (
-  record: Record<Snowflake, APIAttachment>
+  record: Record<Snowflake, APIAttachment>,
 ) => {
   return transformRecordValue(transformers.attachment)(record);
 };

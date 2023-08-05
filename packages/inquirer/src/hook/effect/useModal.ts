@@ -22,7 +22,7 @@ type ModalComponent<T> = Omit<
 
 export type UseModalResult<T extends string> = [
   result: Record<T, string> | null,
-  open: (interactionId: Snowflake, token: string) => void
+  open: (interactionId: Snowflake, token: string) => void,
 ];
 
 export type UseModalParam<TKey extends string> = {
@@ -35,14 +35,14 @@ export type UseModalParam<TKey extends string> = {
         ModalComponent<TKey>,
         ModalComponent<TKey>,
         ModalComponent<TKey>,
-        ModalComponent<TKey>
+        ModalComponent<TKey>,
       ]
     | [
         ModalComponent<TKey>,
         ModalComponent<TKey>,
         ModalComponent<TKey>,
         ModalComponent<TKey>,
-        ModalComponent<TKey>
+        ModalComponent<TKey>,
       ];
   onSubmit?: (result: Record<TKey, string>) => void;
 };
@@ -53,7 +53,7 @@ export type UseModalParam<TKey extends string> = {
  * @returns [result, open] resultはモーダルの入力値、openはモーダルを開く関数
  */
 export const useModal = <TKey extends string>(
-  param: UseModalParam<TKey>
+  param: UseModalParam<TKey>,
 ): UseModalResult<TKey> => {
   const adaptor = useAdaptor();
   const [result, setResult] = useState<Record<TKey, string> | null>(null);
@@ -63,7 +63,7 @@ export const useModal = <TKey extends string>(
     param.components.map((component) => [
       component.key,
       generateCustomId("modalElement"),
-    ])
+    ]),
   );
 
   const keyToCustomIdMap = Object.fromEntries(customIdKeyEntries) as Record<
@@ -71,7 +71,7 @@ export const useModal = <TKey extends string>(
     string
   >;
   const customIdToKeyMap = Object.fromEntries(
-    customIdKeyEntries.map(([key, customId]) => [customId, key])
+    customIdKeyEntries.map(([key, customId]) => [customId, key]),
   ) as Record<string, TKey>;
 
   const markUpdate = useObserveValue(result, (value) => {
@@ -83,7 +83,7 @@ export const useModal = <TKey extends string>(
 
   const openModal = async (
     interactionId: Snowflake,
-    token: string
+    token: string,
   ): Promise<void> => {
     const customId = generateCustomId("modalRoot");
 
@@ -107,7 +107,7 @@ export const useModal = <TKey extends string>(
             },
           ],
         };
-      }
+      },
     );
 
     //mapを使うとtupleではなくarrayになってしまうのでキャストしている

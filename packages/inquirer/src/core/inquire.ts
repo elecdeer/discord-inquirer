@@ -38,7 +38,7 @@ export type InquireResult<T extends Record<string, unknown>> = {
 
 export type Inquire<T extends Record<string, unknown>> = (
   prompt: Prompt<T>,
-  config: InquireConfig<T>
+  config: InquireConfig<T>,
 ) => InquireResult<T>;
 
 /**
@@ -50,7 +50,7 @@ export type Inquire<T extends Record<string, unknown>> = (
  * @param idle 最後に回答状態かコンポーネントの状態が変化してからタイムアウトするまでの時間（ミリ秒） デフォルトは2 ** 31 - 1 ms
  */
 export interface InquireConfig<
-  T extends Record<string, unknown> = Record<string, unknown>
+  T extends Record<string, unknown> = Record<string, unknown>,
 > {
   screen: Screen;
   adaptor: DiscordAdaptor;
@@ -65,10 +65,10 @@ export interface InquireConfig<
 }
 
 export type Prompt<
-  T extends Record<string, unknown> = Record<string, unknown>
+  T extends Record<string, unknown> = Record<string, unknown>,
 > = (
   answer: UnionToIntersection<AnswerPrompt<T>>,
-  close: () => void
+  close: () => void,
 ) => MessageMutualPayload;
 
 export type AnswerPrompt<T extends Record<string, unknown>> = {
@@ -77,11 +77,11 @@ export type AnswerPrompt<T extends Record<string, unknown>> = {
 
 export type AnswerFunc<T extends Record<string, unknown>, K extends keyof T> = (
   key: K,
-  value: T[K]
+  value: T[K],
 ) => void;
 
 const completeConfig = <T extends Record<string, unknown>>(
-  config: InquireConfig<T>
+  config: InquireConfig<T>,
 ): Required<InquireConfig<T>> => {
   return {
     screen: config.screen,
@@ -100,7 +100,7 @@ const completeConfig = <T extends Record<string, unknown>>(
  */
 export const inquire = <T extends Record<string, unknown>>(
   prompt: Prompt<T>,
-  partialConfig: InquireConfig<T>
+  partialConfig: InquireConfig<T>,
 ): InquireResult<T> => {
   const { screen, adaptor, defaultResult, time, idle, logger } =
     completeConfig(partialConfig);
@@ -148,7 +148,7 @@ export const inquire = <T extends Record<string, unknown>>(
       return lastSendMessageId;
     },
     adaptor,
-    logger
+    logger,
   );
 
   const close = async () => {
@@ -168,7 +168,7 @@ export const inquire = <T extends Record<string, unknown>>(
     },
     () => {
       void close();
-    }
+    },
   );
 
   //初回送信
@@ -187,7 +187,7 @@ const createInquireTimer = (
     idle,
     logger,
   }: Pick<Required<InquireConfig<never>>, "idle" | "time" | "logger">,
-  close: () => void
+  close: () => void,
 ) => {
   const timeoutTimer = createTimer(time).onTimeout(() => {
     logger.log("debug", "inquirer timeout");

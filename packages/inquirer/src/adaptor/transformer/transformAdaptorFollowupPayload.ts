@@ -10,13 +10,13 @@ import type {
 } from "discord-api-types/v10";
 
 const transformAdaptorFollowupPayload = (
-  payload: AdaptorFollowupPayload
+  payload: AdaptorFollowupPayload,
 ): RESTPostAPIInteractionFollowupJSONBody => {
   return transformers.adaptorMessagePayload(payload);
 };
 
 const transformAdaptorFollowupPayloadPatch = (
-  payload: AdaptorFollowupPayloadPatch
+  payload: AdaptorFollowupPayloadPatch,
 ): RESTPatchAPIInteractionFollowupJSONBody => {
   return transformers.adaptorMessagePayloadPatch(payload);
 };

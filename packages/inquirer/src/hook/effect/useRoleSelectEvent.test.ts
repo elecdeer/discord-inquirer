@@ -8,12 +8,12 @@ describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
       const { interactionHelper } = await renderHook(() =>
-        useRoleSelectEvent("customId", handle)
+        useRoleSelectEvent("customId", handle),
       );
 
       const interaction = await interactionHelper.emitRoleSelectInteraction(
         "customId",
-        2
+        2,
       );
 
       expect(handle).toBeCalledWith(
@@ -22,7 +22,7 @@ describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
           interaction.data.resolved.roles[interaction.data.values[0]],
           interaction.data.resolved.roles[interaction.data.values[1]],
         ]),
-        expect.anything()
+        expect.anything(),
       );
       expect(handle).toBeCalledTimes(1);
     });
@@ -30,7 +30,7 @@ describe("packages/inquirer/src/hook/effect/useRoleSelectEvent", () => {
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", async () => {
       const handle = vi.fn();
       const { interactionHelper } = await renderHook(() =>
-        useRoleSelectEvent("customId", handle)
+        useRoleSelectEvent("customId", handle),
       );
 
       await interactionHelper.emitRoleSelectInteraction("unmatchedCustomId", 2);

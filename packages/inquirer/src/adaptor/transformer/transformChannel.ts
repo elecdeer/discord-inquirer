@@ -19,7 +19,7 @@ import type {
 } from "discord-api-types/v10";
 
 const transformThreadMetadata = (
-  metadata: APIThreadMetadata
+  metadata: APIThreadMetadata,
 ): AdaptorThreadMetadata => {
   return {
     archived: metadata.archived,
@@ -32,7 +32,7 @@ const transformThreadMetadata = (
 };
 
 const transformChannel = (
-  channel: APIInteractionDataResolvedChannel
+  channel: APIInteractionDataResolvedChannel,
 ): AdaptorPartialChannel => {
   const base: AdaptorPartialChannelBase = {
     id: channel.id,

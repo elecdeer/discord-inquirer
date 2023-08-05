@@ -23,7 +23,7 @@ const registerCommand = async (applicationId: string, botToken: string) => {
         Authorization: `Bot ${botToken}`,
       },
       body: body,
-    }
+    },
   )
     .then((res) => res.json())
     .then((res) => {

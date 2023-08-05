@@ -12,8 +12,8 @@ describe("packages/inquirer/src/hook/render/useMultiPagePrompt", () => {
             ["foo", () => ({ content: "foo" })],
             ["bar", () => ({ content: "bar" })],
           ],
-          "foo"
-        )
+          "foo",
+        ),
       );
 
       expect(result.current.result).toEqual({
@@ -28,8 +28,8 @@ describe("packages/inquirer/src/hook/render/useMultiPagePrompt", () => {
             ["foo", () => ({ content: "foo" })],
             ["bar", () => ({ content: "bar" })],
           ],
-          "foo"
-        )
+          "foo",
+        ),
       );
 
       await act(() => {
@@ -49,8 +49,8 @@ describe("packages/inquirer/src/hook/render/useMultiPagePrompt", () => {
             ["foo", renderFoo],
             ["bar", renderBar],
           ],
-          "foo"
-        )
+          "foo",
+        ),
       );
 
       expect(renderFoo).toHaveBeenCalledOnce();

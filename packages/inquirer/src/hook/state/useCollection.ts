@@ -8,10 +8,10 @@ import type { Lazy } from "../../util/lazy";
  * @param initialState 初期値
  */
 export const useCollection = <K, V>(
-  initialState: Lazy<Map<K, V> | [K, V][]>
+  initialState: Lazy<Map<K, V> | [K, V][]>,
 ) => {
   const [mapState, setMapState] = useState<Map<K, V>>(
-    new Map(resolveLazy(initialState))
+    new Map(resolveLazy(initialState)),
   );
 
   const set = (key: K, value: Lazy<V, V | undefined>) => {

@@ -22,7 +22,7 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
               payload: "bar",
             },
           ],
-        })
+        }),
       );
 
       expect(result.current[0]).toEqual([
@@ -53,14 +53,14 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
             },
           ],
           onSelected: handle,
-        })
+        }),
       );
 
       await interactionHelper.selectStringSelectComponent(
         result.current[1](),
         result.current[1]()
           .options.filter((option) => option.label === "bar")
-          .map((option) => option.value)
+          .map((option) => option.value),
       );
 
       expect(handle).toBeCalledWith([
@@ -90,14 +90,14 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
               payload: "bar",
             },
           ],
-        })
+        }),
       );
 
       await interactionHelper.selectStringSelectComponent(
         result.current[1](),
         result.current[1]()
           .options.filter((option) => option.label === "bar")
-          .map((option) => option.value)
+          .map((option) => option.value),
       );
 
       expect(result.current[0]).toEqual([
@@ -128,7 +128,7 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
               payload: "bar",
             },
           ],
-        })
+        }),
       );
 
       expect(result.current[1]().options).toEqual([
@@ -155,7 +155,7 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
             },
           ],
           filter: (interaction) => interaction.user.id === "foo",
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -174,7 +174,7 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
             ...base.user,
             id: "foo",
           },
-        })
+        }),
       );
       expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();
       expect(handle).toHaveBeenCalled();
@@ -195,14 +195,14 @@ describe("packages/inquirer/src/hook/render/useSelectComponent", () => {
               payload: "bar",
             },
           ],
-        })
+        }),
       );
 
       const component = result.current[1]();
       expect(component).toEqual(
         expect.objectContaining({
           maxValues: 1,
-        })
+        }),
       );
     });
   });

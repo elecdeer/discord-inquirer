@@ -36,26 +36,26 @@ const transformAdaptorEmbed = (embed: AdaptorEmbed): APIEmbed => ({
 });
 
 const transformAdaptorEmbedFooter = (
-  footer: AdaptorEmbedFooter
+  footer: AdaptorEmbedFooter,
 ): APIEmbedFooter => ({
   text: footer.text,
   icon_url: footer.iconUrl,
 });
 
 const transformAdaptorEmbedImage = (
-  image: AdaptorEmbedImage
+  image: AdaptorEmbedImage,
 ): APIEmbedImage => ({
   url: image.url,
 });
 
 const transformAdaptorEmbedThumbnail = (
-  thumbnail: AdaptorEmbedThumbnail
+  thumbnail: AdaptorEmbedThumbnail,
 ): APIEmbedThumbnail => ({
   url: thumbnail.url,
 });
 
 const transformAdaptorEmbedAuthor = (
-  author: AdaptorEmbedAuthor
+  author: AdaptorEmbedAuthor,
 ): APIEmbedAuthor => ({
   name: author.name,
   url: author.url,
@@ -63,7 +63,7 @@ const transformAdaptorEmbedAuthor = (
 });
 
 const transformAdaptorEmbedField = (
-  field: AdaptorEmbedField
+  field: AdaptorEmbedField,
 ): APIEmbedField => ({
   name: field.name,
   value: field.value,

@@ -12,7 +12,7 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
       const cache = new Map();
 
       const { result, waitFor } = await renderHook(() =>
-        useFetchExternalCache("fooKey", fetcher, cache)
+        useFetchExternalCache("fooKey", fetcher, cache),
       );
 
       expect(fetcher).toBeCalledWith("fooKey");
@@ -30,7 +30,7 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
       });
 
       const { result } = await renderHook(() =>
-        useFetchExternalCache("fooKey", fetcher, cache)
+        useFetchExternalCache("fooKey", fetcher, cache),
       );
 
       expect(fetcher).not.toBeCalled();
@@ -40,13 +40,13 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
 
     test("keyが変わったらそのkeyでfetcherが呼ばれる", async () => {
       const fetcher = vi.fn(async (key) =>
-        key === "fooKey" ? "fooValue" : "barValue"
+        key === "fooKey" ? "fooValue" : "barValue",
       );
       const cache = new Map();
 
       const { result, rerender, waitFor } = await renderHook(
         (key) => useFetchExternalCache(key, fetcher, cache),
-        { initialArgs: "fooKey" }
+        { initialArgs: "fooKey" },
       );
 
       expect(fetcher).toBeCalledWith("fooKey");
@@ -65,7 +65,7 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
       const cache = new Map();
 
       const { result, waitFor } = await renderHook(() =>
-        useFetchExternalCache("fooKey", fetcher, cache)
+        useFetchExternalCache("fooKey", fetcher, cache),
       );
 
       expect(result.current.isLoading).toBe(true);
@@ -85,7 +85,7 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
       const cache = new Map();
 
       const { result, waitFor } = await renderHook(() =>
-        useFetchExternalCache("fooKey", fetcher, cache)
+        useFetchExternalCache("fooKey", fetcher, cache),
       );
 
       expect(result.current.isLoading).toBe(true);
@@ -122,13 +122,13 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
       const barDeferred = new Deferred();
 
       const fetcher = vi.fn((key) =>
-        key === "fooKey" ? fooDeferred.promise : barDeferred.promise
+        key === "fooKey" ? fooDeferred.promise : barDeferred.promise,
       );
       const cache = new Map();
 
       const { result, rerender, waitFor } = await renderHook(
         (key) => useFetchExternalCache(key, fetcher, cache),
-        { initialArgs: "fooKey" }
+        { initialArgs: "fooKey" },
       );
 
       expect(result.current.isLoading).toBe(true);
@@ -150,7 +150,7 @@ describe("packages/inquirer/src/hook/state/useFetch", () => {
       const deleteSpy = vi.spyOn(cache, "delete");
 
       const { result, waitFor } = await renderHook(() =>
-        useFetchExternalCache("fooKey", fetcher, cache)
+        useFetchExternalCache("fooKey", fetcher, cache),
       );
 
       await waitFor(() => expect(result.current.isLoading).toBe(false));

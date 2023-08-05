@@ -12,7 +12,7 @@ import type { DiscordAdaptor } from "discord-inquirer";
 import type { Client } from "discord.js";
 
 export const createDiscordJsAdaptor = (
-  client: Client<true>
+  client: Client<true>,
 ): DiscordAdaptor => {
   // interactionCreateイベントをフックしてInteractionオブジェクトをため込み、それに対して操作するようにした方が良いかもしれない
   // そうするとfileなどの対応が楽になる

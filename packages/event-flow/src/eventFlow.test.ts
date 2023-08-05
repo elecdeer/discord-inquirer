@@ -21,7 +21,7 @@ describe("/eventFlow.ts", () => {
       testOffFunc(createEventFlow(), (source) => source.filter(() => true));
       testOffAllFunc(createEventFlow(), (source) => source.filter(() => true));
       testOffAllInBranchFunc(createEventFlow(), (source) =>
-        source.filter(() => true)
+        source.filter(() => true),
       );
     });
 
@@ -61,7 +61,7 @@ describe("/eventFlow.ts", () => {
 
       const filteredFlow = flow.filter(
         (num) => num % 2 === 0,
-        (num) => num % 3 === 0
+        (num) => num % 3 === 0,
       );
 
       //6の倍数だけ通過する
@@ -122,10 +122,10 @@ describe("/eventFlow.ts", () => {
       testOnceFunc(createEventFlow(), (source) => source.map((value) => value));
       testOffFunc(createEventFlow(), (source) => source.map((value) => value));
       testOffAllFunc(createEventFlow(), (source) =>
-        source.map((value) => value)
+        source.map((value) => value),
       );
       testOffAllInBranchFunc(createEventFlow(), (source) =>
-        source.map((value) => value)
+        source.map((value) => value),
       );
     });
 
@@ -227,7 +227,7 @@ describe("/eventFlow.ts", () => {
 
   const testOnFunc = (
     sourceFlow: IEventFlow<number>,
-    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
+    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>,
   ) => {
     test("on()", () => {
       const branchFlow = createBranchFlow(sourceFlow);
@@ -252,7 +252,7 @@ describe("/eventFlow.ts", () => {
 
   const testOnceFunc = (
     sourceFlow: IEventFlow<number>,
-    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
+    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>,
   ) => {
     test("once()", () => {
       const branchFlow = createBranchFlow(sourceFlow);
@@ -269,7 +269,7 @@ describe("/eventFlow.ts", () => {
 
   const testOffFunc = (
     sourceFlow: IEventFlow<number>,
-    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
+    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>,
   ) => {
     test("off()", () => {
       const branchFlow = createBranchFlow(sourceFlow);
@@ -287,7 +287,7 @@ describe("/eventFlow.ts", () => {
 
   const testOffAllFunc = (
     sourceFlow: IEventFlow<number>,
-    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
+    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>,
   ) => {
     test("offAll()", () => {
       const branchFlow = createBranchFlow(sourceFlow);
@@ -308,7 +308,7 @@ describe("/eventFlow.ts", () => {
 
   const testOffAllInBranchFunc = (
     sourceFlow: IEventFlow<number>,
-    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>
+    createBranchFlow: (source: IEventFlow<number>) => IEventFlowHandler<number>,
   ) => {
     test("offAllInBranch()", () => {
       const branchFlow = createBranchFlow(sourceFlow);

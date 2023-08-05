@@ -10,7 +10,7 @@ describe("packages/inquirer/src/hook/render/useButtonComponent", () => {
       const { result, adaptorMock, interactionHelper } = await renderHook(() =>
         useButtonComponent({
           onClick: handle,
-        })
+        }),
       );
 
       const component = result.current({
@@ -24,7 +24,7 @@ describe("packages/inquirer/src/hook/render/useButtonComponent", () => {
         expect.anything(),
         {
           type: "deferredUpdateMessage",
-        }
+        },
       );
 
       expect(handle).toHaveBeenCalledOnce();
@@ -36,7 +36,7 @@ describe("packages/inquirer/src/hook/render/useButtonComponent", () => {
         useButtonComponent({
           onClick: handle,
           filter: (interaction) => interaction.user.id === "foo",
-        })
+        }),
       );
 
       const component = result.current({

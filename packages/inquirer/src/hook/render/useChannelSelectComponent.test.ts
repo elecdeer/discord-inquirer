@@ -16,7 +16,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
       const { result, interactionHelper } = await renderHook(() =>
         useChannelSelectComponent({
           onSelected: handle,
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -47,7 +47,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
 
     test("チャンネルが選択されると選択状態が更新される", async () => {
       const { result, interactionHelper } = await renderHook(() =>
-        useChannelSelectComponent()
+        useChannelSelectComponent(),
       );
 
       const component = result.current[1]();
@@ -79,7 +79,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
         useChannelSelectComponent({
           minValues: 1,
           maxValues: 2,
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -87,7 +87,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
         expect.objectContaining({
           minValues: 1,
           maxValues: 2,
-        })
+        }),
       );
     });
 
@@ -97,7 +97,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
         useChannelSelectComponent({
           onSelected: handle,
           filter: (interaction) => interaction.user.id === "foo",
-        })
+        }),
       );
 
       const component = result.current[1]();
@@ -113,7 +113,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
       ] as const;
       await interactionHelper.selectChannelSelectComponent(
         component,
-        dummyChannels
+        dummyChannels,
       );
 
       expect(adaptorMock.sendInteractionResponse).not.toHaveBeenCalled();
@@ -127,7 +127,7 @@ describe("packages/inquirer/src/hook/render/useChannelSelectComponent", () => {
             ...base.user,
             id: "foo",
           },
-        })
+        }),
       );
 
       expect(adaptorMock.sendInteractionResponse).toHaveBeenCalled();

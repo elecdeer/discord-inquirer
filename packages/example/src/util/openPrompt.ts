@@ -18,7 +18,7 @@ import type {
 export const openPrompt = async (
   adaptor: DiscordAdaptor,
   interaction: { id: string; token: string },
-  promptType: string
+  promptType: string,
 ) => {
   switch (promptType) {
     case "dispatch":
@@ -48,7 +48,7 @@ const openMonoPagePrompt = async (
   interaction: { id: string; token: string },
   adaptor: DiscordAdaptor,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  prompt: Prompt<any>
+  prompt: Prompt<any>,
 ) => {
   const screen = createScreen(
     adaptor,
@@ -60,7 +60,7 @@ const openMonoPagePrompt = async (
     {
       onClose: "deleteComponent",
       logger,
-    }
+    },
   );
 
   const result = inquire(prompt, {
@@ -83,9 +83,9 @@ const openMultiPrompt = async (
   adaptor: DiscordAdaptor,
   mainPrompt: Prompt<MainPromptAnswer>,
   subPrompt: (
-    mainResultEvent: InquireResultEvent<MainPromptAnswer>
+    mainResultEvent: InquireResultEvent<MainPromptAnswer>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ) => Prompt<any>
+  ) => Prompt<any>,
 ) => {
   const mainScreen = createScreen(
     adaptor,
@@ -97,7 +97,7 @@ const openMultiPrompt = async (
     {
       onClose: "deleteComponent",
       logger,
-    }
+    },
   );
 
   //同じinteractionに対して複数のscreenを表示する際は、2つめ以降のscreenはinteractionFollowupを指定する必要がある
@@ -110,7 +110,7 @@ const openMultiPrompt = async (
     {
       onClose: "deleteMessage",
       logger,
-    }
+    },
   );
 
   const mainResult = inquire<MainPromptAnswer>(mainPrompt, {

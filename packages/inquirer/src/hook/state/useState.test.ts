@@ -16,7 +16,7 @@ describe("packages/inquirer/src/hook/useState", () => {
         },
         {
           initialArgs: 3,
-        }
+        },
       );
 
       expect(result.current.value).toBe(3);

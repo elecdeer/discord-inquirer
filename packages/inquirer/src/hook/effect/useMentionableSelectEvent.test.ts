@@ -8,7 +8,7 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
       const { interactionHelper } = await renderHook(() =>
-        useMentionableSelectEvent("customId", handle)
+        useMentionableSelectEvent("customId", handle),
       );
 
       const interaction =
@@ -29,7 +29,7 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
             ...interaction.data.resolved.roles[interaction.data.values[1]],
           },
         ]),
-        expect.anything()
+        expect.anything(),
       );
       expect(handle).toBeCalledTimes(1);
     });
@@ -37,13 +37,13 @@ describe("packages/inquirer/src/hook/effect/useMentionableSelectEvent", () => {
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", async () => {
       const handle = vi.fn();
       const { interactionHelper } = await renderHook(() =>
-        useMentionableSelectEvent("customId", handle)
+        useMentionableSelectEvent("customId", handle),
       );
 
       await interactionHelper.emitButtonInteraction("customId");
       await interactionHelper.emitMentionableSelectInteraction(
         "unmatchedCustomId",
-        [{ type: "user" }, { type: "role" }]
+        [{ type: "user" }, { type: "role" }],
       );
 
       expect(handle).not.toHaveBeenCalled();

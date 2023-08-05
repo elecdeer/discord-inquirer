@@ -28,7 +28,7 @@ export interface AdaptorMessageActionRowComponent {
         | AdaptorUserSelectComponent
         | AdaptorRoleSelectComponent
         | AdaptorMentionableSelectComponent
-        | AdaptorChannelSelectComponent
+        | AdaptorChannelSelectComponent,
       ]
     | [AdaptorButtonComponent, AdaptorButtonComponent]
     | [AdaptorButtonComponent, AdaptorButtonComponent, AdaptorButtonComponent]
@@ -36,14 +36,14 @@ export interface AdaptorMessageActionRowComponent {
         AdaptorButtonComponent,
         AdaptorButtonComponent,
         AdaptorButtonComponent,
-        AdaptorButtonComponent
+        AdaptorButtonComponent,
       ]
     | [
         AdaptorButtonComponent,
         AdaptorButtonComponent,
         AdaptorButtonComponent,
         AdaptorButtonComponent,
-        AdaptorButtonComponent
+        AdaptorButtonComponent,
       ];
 }
 

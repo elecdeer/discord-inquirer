@@ -25,13 +25,13 @@ export const createDiscordAdaptorMock = (): AdaptorMock => {
     deleteFollowup: vi.fn(),
     subscribeInteraction: vi.fn(
       (
-        handleInteraction: (interaction: AdaptorInteraction) => Promise<void>
+        handleInteraction: (interaction: AdaptorInteraction) => Promise<void>,
       ) => {
         interactionHandlers.add(handleInteraction);
         return () => {
           interactionHandlers.delete(handleInteraction);
         };
-      }
+      },
     ),
 
     emitInteraction: async (interaction) => {

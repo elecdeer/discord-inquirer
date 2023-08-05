@@ -43,7 +43,7 @@ export const selectsPrompt: Prompt<{
     onSelected: (selected) => {
       answer(
         "stringSelected",
-        selected.filter((item) => item.selected).map((item) => item.payload)
+        selected.filter((item) => item.selected).map((item) => item.payload),
       );
       logger.log("debug", {
         component: "string",

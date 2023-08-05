@@ -93,7 +93,7 @@ export const subPromptSelect: Prompt<{
 
 export const subPrompt =
   (
-    mainPageResultEvent: InquireResultEvent<MainPromptAnswer>
+    mainPageResultEvent: InquireResultEvent<MainPromptAnswer>,
   ): Prompt<{
     count: number;
     userId: Snowflake;
@@ -106,7 +106,7 @@ export const subPrompt =
         ["button", () => subPromptButton(answer, close)],
         ["select", () => subPromptSelect(answer, close)],
       ],
-      "button"
+      "button",
     );
 
     useEffect(() => {

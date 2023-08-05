@@ -14,7 +14,7 @@ export const sendMessage =
     const res = await fetcher<APIMessage>(
       "POST",
       `/channels/${channelId}/messages`,
-      body
+      body,
     );
     return res.id;
   };
@@ -23,13 +23,13 @@ export const editMessage =
   async (
     channelId: string,
     messageId: string,
-    payload: AdaptorMessagePayloadPatch
+    payload: AdaptorMessagePayloadPatch,
   ) => {
     const body = transformers.adaptorMessagePayloadPatch(payload);
     const res = await fetcher<APIMessage>(
       "PATCH",
       `/channels/${channelId}/messages/${messageId}`,
-      body
+      body,
     );
     return res.id;
   };

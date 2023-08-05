@@ -8,11 +8,11 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
     test("customIdやtypeが一致した際にhandlerが呼ばれる", async () => {
       const handle = vi.fn();
       const { interactionHelper } = await renderHook(() =>
-        useButtonEvent("customId", handle)
+        useButtonEvent("customId", handle),
       );
 
       const interaction = await interactionHelper.emitButtonInteraction(
-        "customId"
+        "customId",
       );
 
       expect(handle).toBeCalledWith(interaction, expect.anything());
@@ -22,7 +22,7 @@ describe("packages/inquirer/src/hook/useButtonEvent", () => {
     test("customIdやtypeが一致していない場合はhandlerが呼ばれない", async () => {
       const handle = vi.fn();
       const { interactionHelper } = await renderHook(() =>
-        useButtonEvent("customId", handle)
+        useButtonEvent("customId", handle),
       );
 
       await interactionHelper.emitButtonInteraction("unmatchedCustomId");

@@ -18,7 +18,7 @@ export type UseModalComponentResult<TKey extends string> = [
   result: Record<TKey, string> | null,
   Button: NonLinkButtonComponentBuilder<{
     customId: string;
-  }>
+  }>,
 ];
 
 /**

@@ -19,8 +19,8 @@ export const useRoleSelectEvent = (
   handle: (
     interaction: Readonly<AdaptorRoleSelectInteraction>,
     values: readonly AdaptorRole[],
-    deferUpdate: () => Promise<void>
-  ) => Awaitable<void>
+    deferUpdate: () => Promise<void>,
+  ) => Awaitable<void>,
 ): void => {
   const adaptor = useAdaptor();
 
@@ -36,7 +36,7 @@ export const useRoleSelectEvent = (
       };
 
       const roles = interaction.data.values.map(
-        (id) => interaction.data.resolved.roles[id]
+        (id) => interaction.data.resolved.roles[id],
       );
 
       await handle(interaction, roles, deferUpdate);

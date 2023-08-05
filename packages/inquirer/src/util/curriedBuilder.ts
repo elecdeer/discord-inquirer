@@ -22,7 +22,7 @@ type Build<_, __, Terminal> = {
 
 export type UnfulfilledCurriedBuilder<Props, Applied, Terminal> = {
   <P extends Partial<Omit<Props, keyof Applied>>>(
-    props: StrictPropertyCheck<P, Partial<Omit<Props, keyof Applied>>>
+    props: StrictPropertyCheck<P, Partial<Omit<Props, keyof Applied>>>,
   ): ConditionalCurriedBuilder<Props, Applied & P, Terminal>;
 };
 
@@ -55,10 +55,10 @@ const builderImpl = <T extends object, U>(terminalOp: (props: T) => U) => {
 
 export function createCurriedBuilder<T extends object>(): CurriedBuilder<T, T>;
 export function createCurriedBuilder<T extends object, U>(
-  terminalOp: (props: T) => U
+  terminalOp: (props: T) => U,
 ): CurriedBuilder<T, U>;
 export function createCurriedBuilder<T extends object, U>(
-  terminalOp?: (props: T) => U
+  terminalOp?: (props: T) => U,
 ) {
   if (terminalOp === undefined) {
     return builderImpl<T, T>((props) => props);

@@ -68,7 +68,7 @@ const resultContainer = <T>() => {
 
 export const renderHook = async <TResult, TArgs>(
   runHook: (args: TArgs) => TResult,
-  options?: RenderHookOptions<TArgs>
+  options?: RenderHookOptions<TArgs>,
 ) => {
   const {
     initialArgs = undefined,
@@ -94,7 +94,7 @@ export const renderHook = async <TResult, TArgs>(
           setError(
             new Error("unexpected throw", {
               cause: e,
-            })
+            }),
           );
         }
       }
@@ -103,12 +103,12 @@ export const renderHook = async <TResult, TArgs>(
       return latestMessageId;
     },
     adaptor,
-    logger
+    logger,
   );
 
   const act = async <T>(
     cb: () => Awaitable<T>,
-    messageId?: string
+    messageId?: string,
   ): Promise<T> => {
     latestMessageId = messageId ?? latestMessageId;
     return await renderer.act(cb);
@@ -117,7 +117,7 @@ export const renderHook = async <TResult, TArgs>(
   const interactionHelper = createEmitInteractionTestUtil(
     adaptor.emitInteraction,
     act,
-    randomSource
+    randomSource,
   );
 
   await renderer.act(() => {
@@ -149,11 +149,11 @@ export const renderHook = async <TResult, TArgs>(
 
 export const asyncUtil = (
   actAsync: (cb: () => Promise<void>, messageId?: string) => Promise<void>,
-  addResolver: (resolver: () => void) => void
+  addResolver: (resolver: () => void) => void,
 ) => {
   const waitFor = async (
     cb: () => boolean | void,
-    { timeout = 1000, interval = 5 } = {}
+    { timeout = 1000, interval = 5 } = {},
   ) => {
     const safeCb = () => {
       try {
