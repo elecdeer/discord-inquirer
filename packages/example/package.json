@@ -25,7 +25,7 @@
     "@discord-inquirer/adaptor-discordjs": "*",
     "@discord-inquirer/adaptor-node": "*",
     "discord.js": "^14.8.0",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
