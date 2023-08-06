@@ -37,6 +37,7 @@ export const rollupConfig = ({
       ],
       plugins: [
         typescript({
+          exclude: "**.test.ts",
           cacheDir: cacheDir,
         }),
         copy({
