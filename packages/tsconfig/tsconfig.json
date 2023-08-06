@@ -7,5 +7,6 @@
     "declaration": true,
     "inlineSourceMap": true,
     "declarationMap": true,
+    "moduleResolution": "bundler",
   }
 }
