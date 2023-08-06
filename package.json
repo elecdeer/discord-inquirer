@@ -29,6 +29,7 @@
     "@changesets/cli": "^2.26.2",
     "@rollup/plugin-typescript": "^11.1.1",
     "rollup": "^3.27.2",
+    "rollup-plugin-copy": "^3.4.0",
     "turbo": "^1.10.12",
     "typescript": "^5.1.6",
     "vitest": "^0.34.1"
