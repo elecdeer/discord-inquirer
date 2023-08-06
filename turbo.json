@@ -1,6 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "baseBranch": "origin/main",
+  "globalDependencies": [
+    "rollup.config.mjs"
+  ],
   "pipeline": {
     "build": {
       "dependsOn": [
