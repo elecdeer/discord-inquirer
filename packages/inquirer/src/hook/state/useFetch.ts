@@ -68,7 +68,7 @@ export const useFetchExternalCache = <TKey, TData>(
         setIsLoading(false);
         setValue(value);
       },
-      (error) => {
+      (error: Error) => {
         const value = {
           data: undefined,
           error,

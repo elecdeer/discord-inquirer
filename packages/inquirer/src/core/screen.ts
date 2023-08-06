@@ -156,7 +156,7 @@ export const createScreen = (
     if (onClose === "deleteMessage") {
       await editor
         ?.del()
-        .catch((e) => {
+        .catch((e: unknown) => {
           logger.log("error", {
             message: "failed to delete message",
             error: e,
@@ -171,7 +171,7 @@ export const createScreen = (
       await commit({
         components: [],
       })
-        .catch((e) => {
+        .catch((e: unknown) => {
           logger.log("error", {
             message: "failed to delete component",
             error: e,
@@ -204,37 +204,35 @@ export const createMessagePayloadPatch = (
   if (prev.content !== next.content) {
     result = {
       ...(result ?? {}),
-      content: next.content === undefined ? null : next.content,
+      content: next.content ?? null,
     };
   }
 
   if (!isMatchHash(prev.embeds, next.embeds)) {
     result = {
       ...(result ?? {}),
-      embeds: next.embeds === undefined ? null : next.embeds,
+      embeds: next.embeds ?? null,
     };
   }
 
   if (!isMatchHash(prev.components, next.components)) {
     result = {
       ...(result ?? {}),
-      components: next.components === undefined ? null : next.components,
+      components: next.components ?? null,
     };
   }
 
   if (!isMatchHash(prev.allowedMentions, next.allowedMentions)) {
     result = {
       ...(result ?? {}),
-      allowedMentions:
-        next.allowedMentions === undefined ? null : next.allowedMentions,
+      allowedMentions: next.allowedMentions ?? null,
     };
   }
 
   if (prev.suppressEmbeds !== next.suppressEmbeds) {
     result = {
       ...(result ?? {}),
-      suppressEmbeds:
-        next.suppressEmbeds === undefined ? null : next.suppressEmbeds,
+      suppressEmbeds: next.suppressEmbeds ?? null,
     };
   }
 

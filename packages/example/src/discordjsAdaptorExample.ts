@@ -33,4 +33,4 @@ client.on("ready", (readyClient) => {
   });
 });
 
-await client.login(process.env.DISCORD_TOKEN!);
+await client.login(process.env.DISCORD_TOKEN);

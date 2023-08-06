@@ -1,6 +1,0 @@
-{
-  "extends": ["@monorepo/eslint-config"],
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  }
-}

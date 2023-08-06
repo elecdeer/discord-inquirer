@@ -1,5 +1,5 @@
 export type ApiFetcher = <T>(
-  method: "GET" | "POST" | "PATCH" | "DELETE" | string,
+  method: "GET" | "POST" | "PATCH" | "DELETE" | "PUT",
   path: string,
   body?: object,
 ) => Promise<T>;
