@@ -66,7 +66,7 @@ export const useConfirmButtonComponent = <T = undefined>({
 
   const markChanged = useObserveValue(validateResult, (value) => {
     if (!value.ok) return;
-    onConfirm?.();
+    void onConfirm?.();
   });
 
   useButtonEvent(customId, async (interaction, deferUpdate) => {

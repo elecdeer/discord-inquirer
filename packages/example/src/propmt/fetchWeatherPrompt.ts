@@ -21,7 +21,15 @@ const weatherFetcher =
       `https://weather.tsukumijima.net/api/forecast?city=${cityCode}`,
     );
 
-    const data = await rawData.json();
+    const data = (await rawData.json()) as {
+      title: string;
+      forecasts: {
+        date: string;
+        detail: {
+          weather: string;
+        };
+      }[];
+    };
 
     const result = {
       title: data.title,

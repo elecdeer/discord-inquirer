@@ -42,7 +42,7 @@ const charSet =
  * 文字列の数だけ乱数を消費する
  */
 export const nextString = (next: RandomSource) => (length: number) => {
-  return [...Array(length)]
+  return Array.from({ length })
     .map(() => {
       const rand = next();
       return charSet[rand % charSet.length];

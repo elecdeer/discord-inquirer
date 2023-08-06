@@ -9,10 +9,13 @@ import {
 
 import type { Prompt } from "discord-inquirer";
 
-const allOptions = [...Array(30)].map((_, i) => ({
-  label: `${i}`,
-  payload: i,
-}));
+const generateOptions = (size: number) =>
+  Array.from({ length: size }, (_, index) => ({
+    label: `${index}`,
+    payload: index,
+  }));
+
+const allOptions = generateOptions(30);
 
 export const pagedSelectPrompt = (() => {
   const logger = useLogger();

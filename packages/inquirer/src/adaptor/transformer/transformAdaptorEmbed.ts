@@ -32,7 +32,7 @@ const transformAdaptorEmbed = (embed: AdaptorEmbed): APIEmbed => ({
   thumbnail:
     embed.thumbnail && transformers.adaptorEmbedThumbnail(embed.thumbnail),
   author: embed.author && transformers.adaptorEmbedAuthor(embed.author),
-  fields: embed.fields && embed.fields.map(transformers.adaptorEmbedField),
+  fields: embed.fields?.map(transformers.adaptorEmbedField),
 });
 
 const transformAdaptorEmbedFooter = (

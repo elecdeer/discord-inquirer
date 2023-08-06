@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export type LogType = "trace" | "debug" | "warn" | "error" | string;
 
 export type Logger = {

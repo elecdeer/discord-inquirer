@@ -72,6 +72,7 @@ const openMonoPagePrompt = async (
   result.resultEvent.on(({ key, value, all }) => {
     logger.log("debug", {
       key,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       value,
       all,
     });
@@ -129,12 +130,13 @@ const openMultiPrompt = async (
   mainResult.resultEvent
     .filter(({ key }) => key === "close")
     .on(() => {
-      subResult.close();
+      void subResult.close();
     });
 
   subResult.resultEvent.on(({ key, value, all }) => {
     logger.log("debug", {
       key,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       value,
       all,
     });

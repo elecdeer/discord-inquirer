@@ -89,7 +89,7 @@ export const createEmitInteractionTestUtil = (
     overrideParam?: LazyOverrideParam<AdaptorUserSelectInteraction>,
   ): Promise<AdaptorUserSelectInteraction> => {
     const userList = Array.isArray(dummyUsers)
-      ? dummyUsers.map((user) => faker.user(user))
+      ? dummyUsers.map((user: AdaptorUser) => faker.user(user))
       : [...Array(dummyUsers)].map(() => faker.user());
     const members = Object.fromEntries(
       userList.map((user) => [user.id, faker.partialMember()]),
@@ -125,7 +125,7 @@ export const createEmitInteractionTestUtil = (
     overrideParam?: LazyOverrideParam<AdaptorRoleSelectInteraction>,
   ): Promise<AdaptorRoleSelectInteraction> => {
     const roleList = Array.isArray(dummyRole)
-      ? dummyRole.map((role) => faker.role(role))
+      ? dummyRole.map((role: AdaptorRole) => faker.role(role))
       : [...Array(dummyRole)].map(() => faker.role());
     const roles = Object.fromEntries(roleList.map((role) => [role.id, role]));
 

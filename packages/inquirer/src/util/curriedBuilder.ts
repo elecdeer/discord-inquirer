@@ -16,15 +16,13 @@ export type FulfilledCurriedBuilder<Props, Applied, Terminal> =
   UnfulfilledCurriedBuilder<Props, Applied, Terminal> &
     Build<Props, Applied, Terminal>;
 
-type Build<_, __, Terminal> = {
-  (): Terminal;
-};
+type Build<_, __, Terminal> = () => Terminal;
 
-export type UnfulfilledCurriedBuilder<Props, Applied, Terminal> = {
-  <P extends Partial<Omit<Props, keyof Applied>>>(
-    props: StrictPropertyCheck<P, Partial<Omit<Props, keyof Applied>>>,
-  ): ConditionalCurriedBuilder<Props, Applied & P, Terminal>;
-};
+export type UnfulfilledCurriedBuilder<Props, Applied, Terminal> = <
+  P extends Partial<Omit<Props, keyof Applied>>,
+>(
+  props: StrictPropertyCheck<P, Partial<Omit<Props, keyof Applied>>>,
+) => ConditionalCurriedBuilder<Props, Applied & P, Terminal>;
 
 export type ConditionalCurriedBuilder<Props, Applied, Terminal> = If<
   IsAllPartial<Omit<Props, keyof Applied>>,
