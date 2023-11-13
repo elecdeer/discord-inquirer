@@ -37,7 +37,7 @@
   "homepage": "https://github.com/elecdeer/discord-inquirer#readme",
   "dependencies": {
     "discord-inquirer": "^0.1.0",
-    "discord.js": "^14.12.1"
+    "discord.js": "^14.14.1"
   },
   "devDependencies": {
     "@monorepo/eslint-config": "*",
