@@ -39,7 +39,7 @@
     "@discord-inquirer/event-flow": "^1.3.0",
     "discord-api-types": "^0.37.37",
     "node-object-hash": "^2.3.10",
-    "type-fest": "^4.2.0"
+    "type-fest": "^4.7.1"
   },
   "devDependencies": {
     "@monorepo/eslint-config": "*",
